@@ -4,6 +4,9 @@ This file explains **everything** about the RIIMS website: what it is, why it ex
 exactly how it works — design, build system, data, wiring, interactivity, SEO and deployment.
 If you are new here, read this top to bottom and you will understand the whole project.
 
+> **Status: 🟢 LIVE** at **https://riimshospitals.com** (Hostinger VPS `187.127.132.106`,
+> project at `/opt/riims`). Full deployment facts + commands in **§18**.
+
 > Maintenance rule: per [CLAUDE.md](CLAUDE.md), **every change to this project must be
 > reflected here**, down to the smallest detail.
 
@@ -371,19 +374,102 @@ npm test         # build + check  (MUST be 0 problems before pushing — see CLA
 block parses, every page has exactly one `<h1>` + a `<title>` + a description, and there are no
 `href="#"` dead anchors. Exit code 0 = clean.
 
-## 18. Deployment
+## 18. Deployment — LIVE (as actually deployed)
 
-Production target: **riimshospitals.com on the Hostinger VPS** (IP `187.127.132.106`), which runs
-**Docker + Traefik**. Recommended path = deploy RIIMS as its **own Docker container** (`riims-web`,
-nginx serving `site/`) on the same network as the other apps, routed by the existing Traefik with
-auto Let's Encrypt SSL — fully isolated. Full runbook: **[DEPLOY.md](DEPLOY.md)** (includes GoDaddy
-DNS + discovery commands to find the Traefik network + cert resolver).
+**Live site: https://riimshospitals.com (+ www).** Deployed and verified on **2026-06-10**.
+This section is the source of truth for the running production setup.
 
-Summary: GoDaddy A-records (`@` + `www`) → `187.127.132.106`; `git clone` into `/opt/riims`; set
-`<TRAEFIK_NETWORK>` + `<CERTRESOLVER>` in `docker-compose.yml` (copy from a working app's labels);
-`docker compose up -d`. Update later with `git pull` (site/ is bind-mounted → served instantly).
-The site is fully static, so it serves **1000+ concurrent** from cache. Non-Docker alternatives
-(system nginx/Apache, or any static host like Netlify/Vercel/GitHub Pages) are in DEPLOY.md §B.
+### 18.1 Where it runs (facts)
+
+| Thing | Value |
+|-------|-------|
+| Domain | `riimshospitals.com` (non-www canonical; `www` also serves; `http`→`https` 301) |
+| Registrar / DNS | GoDaddy — `A @` and `A www` → `187.127.132.106` |
+| Host | Hostinger VPS, Ubuntu 24.04 LTS, `ssh root@187.127.132.106` |
+| Web server | **host nginx 1.24.0** (systemd) on ports 80/443 — it reverse-proxies all the box's sites. (A `traefik-*` Docker project exists but is **dormant/not used**; other apps run as Docker containers with their own nginx — do not touch them.) |
+| **Project location on VPS** | **`/opt/riims`** (a `git clone` of this repo) |
+| **Web root** | **`/opt/riims/site`** (the generated static files) |
+| nginx site config | `/etc/nginx/sites-available/riimshospitals` → symlinked to `/etc/nginx/sites-enabled/riimshospitals` (a copy of `deploy/nginx-riims-bootstrap.conf`, then upgraded to HTTPS by certbot) |
+| SSL | Let's Encrypt via **certbot** (`/etc/letsencrypt/live/riimshospitals.com/`), auto-renew enabled |
+| Repo | https://github.com/prarit0097/Riims-Website (`main`) |
+
+### 18.2 How it was deployed (the exact commands that were run)
+
+```bash
+# 1) DNS: GoDaddy A @ + A www -> 187.127.132.106  (then `getent hosts riimshospitals.com` confirms)
+
+# 2) Clone the repo into a new, isolated folder
+mkdir -p /opt/riims && cd /opt/riims
+git clone https://github.com/prarit0097/Riims-Website.git .
+chmod -R a+rX /opt/riims
+
+# 3) Install the RIIMS server block into the existing host nginx (sites-enabled)
+cp deploy/nginx-riims-bootstrap.conf /etc/nginx/sites-available/riimshospitals
+ln -sf /etc/nginx/sites-available/riimshospitals /etc/nginx/sites-enabled/riimshospitals
+nginx -t && systemctl reload nginx          # nginx -t MUST pass (protects the other ~13 sites)
+
+# 4) SSL — certbot adds the 443 block + http->https redirect to THIS site only
+certbot --nginx -d riimshospitals.com -d www.riimshospitals.com \
+        --agree-tos -m praritsidana786@gmail.com --redirect --non-interactive
+nginx -t && systemctl reload nginx
+```
+
+### 18.3 Updating the live site (after any push to GitHub)
+
+```bash
+cd /opt/riims && git pull        # static files served instantly — no reload needed
+```
+Helper: `/opt/riims/deploy/update.sh` does the same (`git fetch` + `reset --hard origin/main`).
+
+### 18.4 Re-applying the nginx config (only if `deploy/nginx-riims-bootstrap.conf` changes)
+
+The live nginx file is a **copy** in `/etc/nginx/` (not the repo file), and certbot edited it to add
+HTTPS. So a plain `git pull` does NOT change nginx config. To re-apply a changed config:
+
+```bash
+cd /opt/riims && git pull
+cp deploy/nginx-riims-bootstrap.conf /etc/nginx/sites-available/riimshospitals
+certbot --nginx -d riimshospitals.com -d www.riimshospitals.com --redirect --non-interactive --reinstall
+nginx -t && systemctl reload nginx
+```
+
+> **nginx gotcha (already handled):** a `location` block that has its own `add_header` *drops* all
+> server-level `add_header` directives for that location. So caching locations use **only `expires`**
+> (which sets `Cache-Control`) — never `add_header Cache-Control` — otherwise the security headers
+> (CSP/HSTS/…) get stripped from pages. Keep it that way.
+
+### 18.5 Verify (run locally or on the VPS)
+
+```bash
+D=https://riimshospitals.com
+curl -sI $D/ | head -1                                   # HTTP/.. 200
+curl -sI http://riimshospitals.com/ | grep -i location   # 301 -> https://riimshospitals.com/
+curl -sI $D/ | grep -iE "content-security|strict-transport|x-frame|permissions-policy"   # 6 headers
+for p in / conditions/ckd.html blog/ckd-diet-chart-indian-veg.html contact.html 404.html; do
+  printf "%-40s %s\n" "$p" "$(curl -s -o /dev/null -w '%{http_code}' $D/$p)"; done
+```
+Confirmed at launch: all pages 200, SSL valid (Let's Encrypt, expires 2026-09-08, auto-renew), all
+6 security headers present, gzip on, `http`→`https` 301, canonical/sitemap on `riimshospitals.com`.
+
+### 18.6 Scale / 1000+ concurrent
+
+Fully static behind host nginx → served from cache/RAM, thousands of req/s per core. The config adds
+**gzip** (text) + **30-day asset caching** + security headers. No backend, DB, or per-request compute.
+Leads never depend on the server (booking form → prefilled WhatsApp; Call/WhatsApp are plain links).
+
+### 18.7 Alternatives (not used here)
+
+`DEPLOY.md` also documents: a Docker container behind Traefik (`docker-compose.yml`), a standalone
+**Caddy** auto-HTTPS container (`docker-compose.caddy.yml` + `deploy/docker/Caddyfile`), a full
+system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apache-riimshospitals.conf`
++ `site/.htaccess`). Any static host (Netlify/Vercel/GitHub Pages) also works.
+
+### 18.8 Post-launch SEO actions (off-site; not in code)
+
+1. **Google Search Console** → verify `riimshospitals.com` → submit `https://riimshospitals.com/sitemap.xml`.
+2. **Google Business Profile** (Baraut clinic) — #1 lever for local/"near me" searches; then set
+   `SITE.geo`/`mapsQuery` in `build/data.mjs` to the exact verified place and rebuild.
+3. Real doctor names/photos + Google reviews; replace the 9 templated blog articles with full originals.
 
 ## 19. How to make common changes
 

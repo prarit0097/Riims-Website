@@ -46,13 +46,15 @@ No dependencies to install — everything uses Node's standard library.
 
 ## Deploy
 
-Production target: **riimshospitals.com** on the Hostinger VPS — full step-by-step,
-shared-VPS-safe runbook in **[DEPLOY.md](DEPLOY.md)** (git clone into an isolated folder, point a
-new nginx/Apache site block at `site/`, certbot SSL, `deploy/update.sh` to update). The site is
-static, so it serves **1000+ concurrent** from cache with the provided HTTP/2 + gzip + long-cache
-config. You can also drop the `site/` folder on any static host (Netlify/Vercel/GitHub Pages).
+🟢 **LIVE at https://riimshospitals.com** — Hostinger VPS `187.127.132.106`, project at
+`/opt/riims`, served by host nginx with Let's Encrypt SSL.
 
-The live domain is set in `build/data.mjs` → `SITE.origin` (`https://riimshospitals.com`).
+- **Full deployment facts + exact commands:** [RIIMS.md §18](RIIMS.md) (source of truth).
+- **Update the live site:** `cd /opt/riims && git pull`.
+- Step-by-step runbook + alternatives (Docker/Caddy/Traefik/Apache): [DEPLOY.md](DEPLOY.md).
+
+The site is static, so it serves **1000+ concurrent** from cache (gzip + long-cache). The live
+domain is set in `build/data.mjs` → `SITE.origin` (`https://riimshospitals.com`).
 
 ## Project structure
 
