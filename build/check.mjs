@@ -30,7 +30,8 @@ for (const file of walk(ROOT)) {
     const clean = ref.split('#')[0].split('?')[0];
     if (!clean) continue;
     checked++;
-    const target = resolve(dir, clean);
+    // Absolute (/foo) resolve from the site root; relative from the file's dir.
+    const target = clean.startsWith('/') ? join(ROOT, clean.slice(1)) : resolve(dir, clean);
     if (!existsSync(target)) {
       errors++;
       console.error(`MISSING: ${file.replace(ROOT, 'site')} -> ${ref}`);
@@ -68,6 +69,11 @@ for (const file of walk(ROOT)) {
 // No dead anchors
 for (const file of walk(ROOT)) {
   if (/href="#"/.test(readFileSync(file, 'utf8'))) { errors++; console.error(`DEAD ANCHOR href="#": ${file.replace(ROOT, 'site')}`); }
+}
+
+// Stale domain guard — the old placeholder domain must never appear in output
+for (const file of walk(ROOT)) {
+  if (/www\.riims\.in/.test(readFileSync(file, 'utf8'))) { errors++; console.error(`STALE DOMAIN www.riims.in: ${file.replace(ROOT, 'site')}`); }
 }
 
 const pageCount = walk(ROOT).length;

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, LEGAL_KEYS } from './pages.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, LEGAL_KEYS } from './pages.mjs';
 import { esc } from './components.mjs';
 import { CONDITIONS, POSTS, SITE } from './data.mjs';
 
@@ -18,7 +18,7 @@ const OUT = join(__dirname, '..', 'site');
 /* ---------- JSON-LD ---------- */
 function clinicGraph() {
   return {
-    '@type': 'MedicalClinic',
+    '@type': ['MedicalClinic', 'LocalBusiness'],
     '@id': `${SITE.origin}/#clinic`,
     name: 'RIIMS — Rashtriya Institute of Integrated Medical Sciences',
     alternateName: 'RIIMS Baraut',
@@ -26,10 +26,12 @@ function clinicGraph() {
     url: `${SITE.origin}/`,
     logo: `${SITE.origin}/assets/riims-logo.png`,
     image: `${SITE.origin}/assets/riims-logo.png`,
-    telephone: '+91-85120-40000',
+    telephone: SITE.phoneTel,
     medicalSpecialty: ['Nephrology', 'Internal Medicine'],
     priceRange: '₹₹',
-    areaServed: { '@type': 'Country', name: 'India' },
+    areaServed: SITE.serviceCities.map((c) => ({ '@type': 'City', name: c })),
+    geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
+    hasMap: SITE.mapsLink,
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Near Baraut Medicity Hospital, 36VW+JHV, Kotana Road',
@@ -42,6 +44,13 @@ function clinicGraph() {
     }],
     sameAs: [SITE.facebook, SITE.instagram],
   };
+}
+
+/* 'Jun 2026' -> ISO 'YYYY-MM-01' for Article dates */
+const MONTHS = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
+function isoDate(label) {
+  const [m, y] = String(label || '').split(' ');
+  return MONTHS[m] && y ? `${y}-${MONTHS[m]}-01` : undefined;
 }
 function websiteGraph() {
   return {
@@ -77,7 +86,7 @@ function head(p) {
   const graph = [clinicGraph(), websiteGraph(), ...(p.ld || [])];
   const ogImg = `${SITE.origin}/assets/riims-logo.png`;
   return `<!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -85,10 +94,12 @@ function head(p) {
   <meta name="description" content="${esc(p.desc)}" />
   ${p.keywords ? `<meta name="keywords" content="${esc(p.keywords)}" />` : ''}
   <meta name="author" content="RIIMS — Rashtriya Institute of Integrated Medical Sciences" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="robots" content="${p.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}" />
   <meta name="theme-color" content="#0a6168" />
   <link rel="canonical" href="${url}" />
   <link rel="icon" type="image/png" href="${p.base}assets/riims-logo-sm.png" />
+  <link rel="apple-touch-icon" href="${p.base}assets/riims-logo-sm.png" />
+  <link rel="manifest" href="${p.base}site.webmanifest" />
   <meta property="og:type" content="${p.path === '/' ? 'website' : 'article'}" />
   <meta property="og:site_name" content="RIIMS — Integrated Kidney Care" />
   <meta property="og:title" content="${esc(p.title)}" />
@@ -105,7 +116,7 @@ function head(p) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="${p.base}css/styles.css" />
   <link rel="stylesheet" href="${p.base}css/site.css" />
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <script src="${p.base}assets/vendor/lucide.min.js" defer></script>
   <script src="${p.base}js/site.js" defer></script>
 </head>`;
 }
@@ -163,7 +174,7 @@ for (const slug of Object.keys(CONDITIONS)) {
   pages.push({
     out: `conditions/${slug}.html`, base: '../', path, nav: `conditions/${slug}.html`, mobile: '',
     title: `${c.title} — Symptoms & Care | RIIMS Baraut`,
-    desc: c.intro,
+    desc: `${c.intro} Doctor-led, report-based kidney care at RIIMS, Baraut, UP.`,
     keywords: `${c.title.toLowerCase()}, kidney care, nephrologist Baraut, ${slug.replace(/-/g, ' ')}, integrated kidney treatment`,
     body: conditionPage('../', slug),
     ld: [breadcrumb(c.crumb, `${SITE.origin}${path}`), {
@@ -180,7 +191,7 @@ for (const p of POSTS) {
   pages.push({
     out: `blog/${p.slug}.html`, base: '../', path, nav: 'blog.html', mobile: '',
     title: `${p.title} | RIIMS Kidney Care Blog`,
-    desc: p.excerpt,
+    desc: `${p.excerpt} A plain-language RIIMS kidney-care guide (Baraut, UP).`,
     keywords: `${p.cat.toLowerCase()}, kidney care, ${p.title.toLowerCase()}, RIIMS Baraut`,
     body: blogPostPage('../', p),
     ld: [
@@ -196,6 +207,7 @@ for (const p of POSTS) {
         '@type': 'Article', headline: p.title, description: p.excerpt,
         author: { '@type': 'Organization', name: p.author }, image: `${SITE.origin}/assets/riims-logo.png`,
         publisher: { '@id': `${SITE.origin}/#clinic` }, mainEntityOfPage: `${SITE.origin}${path}`,
+        datePublished: isoDate(p.date), dateModified: isoDate(p.date),
         inLanguage: 'en-IN', articleSection: p.cat,
       },
     ],
@@ -215,6 +227,15 @@ for (const key of LEGAL_KEYS) {
   });
 }
 
+/* 404 — uses absolute '/' base so its CSS/JS/links work no matter which URL the
+   server serves it for. noindex + excluded from the sitemap. */
+pages.push({
+  out: '404.html', base: '/', path: '/404.html', nav: '', mobile: '', noindex: true,
+  title: 'Page not found (404) | RIIMS',
+  desc: 'The page could not be found. Browse kidney conditions, the blog, or contact RIIMS, Baraut.',
+  body: notFoundPage('/'),
+});
+
 /* ---------- Write ---------- */
 mkdirSync(join(OUT, 'conditions'), { recursive: true });
 mkdirSync(join(OUT, 'blog'), { recursive: true });
@@ -225,7 +246,7 @@ for (const p of pages) {
 /* sitemap + robots */
 const today = new Date().toISOString().slice(0, 10);
 const legalPaths = new Set(['/privacy.html', '/terms.html', '/disclaimer.html']);
-const urls = pages.map((p) => {
+const urls = pages.filter((p) => !p.noindex).map((p) => {
   const priority = p.path === '/' ? '1.0'
     : p.path.startsWith('/conditions') ? '0.8'
     : p.path.startsWith('/blog/') ? '0.6'

@@ -5,6 +5,9 @@
 import { icon, logo, button, iconButton, input, select, checkbox } from './components.mjs';
 import { NAV, SITE } from './data.mjs';
 
+/* attributes for off-site links (social, WhatsApp) */
+const OFFSITE = { target: '_blank', rel: 'noopener noreferrer' };
+
 /* ---------- Appointment form (2-step, toggled by site.js) ---------- */
 export function appointmentForm({ compact = false } = {}) {
   const step0 = `<form data-step="0" class="appt-step" style="display:flex;flex-direction:column;gap:.9rem">`
@@ -20,10 +23,10 @@ export function appointmentForm({ compact = false } = {}) {
     + `<span style="margin-left:auto;color:var(--text-link);font-weight:700;cursor:pointer">Browse</span></div>`;
 
   const step1 = `<form data-step="1" class="appt-step riims-apptform" hidden style="display:grid;grid-template-columns:${compact ? '1fr' : '1fr 1fr'};gap:.9rem">`
-    + select({ label: 'City', icon: icon('map-pin'), options: ['Baraut', 'Baghpat', 'Meerut', 'Shamli', 'Other'], placeholder: 'Select city' })
-    + select({ label: 'Health concern', icon: icon('activity'), options: ['High creatinine', 'CKD', 'Dialysis guidance', 'Kidney diet', 'Second opinion'], placeholder: 'Select concern' })
-    + input({ label: 'Creatinine level (optional)', icon: icon('flask-conical'), placeholder: 'e.g. 3.2 mg/dL' })
-    + select({ label: 'Consultation mode', icon: icon('video'), options: ['In-clinic visit', 'Video consultation', 'Phone call'], placeholder: 'Select mode' })
+    + select({ label: 'City', name: 'city', icon: icon('map-pin'), options: ['Baraut', 'Baghpat', 'Meerut', 'Shamli', 'Other'], placeholder: 'Select city' })
+    + select({ label: 'Health concern', name: 'concern', icon: icon('activity'), options: ['High creatinine', 'CKD', 'Dialysis guidance', 'Kidney diet', 'Second opinion'], placeholder: 'Select concern' })
+    + input({ label: 'Creatinine level (optional)', name: 'creatinine', icon: icon('flask-conical'), placeholder: 'e.g. 3.2 mg/dL' })
+    + select({ label: 'Consultation mode', name: 'mode', icon: icon('video'), options: ['In-clinic visit', 'Video consultation', 'Phone call'], placeholder: 'Select mode' })
     + uploadRow
     + `<div style="grid-column:1 / -1;display:flex;gap:.7rem;align-items:center">`
     + button('Back', { variant: 'ghost', size: 'sm', type: 'button', iconLeft: icon('arrow-left', { size: 15 }), extraAttrs: { 'data-appt-back': true } })
@@ -39,7 +42,9 @@ export function appointmentForm({ compact = false } = {}) {
     + `<button type="button" data-appt-reset style="margin-top:1rem;background:none;border:none;color:var(--text-link);font-weight:700;cursor:pointer;font-family:var(--font-sans)">Send another request</button>`
     + `</div>`;
 
-  return `<div data-apptform>${step0}${step1}${success}</div>`;
+  // data-wa lets site.js compose a prefilled WhatsApp lead from the fields on submit,
+  // so enquiries always reach the clinic (zero backend; matches WhatsApp-first ops).
+  return `<div data-apptform data-wa="${SITE.waNumber}">${step0}${step1}${success}</div>`;
 }
 
 /* ---------- Header ---------- */
@@ -53,10 +58,10 @@ export function header(base, current) {
     + `<span class="util-hide" style="display:inline-flex;align-items:center;gap:.4rem">${icon('clock', { size: 14 })} ${SITE.hours}</span>`
     + `</div>`
     + `<div style="display:flex;align-items:center;gap:.5rem">`
-    + `<a href="${SITE.whatsapp}" style="color:var(--whatsapp);display:inline-flex;align-items:center;gap:.35rem;font-weight:700;text-decoration:none">${icon('message-circle', { size: 14 })} WhatsApp</a>`
+    + `<a href="${SITE.whatsapp}" target="_blank" rel="noopener noreferrer" style="color:var(--whatsapp);display:inline-flex;align-items:center;gap:.35rem;font-weight:700;text-decoration:none">${icon('message-circle', { size: 14 })} WhatsApp</a>`
     + `<span style="opacity:.3">|</span>`
-    + `<a href="${SITE.facebook}" aria-label="Facebook" style="color:inherit;display:inline-flex">${icon('facebook', { size: 15 })}</a>`
-    + `<a href="${SITE.instagram}" aria-label="Instagram" style="color:inherit;display:inline-flex">${icon('instagram', { size: 15 })}</a>`
+    + `<a href="${SITE.facebook}" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style="color:inherit;display:inline-flex">${icon('facebook', { size: 15 })}</a>`
+    + `<a href="${SITE.instagram}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style="color:inherit;display:inline-flex">${icon('instagram', { size: 15 })}</a>`
     + `</div></div></div>`;
 
   const onCondition = current && current.startsWith('conditions/');
@@ -76,7 +81,7 @@ export function header(base, current) {
     + `</div>`
     + `<div class="nav-mobile" style="display:none;align-items:center;gap:.5rem">`
     + iconButton(icon('phone', { size: 18 }), { label: 'Call now', variant: 'solid', href: tel })
-    + iconButton(icon('message-circle', { size: 18 }), { label: 'WhatsApp', variant: 'whatsapp', href: SITE.whatsapp })
+    + iconButton(icon('message-circle', { size: 18 }), { label: 'WhatsApp', variant: 'whatsapp', href: SITE.whatsapp, extraAttrs: OFFSITE })
     + `</div></div></div>`;
 
   return `<header style="position:sticky;top:0;z-index:100">${utility}${main}</header>`;
@@ -98,9 +103,9 @@ export function footer(base) {
 
   const social = `<div style="display:flex;gap:.5rem">`
     + iconButton(icon('phone', { size: 18 }), { variant: 'ghost', label: 'Call', href: `tel:${SITE.phoneTel}` })
-    + iconButton(icon('message-circle', { size: 18 }), { variant: 'whatsapp', label: 'WhatsApp', href: SITE.whatsapp })
-    + iconButton(icon('facebook', { size: 18 }), { variant: 'ghost', label: 'Facebook', href: SITE.facebook })
-    + iconButton(icon('instagram', { size: 18 }), { variant: 'ghost', label: 'Instagram', href: SITE.instagram })
+    + iconButton(icon('message-circle', { size: 18 }), { variant: 'whatsapp', label: 'WhatsApp', href: SITE.whatsapp, extraAttrs: OFFSITE })
+    + iconButton(icon('facebook', { size: 18 }), { variant: 'ghost', label: 'Facebook', href: SITE.facebook, extraAttrs: OFFSITE })
+    + iconButton(icon('instagram', { size: 18 }), { variant: 'ghost', label: 'Instagram', href: SITE.instagram, extraAttrs: OFFSITE })
     + `</div>`;
 
   return `<footer style="background:var(--surface-inverse);color:rgba(255,255,255,.72)">`
@@ -134,7 +139,7 @@ export function mobileBar(base, current) {
     + `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:relative">`
     + `<button type="button" data-book aria-label="Book consultation" style="position:absolute;top:-24px;width:56px;height:56px;border-radius:50%;border:4px solid #fff;background:var(--brand-primary);color:#fff;box-shadow:var(--shadow-brand);cursor:pointer;display:flex;align-items:center;justify-content:center">${icon('calendar-check', { size: 24 })}</button>`
     + `<span style="padding-bottom:.55rem;font-family:var(--font-sans);font-weight:700;font-size:10px;color:var(--text-brand)">Book</span></div>`
-    + `<a href="${SITE.whatsapp}" style="${tab(false)}">${icon('message-circle', { size: 20, style: 'color:var(--whatsapp-dark)' })} WhatsApp</a>`
+    + `<a href="${SITE.whatsapp}" target="_blank" rel="noopener noreferrer" style="${tab(false)}">${icon('message-circle', { size: 20, style: 'color:var(--whatsapp-dark)' })} WhatsApp</a>`
     + `<a href="tel:${SITE.phoneTel}" style="${tab(false)}">${icon('phone', { size: 20 })} Call</a>`
     + `</nav>`;
 }
@@ -142,7 +147,7 @@ export function mobileBar(base, current) {
 /* ---------- Floating contact ---------- */
 export function floatingContact() {
   return `<div class="riims-fab" style="position:fixed;right:clamp(1rem,2vw,1.5rem);bottom:clamp(1rem,2vw,1.5rem);z-index:90;display:flex;flex-direction:column;gap:.7rem">`
-    + `<a href="${SITE.whatsapp}" aria-label="WhatsApp us" style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--whatsapp);color:#06351c;box-shadow:0 10px 24px rgba(37,211,102,.4)">${icon('message-circle', { size: 26 })}</a>`
+    + `<a href="${SITE.whatsapp}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp us" style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--whatsapp);color:#06351c;box-shadow:0 10px 24px rgba(37,211,102,.4)">${icon('message-circle', { size: 26 })}</a>`
     + `<a href="tel:${SITE.phoneTel}" aria-label="Call us" style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--brand-primary);color:#fff;box-shadow:var(--shadow-brand)">${icon('phone', { size: 24 })}</a>`
     + `</div>`;
 }

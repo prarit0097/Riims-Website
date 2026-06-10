@@ -6,9 +6,11 @@
 export const SITE = {
   name: 'RIIMS',
   fullName: 'Rashtriya Institute of Integrated Medical Sciences',
-  origin: 'https://www.riims.in',
+  // Production domain (non-www canonical; the server 301-redirects www -> apex).
+  origin: 'https://riimshospitals.com',
   phone: '+91 85120 40000',
-  phoneTel: '+918512040000',
+  phoneTel: '+918512040000',           // E.164 — used for tel:, wa.me and schema
+  waNumber: '918512040000',            // bare digits for wa.me deep links
   whatsapp: 'https://wa.me/918512040000',
   facebook: 'https://www.facebook.com/profile.php?id=61590269039418',
   instagram: 'https://www.instagram.com/riimshospital/',
@@ -16,6 +18,11 @@ export const SITE = {
   addressLine: 'Near Baraut Medicity Hospital',
   addressSub: '36VW+JHV, Kotana Rd, Baraut, Uttar Pradesh 250611',
   hours: 'Mon–Sat, 9am–7pm',
+  // Approximate Baraut clinic coordinates — VERIFY against the Google Business Profile.
+  geo: { lat: 29.1066, lng: 77.2637 },
+  mapsQuery: 'RIIMS+Rashtriya+Institute+of+Integrated+Medical+Sciences+Baraut',
+  mapsLink: 'https://www.google.com/maps/search/?api=1&query=RIIMS+Baraut',
+  serviceCities: ['Baraut', 'Baghpat', 'Meerut', 'Shamli'],
   year: 2026,
 };
 

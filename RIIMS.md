@@ -85,7 +85,13 @@ RiimS/
 │   ├── pages.mjs             # full page bodies (home, condition, about, doctors, blog,
 │   │                         #   contact, blog-article, legal)
 │   ├── serve.mjs             # zero-dependency local preview server (port 5173)
-│   └── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors
+│   └── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors, stale domain
+│
+├── deploy/                   # ── DEPLOYMENT (see DEPLOY.md) ──
+│   ├── nginx-riimshospitals.conf   # isolated nginx server block (HTTP2, gzip, cache, headers, CSP, 404)
+│   ├── apache-riimshospitals.conf  # Apache vhost alternative
+│   └── update.sh             # VPS update helper (git pull, isolated)
+├── DEPLOY.md                 # step-by-step VPS runbook (Hostinger, new folder, safe)
 │
 └── site/                     # ── GENERATED OUTPUT (the deployable website) ──
     ├── index.html            # home
@@ -107,7 +113,11 @@ RiimS/
     │       └── base.css      # element resets + shared primitives + button/card hover states
     ├── js/site.js            # all client interactivity (no dependencies)
     ├── assets/               # logo, doctor portraits, reel thumbnails, hospital, video img
-    ├── sitemap.xml           # all 25 URLs with lastmod/priority
+    │   └── vendor/lucide.min.js   # self-hosted, pinned Lucide (no CDN)
+    ├── 404.html              # branded not-found page (absolute paths; served by web server)
+    ├── site.webmanifest      # PWA manifest (name, icons, theme color)
+    ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
+    ├── sitemap.xml           # all 25 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -169,10 +179,13 @@ Pure functions that return HTML strings. Key helpers:
 
 **This is where all content lives. Change copy/contact here, not in HTML.**
 
-- **`SITE`** — name, fullName, `origin` (`https://www.riims.in` — set to the real domain
-  before launch), `phone` `+91 85120 40000`, `phoneTel` `+918512040000`, `whatsapp`
-  (`https://wa.me/918512040000`), `facebook`, `instagram`, `city` (`Baraut, Uttar Pradesh
-  250611`), `addressLine`, `addressSub`, `hours` (`Mon–Sat, 9am–7pm`), `year`.
+- **`SITE`** — name, fullName, `origin` (**`https://riimshospitals.com`** — the production
+  domain; non-www is canonical, the server 301-redirects www → apex), `phone`
+  `+91 85120 40000`, `phoneTel` `+918512040000`, `waNumber` (`918512040000`, for wa.me deep
+  links), `whatsapp`, `facebook`, `instagram`, `city` (`Baraut, Uttar Pradesh 250611`),
+  `addressLine`, `addressSub`, `hours` (`Mon–Sat, 9am–7pm`), `geo` ({lat,lng} — Baraut clinic,
+  **verify against the Google Business Profile**), `mapsQuery`/`mapsLink` (contact-page map +
+  schema `hasMap`), `serviceCities` (Baraut/Baghpat/Meerut/Shamli → schema `areaServed`), `year`.
 - **`NAV`** — the 6 header links (About, Kidney Diseases, Treatments, Doctors, Blog, Contact).
 - **`CONDITIONS`** — the 8 condition pages, each with: `icon`, `title`, `crumb`, `intro`,
   `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`. Slugs:
@@ -279,7 +292,12 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 - **Booking modal** — `[data-book]` opens it (delegated click), `[data-modal-close]`/overlay/
   Esc close it; body scroll locked while open.
 - **2-step appointment form** — `[data-apptform]`: step 0 submit → step 1; step 1 submit →
-  success; Back/Reset return to step 0 (toggles the `hidden` attribute).
+  success; Back/Reset return to step 0 (toggles the `hidden` attribute). **Lead capture:** on
+  the final submit, `leadToWhatsApp()` composes a prefilled WhatsApp message from the named
+  fields (name/phone/city/concern/creatinine/mode) and opens `wa.me/<SITE.waNumber>` — so every
+  enquiry reaches the clinic with **zero backend** (fits the WhatsApp-first workflow). The
+  `data-wa` attribute on the form carries the number. (If you later want an emailed/DB copy, add
+  a hosted form service or a PHP handler — see DEPLOY.md / audit notes.)
 - **Select placeholder color** — adds `has-value` when a real option is chosen.
 - **FAQ accordion** — `[data-faq]` items; clicking a question opens it (and closes siblings),
   rotates the chevron, animates `grid-template-rows: 0fr→1fr`.
@@ -292,7 +310,7 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (25 URLs)
+## 14. Page inventory (25 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
@@ -307,16 +325,25 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 
 ## 15. SEO implementation
 
-- Per page: unique `<title>`, meta description, canonical, OG + Twitter, `theme-color`, favicon,
-  keywords where useful.
-- **JSON-LD** (`<script type="application/ld+json">`): `MedicalClinic` + `WebSite` on every
-  page; `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` on each condition;
-  `BreadcrumbList` + `Article` on each blog post.
-- `sitemap.xml` (all 25 URLs, `lastmod`, priority) + `robots.txt` (allow all, sitemap link).
-- One `<h1>` per page, semantic landmarks, `aria-hidden` on decorative icons, `role="img"` +
-  `aria-label` on image tiles, `lang="en"`.
-- To go live: set `SITE.origin` to the real domain and rebuild (updates canonicals, OG URLs,
-  sitemap); submit `sitemap.xml` in Google Search Console; create a Google Business Profile.
+- Per page: unique `<title>`, meta description, canonical (`https://riimshospitals.com`...),
+  OG + Twitter, `theme-color`, favicon + apple-touch-icon + web manifest, keywords where useful.
+  `<html lang="en-IN">`.
+- **JSON-LD** (`<script type="application/ld+json">`): `["MedicalClinic","LocalBusiness"]` +
+  `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
+  `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
+  opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` on each
+  condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post.
+- `sitemap.xml` (25 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
+- One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Baraut — High Creatinine, CKD,
+  Dialysis & Diet Guidance"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
+  + `aria-label` on image tiles. Lucide is **self-hosted** (pinned) — no CDN dependency.
+- Branded **404 page**, real **Google Maps embed** on contact, all off-site links `rel="noopener"`.
+- **Already set for go-live:** `SITE.origin = https://riimshospitals.com`. Off-site actions that
+  remain (only you can do): verify the domain + submit `sitemap.xml` in Google Search Console,
+  create/verify the Google Business Profile (Baraut), and update `SITE.geo`/`mapsQuery` to the
+  exact clinic coordinates. See DEPLOY.md §6.
+- **Known content debt (top ranking task):** the 9 blog articles are templated from their related
+  condition's copy — replace with full original long-form articles to avoid thin/duplicate content.
 
 ## 16. Wiring / data flow (how a click works)
 
@@ -344,10 +371,15 @@ block parses, every page has exactly one `<h1>` + a `<title>` + a description, a
 
 ## 18. Deployment
 
-Upload the **`site/`** folder to any static host (Netlify, Vercel, GitHub Pages, Cloudflare
-Pages, Hostinger, or any web server). That folder is the entire website. For GitHub Pages you
-can serve from the `site/` directory. Before going live, set `SITE.origin` (in `build/data.mjs`)
-to the production domain and rebuild.
+Production target: **riimshospitals.com on the Hostinger VPS**, in an isolated folder + web-server
+site block (does not touch the other apps on the VPS). Full step-by-step runbook: **[DEPLOY.md](DEPLOY.md)**.
+
+Summary: DNS A-records (apex + www) → VPS IP; `git clone` the repo into `/var/www/riimshospitals`
+(web root = its `site/` folder); install `deploy/nginx-riimshospitals.conf` (or the Apache vhost /
+the bundled `site/.htaccess`); `nginx -t` then reload; certbot for SSL. Update later with
+`deploy/update.sh` (git pull). The site is fully static, so it serves **1000+ concurrent** from
+cache with the provided HTTP/2 + gzip + long-cache config. You can alternatively host the `site/`
+folder on any static host (Netlify/Vercel/GitHub Pages/Cloudflare).
 
 ## 19. How to make common changes
 
@@ -380,8 +412,12 @@ to the production domain and rebuild.
 - **Reels & testimonial video** are thumbnails linking to Instagram — embed real videos later.
 - **Blog article bodies are templated** (excerpt + related-condition copy) — replace with full
   original long-form articles for peak SEO.
-- **Contact map** is a styled placeholder — add a real Google Maps embed for the Baraut clinic.
-- **Fonts** load from Google Fonts — swap for licensed files if required.
+- **Contact map** is now a live Google Maps embed using a generic "RIIMS Baraut" query —
+  refine `SITE.geo`/`mapsQuery` to the exact verified Business-Profile place after launch.
+- **Images not yet optimized** — `assets/riims-logo.png` (1.46 MB, used only for social cards) and
+  the reel PNGs (~770 KB) should be compressed to WebP/AVIF for faster LCP (no image tool was
+  available locally to convert them here).
+- **Fonts** load from Google Fonts (trimmed weights) — self-host woff2 later for full privacy/speed.
 - Phone/WhatsApp (`+91 85120 40000`) and the Baraut address are the **real** supplied values.
 
 ## 22. Git

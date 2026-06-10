@@ -46,9 +46,13 @@ No dependencies to install — everything uses Node's standard library.
 
 ## Deploy
 
-Upload the **`site/`** folder to any static host. That's the whole website.
-Set the live domain in `build/data.mjs` → `SITE.origin` (currently `https://www.riims.in`)
-and rebuild so canonicals, Open Graph URLs and the sitemap point at the real domain.
+Production target: **riimshospitals.com** on the Hostinger VPS — full step-by-step,
+shared-VPS-safe runbook in **[DEPLOY.md](DEPLOY.md)** (git clone into an isolated folder, point a
+new nginx/Apache site block at `site/`, certbot SSL, `deploy/update.sh` to update). The site is
+static, so it serves **1000+ concurrent** from cache with the provided HTTP/2 + gzip + long-cache
+config. You can also drop the `site/` folder on any static host (Netlify/Vercel/GitHub Pages).
+
+The live domain is set in `build/data.mjs` → `SITE.origin` (`https://riimshospitals.com`).
 
 ## Project structure
 

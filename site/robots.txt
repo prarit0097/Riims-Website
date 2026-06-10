@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.riims.in/sitemap.xml
+Sitemap: https://riimshospitals.com/sitemap.xml

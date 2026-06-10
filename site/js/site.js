@@ -47,11 +47,27 @@
     });
     refreshIcons();
   }
+  function leadToWhatsApp(form) {
+    const wa = form.getAttribute('data-wa') || '918512040000';
+    const v = (n) => { const el = form.querySelector(`[name="${n}"]`); return el ? el.value.trim() : ''; };
+    const lines = [
+      'New appointment request from riimshospitals.com',
+      v('name') && `Name: ${v('name')}`,
+      v('phone') && `Phone: ${v('phone')}`,
+      v('city') && `City: ${v('city')}`,
+      v('concern') && `Concern: ${v('concern')}`,
+      v('creatinine') && `Creatinine: ${v('creatinine')}`,
+      v('mode') && `Mode: ${v('mode')}`,
+    ].filter(Boolean);
+    try { window.open(`https://wa.me/${wa}?text=` + encodeURIComponent(lines.join('\n')), '_blank', 'noopener'); }
+    catch (e) { /* popup blocked — confirmation still shows below */ }
+  }
+
   $$('[data-apptform]').forEach((form) => {
     const s0 = $('[data-step="0"]', form);
     const s1 = $('[data-step="1"]', form);
     if (s0) s0.addEventListener('submit', (e) => { e.preventDefault(); showStep(form, 1); });
-    if (s1) s1.addEventListener('submit', (e) => { e.preventDefault(); showStep(form, 2); });
+    if (s1) s1.addEventListener('submit', (e) => { e.preventDefault(); leadToWhatsApp(form); showStep(form, 2); });
     const back = $('[data-appt-back]', form);
     if (back) back.addEventListener('click', () => showStep(form, 0));
     const reset = $('[data-appt-reset]', form);

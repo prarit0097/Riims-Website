@@ -261,6 +261,23 @@ const LEGAL = {
   },
 };
 
+/* ---------- 404 (served with absolute /base so it works at any depth) ---------- */
+export function notFoundPage(base) {
+  return pageHero(base, { crumb: 'Page not found', icon: 'compass', title: 'Page not found (404)', intro: 'The page you were looking for could not be found. It may have moved. Try one of these instead — or reach our care team directly.' })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container" style="max-width:820px">`
+    + `<div style="display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:var(--space-8)">`
+    + button('Go to homepage', { variant: 'primary', href: `${base}index.html`, iconLeft: icon('home', { size: 18 }) })
+    + button('Kidney conditions', { variant: 'outline', href: `${base}conditions/high-creatinine.html`, iconLeft: icon('activity', { size: 18 }) })
+    + button('Book Consultation', { variant: 'secondary', extraAttrs: { 'data-book': true }, iconLeft: icon('calendar-check', { size: 18 }) })
+    + button('WhatsApp Now', { variant: 'whatsapp', href: SITE.whatsapp, iconLeft: icon('message-circle', { size: 18 }) })
+    + `</div>`
+    + `<h2 style="font-size:var(--fs-xl);margin:0 0 var(--space-4)">Popular pages</h2>`
+    + `<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.6rem">`
+    + [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Kidney Diet & Blog', 'blog.html'], ['Our Doctors', 'doctors.html'], ['Contact / Book', 'contact.html']]
+      .map(([l, h]) => `<li><a href="${base}${h}" style="display:inline-flex;align-items:center;gap:.5rem;color:var(--text-link);font-weight:600;text-decoration:none">${icon('arrow-right', { size: 15 })} ${l}</a></li>`).join('')
+    + `</ul></div></section>`;
+}
+
 export function legalPage(base, key) {
   const L = LEGAL[key];
   const body = L.sections.map((s) =>

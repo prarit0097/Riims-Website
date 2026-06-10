@@ -24,9 +24,10 @@ export function searchBanner() {
     + `<div class="riims-container" style="padding-block:var(--section-pad-y);position:relative">`
     + `<div style="max-width:780px;margin:0 auto;text-align:center">`
     + eyebrow(`${icon('heart-pulse', { size: 15 })} Rashtriya Institute of Integrated Medical Sciences`)
-    + `<h1 style="font-size:var(--fs-3xl);margin:0 0 .6rem">Search any disease, symptom or report</h1>`
-    + `<p class="riims-lead" style="margin:0 auto 1.5rem;max-width:56ch">Type a condition to see related articles, the right specialist, and a helpful video — for kidney, liver, diabetes, heart and more.</p>`
-    + `<form data-search style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
+    + `<h1 style="font-size:var(--fs-3xl);margin:0 0 .6rem">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
+    + `<p class="riims-lead" style="margin:0 auto 1.5rem;max-width:56ch">Ethical, doctor-led, report-based kidney care with integrated Ayurveda support. Search a disease, symptom or report to see related articles, the right specialist, and a helpful video.</p>`
+    + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
+    + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
     + icon('search', { size: 20, style: 'color:var(--icon-default);flex:0 0 auto' })
     + `<input data-search-input placeholder="Search disease, symptom or treatment…" aria-label="Search" style="flex:1;border:none;outline:none;background:transparent;font-family:var(--font-sans);font-size:var(--fs-md);color:var(--text-strong);min-width:0">`
     + button('Search', { variant: 'primary', type: 'submit', iconLeft: icon('search', { size: 18 }) })
@@ -284,24 +285,28 @@ export function ctaBand() {
 /* ---------- Contact ---------- */
 export function contactSection() {
   const contacts = [
-    { icon: 'phone', label: 'Call us', value: SITE.phone, sub: SITE.hours },
-    { icon: 'message-circle', label: 'WhatsApp', value: SITE.phone, sub: 'Share reports & queries' },
-    { icon: 'map-pin', label: 'Clinic address', value: SITE.addressLine, sub: SITE.addressSub },
+    { icon: 'phone', label: 'Call us', value: SITE.phone, sub: SITE.hours, href: `tel:${SITE.phoneTel}` },
+    { icon: 'message-circle', label: 'WhatsApp', value: SITE.phone, sub: 'Share reports & queries', href: SITE.whatsapp, offsite: true },
+    { icon: 'map-pin', label: 'Clinic address', value: SITE.addressLine, sub: SITE.addressSub, href: SITE.mapsLink, offsite: true },
   ];
-  const contactCards = contacts.map((c) =>
-    `<div style="display:flex;align-items:center;gap:1rem;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-4) var(--space-5)">`
-    + `<span style="flex:0 0 auto;display:inline-flex;width:46px;height:46px;border-radius:50%;background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center">${icon(c.icon, { size: 20 })}</span>`
-    + `<div><span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)">${c.label}</span>`
-    + `<strong style="display:block;font-size:var(--fs-lg);color:var(--text-strong)">${c.value}</strong>`
-    + `<span style="font-size:var(--fs-sm);color:var(--text-muted)">${c.sub}</span></div></div>`
-  ).join('');
+  const contactCards = contacts.map((c) => {
+    const rel = c.offsite ? ' target="_blank" rel="noopener noreferrer"' : '';
+    const valueEl = c.href
+      ? `<a href="${c.href}"${rel} style="display:block;font-size:var(--fs-lg);font-weight:700;color:var(--text-strong);text-decoration:none">${c.value}</a>`
+      : `<strong style="display:block;font-size:var(--fs-lg);color:var(--text-strong)">${c.value}</strong>`;
+    return `<div style="display:flex;align-items:center;gap:1rem;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-4) var(--space-5)">`
+      + `<span style="flex:0 0 auto;display:inline-flex;width:46px;height:46px;border-radius:50%;background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center">${icon(c.icon, { size: 20 })}</span>`
+      + `<div><span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)">${c.label}</span>`
+      + valueEl
+      + `<span style="font-size:var(--fs-sm);color:var(--text-muted)">${c.sub}</span></div></div>`;
+  }).join('');
   return `<section id="contact" style="padding-block:var(--section-pad-y);background:var(--surface-subtle)">`
     + `<div class="riims-container">`
     + sectionHead({ eyebrow: `${icon('map-pin', { size: 15 })} Visit or reach us`, title: 'Book an appointment', intro: 'Send your details and our care team will get back to you. Reports can be shared securely.' })
     + `<div class="contact-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-8);align-items:start">`
     + card(appointmentForm(), { pad: 'xl', accent: true, style: { boxShadow: 'var(--shadow-lg)' } })
     + `<div style="display:flex;flex-direction:column;gap:var(--space-4)">`
-    + `<div style="aspect-ratio:16 / 10;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-default);background:repeating-linear-gradient(45deg,var(--surface-blue-soft),var(--surface-blue-soft) 14px,var(--surface-muted) 14px,var(--surface-muted) 28px);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-family:var(--font-sans);font-weight:600;gap:.5rem">${icon('map', { size: 22 })} Map — Baraut, Uttar Pradesh (embed location)</div>`
+    + `<div style="aspect-ratio:16 / 10;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-default)"><iframe title="RIIMS clinic location, Baraut" src="https://www.google.com/maps?q=${SITE.mapsQuery}&output=embed" width="100%" height="100%" style="border:0;display:block" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`
     + contactCards
     + `</div></div></div></section>`;
 }

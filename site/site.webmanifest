@@ -1,0 +1,14 @@
+{
+  "name": "RIIMS — Rashtriya Institute of Integrated Medical Sciences",
+  "short_name": "RIIMS",
+  "description": "Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet and integrated Ayurveda support.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a6168",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "/assets/riims-logo-sm.png", "sizes": "any", "type": "image/png", "purpose": "any" }
+  ]
+}
