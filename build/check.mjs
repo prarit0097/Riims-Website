@@ -46,5 +46,30 @@ for (const m of css.matchAll(/url\('([^']+)'\)/g)) {
   if (!existsSync(target)) { errors++; console.error(`MISSING CSS asset: ${m[1]}`); }
 }
 
-console.log(`Checked ${checked} local references across ${walk(ROOT).length} pages. ${errors} missing.`);
+// JSON-LD: every structured-data block must be valid JSON
+let ldOk = 0;
+for (const file of walk(ROOT)) {
+  const html = readFileSync(file, 'utf8');
+  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    try { JSON.parse(m[1]); ldOk++; }
+    catch (e) { errors++; console.error(`INVALID JSON-LD: ${file.replace(ROOT, 'site')} -> ${e.message}`); }
+  }
+}
+
+// Every page must have exactly one <h1> and a <title>/description
+for (const file of walk(ROOT)) {
+  const html = readFileSync(file, 'utf8');
+  const h1 = (html.match(/<h1[\s>]/g) || []).length;
+  if (h1 !== 1) { errors++; console.error(`H1 COUNT ${h1} (want 1): ${file.replace(ROOT, 'site')}`); }
+  if (!/<title>[^<]+<\/title>/.test(html)) { errors++; console.error(`MISSING <title>: ${file.replace(ROOT, 'site')}`); }
+  if (!/<meta name="description" content="[^"]+"/.test(html)) { errors++; console.error(`MISSING description: ${file.replace(ROOT, 'site')}`); }
+}
+
+// No dead anchors
+for (const file of walk(ROOT)) {
+  if (/href="#"/.test(readFileSync(file, 'utf8'))) { errors++; console.error(`DEAD ANCHOR href="#": ${file.replace(ROOT, 'site')}`); }
+}
+
+const pageCount = walk(ROOT).length;
+console.log(`Checked ${checked} local refs + ${ldOk} JSON-LD blocks across ${pageCount} pages. ${errors} problem(s).`);
 process.exit(errors ? 1 : 0);
