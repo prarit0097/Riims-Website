@@ -1,0 +1,107 @@
+/* ============================================================
+   RIIMS — Base layer
+   Element defaults + a few shared primitives used across the
+   design system. Tokens come from tokens/*.css.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: var(--leading-relaxed);
+  color: var(--text-body);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  color: var(--text-strong);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 0.4em;
+  text-wrap: balance;
+}
+
+p { margin: 0 0 1em; text-wrap: pretty; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--text-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+strong { font-weight: var(--weight-bold); color: var(--text-strong); }
+
+img { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-xs);
+}
+
+/* ---- Shared layout primitives ---- */
+.riims-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.riims-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--role-eyebrow-size);
+  font-weight: var(--role-eyebrow-weight);
+  letter-spacing: var(--role-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+.riims-section-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  color: var(--text-strong);
+}
+
+.riims-lead {
+  font-size: var(--fs-lg);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+/* Hindi/Hinglish inline runs */
+.lang-hi { font-family: var(--font-hindi); }
+
+/* ---- Component interaction states ---- */
+/* Buttons lift on hover, settle/compress on press. */
+.riims-btn:hover { transform: translateY(-2px); }
+.riims-btn:active { transform: translateY(0) scale(0.985); }
+.riims-btn--primary:hover { background: var(--brand-primary-hover) !important; box-shadow: 0 14px 32px rgba(17,78,143,0.30) !important; }
+.riims-btn--secondary:hover { background: var(--brand-secondary-hover) !important; }
+.riims-btn--whatsapp:hover { background: var(--whatsapp-dark) !important; }
+.riims-btn--outline:hover { border-color: var(--blue-400) !important; background: var(--surface-blue-soft) !important; }
+.riims-btn--ghost:hover { background: var(--surface-blue-soft) !important; }
+.riims-btn--cream:hover { background: var(--cream-300) !important; }
+.riims-btn[aria-disabled="true"]:hover { transform: none; }
+
+/* Cards that are interactive lift gently. */
+.riims-card--hover { transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
+.riims-card--hover:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .riims-btn, .riims-card--hover { transition: none !important; }
+  .riims-btn:hover, .riims-card--hover:hover { transform: none; }
+}
+
+/* Sticky mobile CTA bar — only on narrow viewports when fixed. */
+@media (min-width: 768px) {
+  .riims-mobilecta[style*="fixed"] { display: none !important; }
+}

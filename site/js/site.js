@@ -1,0 +1,225 @@
+/* RIIMS static site — interactivity.
+   Booking modal, 2-step appointment form, FAQ accordion, multi-disease search,
+   blog category filter, newsletter, select state, and count-up stats.
+   No build step, no dependencies (Lucide is loaded separately from CDN). */
+(function () {
+  'use strict';
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function refreshIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+  }
+
+  /* ---------------- Booking modal ---------------- */
+  const modal = $('#booking-modal');
+  function openModal() {
+    if (!modal) return;
+    modal.removeAttribute('hidden');
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    refreshIcons();
+  }
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('click', (e) => {
+    const book = e.target.closest('[data-book]');
+    if (book) { e.preventDefault(); openModal(); return; }
+    if (e.target.closest('[data-modal-close]')) { closeModal(); return; }
+    if (modal && modal.classList.contains('is-open') && e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) closeModal();
+  });
+
+  /* ---------------- Appointment form (2 steps) ---------------- */
+  function showStep(form, n) {
+    $$('.appt-step', form).forEach((el) => {
+      const match = el.getAttribute('data-step') === String(n);
+      if (match) el.removeAttribute('hidden'); else el.setAttribute('hidden', '');
+    });
+    refreshIcons();
+  }
+  $$('[data-apptform]').forEach((form) => {
+    const s0 = $('[data-step="0"]', form);
+    const s1 = $('[data-step="1"]', form);
+    if (s0) s0.addEventListener('submit', (e) => { e.preventDefault(); showStep(form, 1); });
+    if (s1) s1.addEventListener('submit', (e) => { e.preventDefault(); showStep(form, 2); });
+    const back = $('[data-appt-back]', form);
+    if (back) back.addEventListener('click', () => showStep(form, 0));
+    const reset = $('[data-appt-reset]', form);
+    if (reset) reset.addEventListener('click', () => showStep(form, 0));
+  });
+
+  /* ---------------- Select placeholder colour ---------------- */
+  $$('.riims-select').forEach((sel) => {
+    sel.addEventListener('change', () => {
+      sel.classList.toggle('has-value', !!sel.value);
+    });
+  });
+
+  /* ---------------- FAQ accordion ---------------- */
+  $$('[data-faq] .faq-q').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('[data-faq]');
+      const isOpen = item.hasAttribute('data-open');
+      // accordion: close siblings
+      $$('[data-faq]').forEach((other) => {
+        if (other === item) return;
+        setFaq(other, false);
+      });
+      setFaq(item, !isOpen);
+    });
+  });
+  function setFaq(item, open) {
+    const btn = $('.faq-q', item);
+    const chev = $('.faq-chevron', item);
+    const panel = $('.faq-panel', item);
+    if (open) item.setAttribute('data-open', ''); else item.removeAttribute('data-open');
+    if (btn) btn.setAttribute('aria-expanded', String(open));
+    if (chev) chev.style.transform = open ? 'rotate(180deg)' : 'none';
+    if (panel) panel.style.gridTemplateRows = open ? '1fr' : '0fr';
+    item.style.borderColor = open ? 'var(--border-brand)' : 'var(--border-subtle)';
+    item.style.boxShadow = open ? 'var(--shadow-sm)' : 'none';
+  }
+
+  /* ---------------- Multi-disease search ---------------- */
+  const HEALTH_DB = {
+    Kidney: { tone: 'green', doctor: { name: 'Dr. A. Sharma', title: 'Senior Nephrologist', init: 'AS' }, blogs: ['High creatinine: symptoms & causes', 'CKD diet chart (Indian, veg)', 'Dialysis myths vs facts'], video: '5 signs your creatinine is rising' },
+    Liver: { tone: 'cream', doctor: { name: 'Dr. R. Verma', title: 'Hepatology & Medicine', init: 'RV' }, blogs: ['Fatty liver: causes & reversal', 'Foods that support liver health', 'When jaundice needs a doctor'], video: 'Understanding fatty liver in 3 minutes' },
+    Diabetes: { tone: 'blue', doctor: { name: 'Dr. R. Verma', title: 'Diabetes & Kidney Risk', init: 'RV' }, blogs: ['Protect your kidneys with diabetes', 'Diabetic diet basics', 'HbA1c explained simply'], video: 'Diabetes & kidney health: what to watch' },
+    Cancer: { tone: 'cream', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['Early warning signs to discuss', 'Nutrition during treatment', 'Getting a second opinion'], video: 'Talking to your doctor about a diagnosis' },
+    Heart: { tone: 'blue', doctor: { name: 'Dr. R. Verma', title: 'Internal Medicine', init: 'RV' }, blogs: ['BP control protects kidneys & heart', 'Heart-friendly Indian diet', 'When chest symptoms need care'], video: 'Blood pressure & your organs' },
+  };
+  const TONE = {
+    green: { bg: 'var(--surface-green-soft)', fg: 'var(--icon-accent)', badgeBg: 'var(--surface-green-soft)', badgeFg: 'var(--text-accent)' },
+    blue: { bg: 'var(--surface-blue-soft)', fg: 'var(--icon-brand)', badgeBg: 'var(--surface-blue-soft)', badgeFg: 'var(--text-brand)' },
+    cream: { bg: 'var(--surface-cream-deep)', fg: 'var(--sand-500)', badgeBg: 'var(--surface-cream-deep)', badgeFg: 'var(--text-on-cream)' },
+  };
+  function resolveTopic(q) {
+    if (!q) return null;
+    const s = q.toLowerCase();
+    if (/creat|ckd|dialys|kidney|nephro|urine|gfr/.test(s)) return 'Kidney';
+    for (const k of Object.keys(HEALTH_DB)) if (s.includes(k.toLowerCase())) return k;
+    return null;
+  }
+  function ic(n, size, style) { return `<i data-lucide="${n}" style="width:${size}px;height:${size}px;${style || ''}"></i>`; }
+
+  function renderSearch(container, q) {
+    const topic = resolveTopic(q);
+    if (!q) { container.innerHTML = ''; return; }
+    if (!topic) {
+      container.innerHTML = `<p style="text-align:center;margin-top:1.6rem;color:var(--text-muted);font-family:var(--font-sans)">No direct match — <a href="#" data-book style="color:var(--text-link);font-weight:700">talk to our care team</a> and we’ll guide you.</p>`;
+      refreshIcons();
+      return;
+    }
+    const data = HEALTH_DB[topic];
+    const t = TONE[data.tone];
+    const cardCss = 'position:relative;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);background:var(--surface-card);border:1px solid var(--border-subtle);overflow:hidden';
+    const blogs = data.blogs.map((b) =>
+      `<li><a href="blog.html" style="display:flex;gap:.5rem;align-items:flex-start;color:var(--text-body);text-decoration:none;font-size:var(--fs-base)">${ic('arrow-right', 15, 'margin-top:3px;color:var(--icon-accent);flex:0 0 auto')} ${b}</a></li>`
+    ).join('');
+    container.innerHTML = `<div style="margin-top:var(--space-8)">`
+      + `<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;justify-content:center">`
+      + `<span style="display:inline-flex;align-items:center;gap:.34rem;background:${t.badgeBg};color:${t.badgeFg};font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1;padding:.38rem .7rem;border-radius:var(--radius-pill)">${topic}</span>`
+      + `<span style="font-family:var(--font-sans);color:var(--text-muted)">Here’s what we found for you</span></div>`
+      + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
+      + `<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('book-open', 18, 'color:var(--icon-brand)')} Related articles</span><ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem">${blogs}</ul></div>`
+      + `<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('user-round', 18, 'color:var(--icon-brand)')} Specialist for you</span>`
+      + `<div style="display:flex;align-items:center;gap:.8rem"><span style="flex:0 0 auto;display:inline-flex;width:52px;height:52px;border-radius:50%;background:${t.bg};color:${t.fg};align-items:center;justify-content:center;font-family:var(--font-sans);font-weight:800">${data.doctor.init}</span><div><strong style="display:block">${data.doctor.name}</strong><span style="font-size:var(--fs-sm);color:var(--text-muted)">${data.doctor.title}</span></div></div>`
+      + `<button type="button" data-book class="riims-btn riims-btn--outline" style="display:flex;width:100%;align-items:center;justify-content:center;gap:.5rem;font-family:var(--font-sans);font-weight:800;line-height:1;white-space:nowrap;border-radius:var(--radius-pill);border:1.5px solid var(--border-strong);cursor:pointer;background:var(--white);color:var(--text-brand);font-size:.875rem;padding:.5rem .9rem;min-height:38px;margin-top:.9rem">${ic('calendar-check', 16)}<span>Book consultation</span></button></div>`
+      + `<div style="${cardCss}"><div style="aspect-ratio:16/9;background:linear-gradient(135deg, var(--teal-700), var(--teal-900));display:flex;align-items:center;justify-content:center;position:relative"><span style="display:inline-flex;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--brand-primary);align-items:center;justify-content:center">${ic('play', 24)}</span></div><div style="padding:var(--space-4) var(--space-5)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong)">${ic('video', 16, 'color:var(--icon-accent)')} ${data.video}</span></div></div>`
+      + `</div></div>`;
+    refreshIcons();
+  }
+  const searchForm = $('[data-search]');
+  if (searchForm) {
+    const inputEl = $('[data-search-input]', searchForm);
+    const results = $('[data-search-results]');
+    searchForm.addEventListener('submit', (e) => { e.preventDefault(); renderSearch(results, inputEl.value.trim()); });
+    $$('[data-search-term]').forEach((chip) => {
+      chip.addEventListener('click', () => { inputEl.value = chip.getAttribute('data-search-term'); renderSearch(results, inputEl.value.trim()); });
+    });
+  }
+
+  /* ---------------- Blog category filter ---------------- */
+  const blogGrid = $('[data-blog-grid]');
+  if (blogGrid) {
+    const featured = $('[data-featured]');
+    const cards = $$('[data-blog-card]', blogGrid);
+    $$('[data-blog-cat]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cat = btn.getAttribute('data-blog-cat');
+        $$('[data-blog-cat]').forEach((b) => {
+          const on = b === btn;
+          b.style.background = on ? 'var(--brand-primary)' : 'var(--white)';
+          b.style.color = on ? '#fff' : 'var(--text-body)';
+          b.style.borderColor = on ? 'var(--brand-primary)' : 'var(--border-default)';
+        });
+        const all = cat === 'All';
+        if (featured) featured.style.display = all ? '' : 'none';
+        cards.forEach((c) => {
+          if (all) c.style.display = c.hasAttribute('data-first') ? 'none' : '';
+          else c.style.display = c.getAttribute('data-cat') === cat ? '' : 'none';
+        });
+      });
+    });
+    // initial state: hide the first card (it is the featured duplicate)
+    cards.forEach((c) => { if (c.hasAttribute('data-first')) c.style.display = 'none'; });
+  }
+
+  /* ---------------- Newsletter ---------------- */
+  const news = $('[data-newsletter]');
+  if (news) {
+    news.addEventListener('submit', (e) => {
+      e.preventDefault();
+      news.style.display = 'none';
+      const done = $('[data-newsletter-done]');
+      if (done) { done.removeAttribute('hidden'); refreshIcons(); }
+    });
+  }
+
+  /* ---------------- Count-up stats ---------------- */
+  function animateCount(el) {
+    const to = parseFloat(el.getAttribute('data-countup'));
+    const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    const indian = el.hasAttribute('data-indian');
+    const suffix = el.getAttribute('data-suffix') || '';
+    const t0 = performance.now(), dur = 1500;
+    function tick(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = to * eased;
+      const shown = decimals > 0 ? val.toFixed(decimals) : (indian ? Math.round(val).toLocaleString('en-IN') : Math.round(val));
+      el.textContent = shown + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const counters = $$('[data-countup]');
+  if (counters.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) { animateCount(entry.target); obs.unobserve(entry.target); }
+      });
+    }, { threshold: 0.4 });
+    counters.forEach((c) => io.observe(c));
+  } else {
+    counters.forEach(animateCount);
+  }
+
+  /* ---------------- Icons ---------------- */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', refreshIcons);
+  } else {
+    refreshIcons();
+  }
+  window.addEventListener('load', refreshIcons);
+})();

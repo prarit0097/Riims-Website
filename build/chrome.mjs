@@ -1,0 +1,172 @@
+/* RIIMS static-site generator — site chrome: header, footer, mobile bar,
+   floating contact, booking modal, appointment form, page hero.
+   Ported from ui_kits/website sections-a/-d + pages.jsx. */
+
+import { icon, logo, button, iconButton, input, select, checkbox } from './components.mjs';
+import { NAV, SITE } from './data.mjs';
+
+/* ---------- Appointment form (2-step, toggled by site.js) ---------- */
+export function appointmentForm({ compact = false } = {}) {
+  const step0 = `<form data-step="0" class="appt-step" style="display:flex;flex-direction:column;gap:.9rem">`
+    + input({ label: 'Full name', required: true, icon: icon('user'), placeholder: 'Your name', name: 'name' })
+    + input({ label: 'Phone / WhatsApp', type: 'tel', required: true, icon: icon('phone'), placeholder: '10-digit mobile', name: 'phone' })
+    + checkbox({ label: 'I agree to be contacted by RIIMS about my query.', name: 'agree', checked: true })
+    + button('Continue', { variant: 'primary', size: 'lg', fullWidth: true, type: 'submit', iconRight: icon('arrow-right', { size: 18 }) })
+    + `<p style="margin:0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Step 1 of 2 · takes ~30 seconds</p>`
+    + `</form>`;
+
+  const uploadRow = `<div style="grid-column:1 / -1;display:flex;align-items:center;gap:.7rem;background:var(--surface-muted);border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:.8rem 1rem;color:var(--text-muted);font-family:var(--font-sans);font-size:var(--fs-sm)">`
+    + icon('upload-cloud', { size: 20 }) + ` Upload reports (PDF/JPG) — optional`
+    + `<span style="margin-left:auto;color:var(--text-link);font-weight:700;cursor:pointer">Browse</span></div>`;
+
+  const step1 = `<form data-step="1" class="appt-step riims-apptform" hidden style="display:grid;grid-template-columns:${compact ? '1fr' : '1fr 1fr'};gap:.9rem">`
+    + select({ label: 'City', icon: icon('map-pin'), options: ['Baraut', 'Baghpat', 'Meerut', 'Shamli', 'Other'], placeholder: 'Select city' })
+    + select({ label: 'Health concern', icon: icon('activity'), options: ['High creatinine', 'CKD', 'Dialysis guidance', 'Kidney diet', 'Second opinion'], placeholder: 'Select concern' })
+    + input({ label: 'Creatinine level (optional)', icon: icon('flask-conical'), placeholder: 'e.g. 3.2 mg/dL' })
+    + select({ label: 'Consultation mode', icon: icon('video'), options: ['In-clinic visit', 'Video consultation', 'Phone call'], placeholder: 'Select mode' })
+    + uploadRow
+    + `<div style="grid-column:1 / -1;display:flex;gap:.7rem;align-items:center">`
+    + button('Back', { variant: 'ghost', size: 'sm', type: 'button', iconLeft: icon('arrow-left', { size: 15 }), extraAttrs: { 'data-appt-back': true } })
+    + `<span style="margin-left:auto;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Step 2 of 2 · all fields optional</span></div>`
+    + `<div style="grid-column:1 / -1">`
+    + button('Request a callback', { variant: 'primary', size: 'lg', fullWidth: true, type: 'submit', iconRight: icon('arrow-right', { size: 18 }) })
+    + `</div></form>`;
+
+  const success = `<div data-step="2" class="appt-step" hidden style="text-align:center;padding:1rem .5rem">`
+    + `<span style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center;margin-bottom:.8rem">${icon('check', { size: 28 })}</span>`
+    + `<h3 style="margin:0 0 .3rem;font-size:var(--fs-xl)">Request received</h3>`
+    + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-base)">Our care team will reach out on WhatsApp shortly. This is not an emergency service.</p>`
+    + `<button type="button" data-appt-reset style="margin-top:1rem;background:none;border:none;color:var(--text-link);font-weight:700;cursor:pointer;font-family:var(--font-sans)">Send another request</button>`
+    + `</div>`;
+
+  return `<div data-apptform>${step0}${step1}${success}</div>`;
+}
+
+/* ---------- Header ---------- */
+export function header(base, current) {
+  const tel = `tel:${SITE.phoneTel}`;
+  const utility = `<div style="background:var(--surface-inverse);color:rgba(255,255,255,.85)">`
+    + `<div class="riims-container" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:40px;font-family:var(--font-sans);font-size:.82rem">`
+    + `<div style="display:flex;align-items:center;gap:1.2rem">`
+    + `<a href="${tel}" style="color:inherit;display:inline-flex;align-items:center;gap:.4rem;text-decoration:none">${icon('phone', { size: 14 })} ${SITE.phone}</a>`
+    + `<span class="util-hide" style="display:inline-flex;align-items:center;gap:.4rem">${icon('map-pin', { size: 14 })} ${SITE.city}</span>`
+    + `<span class="util-hide" style="display:inline-flex;align-items:center;gap:.4rem">${icon('clock', { size: 14 })} ${SITE.hours}</span>`
+    + `</div>`
+    + `<div style="display:flex;align-items:center;gap:.5rem">`
+    + `<a href="${SITE.whatsapp}" style="color:var(--whatsapp);display:inline-flex;align-items:center;gap:.35rem;font-weight:700;text-decoration:none">${icon('message-circle', { size: 14 })} WhatsApp</a>`
+    + `<span style="opacity:.3">|</span>`
+    + `<a href="${SITE.facebook}" aria-label="Facebook" style="color:inherit;display:inline-flex">${icon('facebook', { size: 15 })}</a>`
+    + `<a href="${SITE.instagram}" aria-label="Instagram" style="color:inherit;display:inline-flex">${icon('instagram', { size: 15 })}</a>`
+    + `</div></div></div>`;
+
+  const links = NAV.map((n) => {
+    const active = current && (n.href.startsWith(current));
+    return `<a href="${base}${n.href}" style="font-family:var(--font-sans);font-size:.95rem;font-weight:600;text-decoration:none;color:${active ? 'var(--text-brand)' : 'var(--text-body)'}">${n.label}</a>`;
+  }).join('');
+
+  const main = `<div style="background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-subtle)">`
+    + `<div class="riims-container" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:72px">`
+    + logo(base)
+    + `<nav class="nav-links" aria-label="Main navigation" style="display:flex;align-items:center;gap:1.4rem">${links}</nav>`
+    + `<div class="nav-cta" style="display:flex;align-items:center;gap:.6rem">`
+    + iconButton(icon('phone', { size: 18 }), { label: 'Call now', variant: 'solid', href: tel })
+    + button('Upload Reports', { variant: 'outline', size: 'sm', iconLeft: icon('upload', { size: 16 }), extraAttrs: { 'data-book': true } })
+    + button('Book Consultation', { variant: 'primary', size: 'sm', iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
+    + `</div>`
+    + `<div class="nav-mobile" style="display:none;align-items:center;gap:.5rem">`
+    + iconButton(icon('phone', { size: 18 }), { label: 'Call now', variant: 'solid', href: tel })
+    + iconButton(icon('message-circle', { size: 18 }), { label: 'WhatsApp', variant: 'whatsapp', href: SITE.whatsapp })
+    + `</div></div></div>`;
+
+  return `<header style="position:sticky;top:0;z-index:100">${utility}${main}</header>`;
+}
+
+/* ---------- Footer ---------- */
+export function footer(base) {
+  const cols = [
+    { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html']] },
+    { h: 'Care', links: [['Kidney Diet', 'blog.html'], ['Lifestyle Support', 'conditions/diabetes-bp.html'], ['Report Review', 'contact.html'], ['Second Opinion', 'contact.html']] },
+    { h: 'Institute', links: [['About RIIMS', 'about.html'], ['Our Doctors', 'doctors.html'], ['Blog', 'blog.html'], ['Contact', 'contact.html']] },
+  ];
+  const colHtml = cols.map((c) =>
+    `<div><h4 style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin:0 0 .9rem">${c.h}</h4>`
+    + `<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem">`
+    + c.links.map(([l, href]) => `<li><a href="${base}${href}" style="color:rgba(255,255,255,.72);text-decoration:none;font-size:var(--fs-sm)">${l}</a></li>`).join('')
+    + `</ul></div>`
+  ).join('');
+
+  const social = `<div style="display:flex;gap:.5rem">`
+    + iconButton(icon('phone', { size: 18 }), { variant: 'ghost', label: 'Call', href: `tel:${SITE.phoneTel}` })
+    + iconButton(icon('message-circle', { size: 18 }), { variant: 'whatsapp', label: 'WhatsApp', href: SITE.whatsapp })
+    + iconButton(icon('facebook', { size: 18 }), { variant: 'ghost', label: 'Facebook', href: SITE.facebook })
+    + iconButton(icon('instagram', { size: 18 }), { variant: 'ghost', label: 'Instagram', href: SITE.instagram })
+    + `</div>`;
+
+  return `<footer style="background:var(--surface-inverse);color:rgba(255,255,255,.72)">`
+    + `<div class="riims-container" style="padding-block:var(--space-12)">`
+    + `<div class="footer-grid" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:var(--space-8)">`
+    + `<div>${logo(base, { light: true })}`
+    + `<p style="margin:1rem 0 1.2rem;font-size:var(--fs-sm);max-width:34ch">Rashtriya Institute of Integrated Medical Sciences — ethical, kidney-focused integrated care, patient education and report-based consultation.</p>`
+    + social + `</div>` + colHtml + `</div>`
+    + `<div style="margin-top:var(--space-10)">${disclaimerDark()}</div>`
+    + `<div style="margin-top:var(--space-8);padding-top:var(--space-6);border-top:1px solid rgba(255,255,255,.12);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-size:var(--fs-sm)">`
+    + `<span>© ${SITE.year} RIIMS. All rights reserved.</span>`
+    + `<div style="display:flex;gap:1.2rem">`
+    + `<a href="#" style="color:rgba(255,255,255,.72);text-decoration:none">Privacy Policy</a>`
+    + `<a href="#" style="color:rgba(255,255,255,.72);text-decoration:none">Terms</a>`
+    + `<a href="#" style="color:rgba(255,255,255,.72);text-decoration:none">Disclaimer</a>`
+    + `</div></div></div></footer>`;
+}
+
+function disclaimerDark() {
+  const base = 'display:flex;gap:.7rem;align-items:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);color:rgba(255,255,255,.8);font-family:var(--font-sans);font-size:var(--fs-sm);line-height:var(--leading-relaxed)';
+  return `<div style="${base}">${icon('info', { size: 18, style: 'flex:0 0 auto;margin-top:2px;color:var(--green-300)' })}`
+    + `<span><strong style="color:#fff">Medical disclaimer:</strong> Information on this site is for awareness only and does not replace medical consultation. Treatment depends on doctor evaluation and patient reports. RIIMS does not promise guaranteed cure or recovery.</span></div>`;
+}
+
+/* ---------- Mobile bottom nav ---------- */
+export function mobileBar(base, current) {
+  const tab = (active) => `flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:.12rem;border:none;background:transparent;cursor:pointer;padding:.55rem .2rem;font-family:var(--font-sans);font-weight:700;font-size:10px;color:${active ? 'var(--text-brand)' : 'var(--text-muted)'};text-decoration:none`;
+  return `<nav class="riims-mobilebar" aria-label="Mobile" style="position:fixed;left:0;right:0;bottom:0;z-index:110;display:none;align-items:flex-end;min-height:62px;background:#fff;border-top:1px solid var(--border-default);box-shadow:0 -8px 24px rgba(4,45,49,.12)">`
+    + `<a href="${base}index.html" style="${tab(current === 'home')}">${icon('home', { size: 20 })} Home</a>`
+    + `<a href="${base}doctors.html" style="${tab(current === 'doctors.html')}">${icon('stethoscope', { size: 20 })} Doctors</a>`
+    + `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:relative">`
+    + `<button type="button" data-book aria-label="Book consultation" style="position:absolute;top:-24px;width:56px;height:56px;border-radius:50%;border:4px solid #fff;background:var(--brand-primary);color:#fff;box-shadow:var(--shadow-brand);cursor:pointer;display:flex;align-items:center;justify-content:center">${icon('calendar-check', { size: 24 })}</button>`
+    + `<span style="padding-bottom:.55rem;font-family:var(--font-sans);font-weight:700;font-size:10px;color:var(--text-brand)">Book</span></div>`
+    + `<a href="${SITE.whatsapp}" style="${tab(false)}">${icon('message-circle', { size: 20, style: 'color:var(--whatsapp-dark)' })} WhatsApp</a>`
+    + `<a href="tel:${SITE.phoneTel}" style="${tab(false)}">${icon('phone', { size: 20 })} Call</a>`
+    + `</nav>`;
+}
+
+/* ---------- Floating contact ---------- */
+export function floatingContact() {
+  return `<div class="riims-fab" style="position:fixed;right:clamp(1rem,2vw,1.5rem);bottom:clamp(1rem,2vw,1.5rem);z-index:90;display:flex;flex-direction:column;gap:.7rem">`
+    + `<a href="${SITE.whatsapp}" aria-label="WhatsApp us" style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--whatsapp);color:#06351c;box-shadow:0 10px 24px rgba(37,211,102,.4)">${icon('message-circle', { size: 26 })}</a>`
+    + `<a href="tel:${SITE.phoneTel}" aria-label="Call us" style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--brand-primary);color:#fff;box-shadow:var(--shadow-brand)">${icon('phone', { size: 24 })}</a>`
+    + `</div>`;
+}
+
+/* ---------- Booking modal ---------- */
+export function bookingModal() {
+  return `<div id="booking-modal" role="dialog" aria-modal="true" aria-label="Book a consultation" hidden style="position:fixed;inset:0;z-index:300;background:var(--surface-overlay);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:clamp(1rem,4vh,4rem) 1rem;overflow-y:auto">`
+    + `<div data-modal-panel style="width:100%;max-width:640px;background:var(--surface-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xl);overflow:hidden">`
+    + `<div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--border-subtle);background:var(--surface-blue-soft)">`
+    + `<div style="display:flex;align-items:center;gap:.6rem">${icon('calendar-clock', { size: 22, style: 'color:var(--icon-brand)' })}<h3 style="margin:0;font-size:var(--fs-xl)">Book a consultation</h3></div>`
+    + iconButton(icon('x', { size: 18 }), { variant: 'outline', label: 'Close', extraAttrs: { 'data-modal-close': true } })
+    + `</div>`
+    + `<div style="padding:var(--space-6)">${appointmentForm()}</div>`
+    + `</div></div>`;
+}
+
+/* ---------- Page hero (inner pages) ---------- */
+export function pageHero(base, { crumb, title, intro, icon: ic } = {}) {
+  return `<section style="background:linear-gradient(180deg, var(--surface-blue-soft), var(--surface-page));border-bottom:1px solid var(--border-subtle)">`
+    + `<div class="riims-container" style="padding-block:clamp(2rem,1.4rem + 3vw,3.5rem)">`
+    + `<nav aria-label="Breadcrumb" style="display:flex;align-items:center;gap:.5rem;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);margin-bottom:1rem">`
+    + `<a href="${base}index.html" style="color:var(--text-link);text-decoration:none">Home</a>${icon('chevron-right', { size: 14 })}<span>${crumb}</span></nav>`
+    + `<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">`
+    + (ic ? `<span style="display:inline-flex;width:60px;height:60px;border-radius:var(--radius-lg);background:var(--surface-card);box-shadow:var(--shadow-sm);color:var(--icon-brand);align-items:center;justify-content:center">${icon(ic, { size: 28 })}</span>` : '')
+    + `<h1 style="font-size:var(--fs-4xl);margin:0">${title}</h1></div>`
+    + (intro ? `<p class="riims-lead" style="margin:1rem 0 0;max-width:60ch">${intro}</p>` : '')
+    + `</div></section>`;
+}

@@ -1,0 +1,48 @@
+/* ============================================================
+   RIIMS — Typography Tokens
+   ============================================================ */
+
+:root {
+  /* ---- Families ---- */
+  --font-display: 'Spectral', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-hindi: 'Mukta', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: var(--font-sans);
+
+  /* ---- Weights ---- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* ---- Fluid type scale (mobile-first; clamps up for desktop) ---- */
+  --fs-xs:   0.75rem;    /* 12px — legal, captions */
+  --fs-sm:   0.875rem;   /* 14px — labels, meta */
+  --fs-base: 1rem;       /* 16px — body */
+  --fs-md:   1.0625rem;  /* 17px — comfy body */
+  --fs-lg:   clamp(1.125rem, 1.05rem + 0.4vw, 1.25rem);  /* @kind spacing */
+  --fs-xl:   clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);  /* @kind spacing */
+  --fs-2xl:  clamp(1.5rem, 1.3rem + 1vw, 1.875rem);  /* @kind spacing */
+  --fs-3xl:  clamp(1.875rem, 1.5rem + 1.8vw, 2.5rem);  /* @kind spacing */
+  --fs-4xl:  clamp(2.25rem, 1.7rem + 2.6vw, 3.25rem);  /* @kind spacing */
+  --fs-5xl:  clamp(2.75rem, 1.9rem + 3.8vw, 4rem);  /* @kind spacing */
+
+  /* ---- Line heights ---- */
+  --leading-tight: 1.12;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* ---- Letter spacing ---- */
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.015em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.08em;   /* eyebrows / overlines */
+
+  /* ---- Semantic text roles ---- */
+  --role-eyebrow-size: var(--fs-sm);
+  --role-eyebrow-weight: var(--weight-bold);
+  --role-eyebrow-tracking: var(--tracking-wider);
+}

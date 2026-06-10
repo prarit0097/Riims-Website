@@ -1,0 +1,109 @@
+/* ============================================================
+   RIIMS — Page layout, responsive rules, background imagery and
+   interactive component states for the static site.
+   Adapted from the design handoff's index.html <style> block.
+   Tokens + base element styles come from styles.css.
+   ============================================================ */
+
+html { scroll-behavior: smooth; }
+body { margin: 0; }
+html, body { overflow-x: clip; }
+
+/* Inputs */
+.riims-input:focus { border-color: var(--border-focus) !important; box-shadow: var(--shadow-focus); }
+.riims-select { color: var(--text-faint); }
+.riims-select.has-value { color: var(--text-strong); }
+.riims-select option { color: var(--text-strong); }
+
+/* Checkbox (label > input + .riims-check-box + text) */
+.riims-check-input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.riims-check-box {
+  position: relative; flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px;
+  border-radius: var(--radius-xs); border: 1.5px solid var(--border-strong); background: #fff;
+  display: inline-flex; align-items: center; justify-content: center; transition: all .14s;
+}
+.riims-check-box svg { opacity: 0; transition: opacity .14s; }
+.riims-check-input:checked + .riims-check-box { border-color: var(--brand-primary); background: var(--brand-primary); }
+.riims-check-input:checked + .riims-check-box svg { opacity: 1; }
+.riims-check-input:focus-visible + .riims-check-box { box-shadow: var(--shadow-focus); }
+
+/* Nav visibility toggles */
+.nav-mobile { display: none; }
+
+/* Booking modal */
+#booking-modal { display: none; }
+#booking-modal.is-open { display: flex; }
+
+/* Brand mark (header / footer) */
+.riims-logo-mark {
+  background-image: url('../assets/riims-logo-sm.png');
+  background-size: contain; background-repeat: no-repeat; background-position: center;
+}
+
+/* Mock imagery — CSS background classes so paths resolve from one stylesheet */
+.img-cover { background-size: cover; background-position: center top; background-repeat: no-repeat; }
+.img-doc-AS { background-image: url('../assets/doctors/doc-AS.png'); }
+.img-doc-RV { background-image: url('../assets/doctors/doc-RV.png'); }
+.img-doc-SI { background-image: url('../assets/doctors/doc-SI.png'); }
+.img-doc-MK { background-image: url('../assets/doctors/doc-MK.png'); }
+.img-doc-PN { background-image: url('../assets/doctors/doc-PN.png'); }
+.img-doc-TR { background-image: url('../assets/doctors/doc-TR.png'); }
+.img-reel-1 { background-image: url('../assets/reels/reel-1.png'); }
+.img-reel-2 { background-image: url('../assets/reels/reel-2.png'); }
+.img-reel-3 { background-image: url('../assets/reels/reel-3.png'); }
+.img-reel-4 { background-image: url('../assets/reels/reel-4.png'); }
+.img-reel-5 { background-image: url('../assets/reels/reel-5.png'); }
+.img-reel-6 { background-image: url('../assets/reels/reel-6.png'); }
+.img-video { background-image: url('../assets/video-testimonial.png'); background-position: center; }
+.img-hospital { background-image: url('../assets/hospital.png'); background-position: center; }
+
+/* Reels hover — autoplay-style zoom + pulsing play */
+.reel .reel-bg { transition: transform .6s var(--ease-out); }
+.reel:hover .reel-bg { transform: scale(1.09); }
+.reel .reel-play { transition: transform .25s var(--ease-out); }
+.reel:hover .reel-play { transform: scale(1.12); animation: reelPulse 1.3s infinite; }
+@keyframes reelPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,.55); }
+  100% { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel .reel-bg, .reel .reel-play { transition: none; animation: none !important; }
+  .reel:hover .reel-bg { transform: none; }
+}
+
+/* Home extras grids */
+.services-grid { grid-template-columns: repeat(4, 1fr); }
+
+/* Tablets & below: collapse grids, switch to mobile nav so the bar never overflows */
+@media (max-width: 1024px) {
+  .grid-auto { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .blog-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .hero-grid, .contact-grid, .condition-grid, .about-grid { grid-template-columns: 1fr !important; }
+  .condition-grid aside { position: static !important; }
+  .footer-grid { grid-template-columns: 1fr 1fr !important; }
+  .nav-links, .nav-cta { display: none !important; }
+  .nav-mobile { display: flex !important; }
+  .services-grid { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+/* Phones: single column everywhere, sticky bottom bar, hidden secondary header info */
+@media (max-width: 760px) {
+  .util-hide { display: none !important; }
+  .riims-mobilebar { display: flex !important; }
+  body { padding-bottom: 76px; }
+  .grid-auto, .grid-3, .grid-4, .blog-grid, .footer-grid, .g2 { grid-template-columns: 1fr !important; }
+  .riims-apptform { grid-template-columns: 1fr !important; }
+  .services-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .riims-fab { display: none !important; }
+}
+
+/* Small phones: tighter rhythm, full-width stacked CTAs, comfortable tap targets */
+@media (max-width: 480px) {
+  :root { --section-pad-y: 2.75rem; --container-pad: 1.1rem; }
+  .hero-actions { flex-direction: column !important; align-items: stretch !important; }
+  .hero-actions > * { width: 100% !important; }
+  .hero-card { padding: var(--space-5) !important; }
+  .riims-section-title, h1 { letter-spacing: -0.02em; }
+}

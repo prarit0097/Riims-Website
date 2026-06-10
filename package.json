@@ -1,0 +1,13 @@
+{
+  "name": "riims-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RIIMS — Rashtriya Institute of Integrated Medical Sciences. Static, SEO-focused kidney-care marketing site generated from the Claude Design handoff.",
+  "type": "module",
+  "scripts": {
+    "build": "node build/generate.mjs",
+    "serve": "node build/serve.mjs",
+    "dev": "node build/generate.mjs && node build/serve.mjs"
+  },
+  "license": "UNLICENSED"
+}

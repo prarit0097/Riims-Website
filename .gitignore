@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Local tooling / editor artifacts
+.code-review-graph/
+.DS_Store
+Thumbs.db
+*.log
+
+# Design source handoff (large binary, not code)
+RIIMS Design System-handoff.zip
