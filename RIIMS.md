@@ -87,11 +87,13 @@ RiimS/
 │   ├── serve.mjs             # zero-dependency local preview server (port 5173)
 │   └── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors, stale domain
 │
+├── docker-compose.yml        # ⭐ deploy as a container behind the VPS's existing Traefik
 ├── deploy/                   # ── DEPLOYMENT (see DEPLOY.md) ──
-│   ├── nginx-riimshospitals.conf   # isolated nginx server block (HTTP2, gzip, cache, headers, CSP, 404)
-│   ├── apache-riimshospitals.conf  # Apache vhost alternative
+│   ├── docker/nginx.conf     # in-container nginx (gzip, cache, headers, CSP, clean URLs, 404)
+│   ├── nginx-riimshospitals.conf   # alt: system nginx server block (if not using Docker)
+│   ├── apache-riimshospitals.conf  # alt: Apache vhost
 │   └── update.sh             # VPS update helper (git pull, isolated)
-├── DEPLOY.md                 # step-by-step VPS runbook (Hostinger, new folder, safe)
+├── DEPLOY.md                 # step-by-step VPS runbook (Hostinger Docker+Traefik; GoDaddy DNS)
 │
 └── site/                     # ── GENERATED OUTPUT (the deployable website) ──
     ├── index.html            # home
@@ -371,15 +373,17 @@ block parses, every page has exactly one `<h1>` + a `<title>` + a description, a
 
 ## 18. Deployment
 
-Production target: **riimshospitals.com on the Hostinger VPS**, in an isolated folder + web-server
-site block (does not touch the other apps on the VPS). Full step-by-step runbook: **[DEPLOY.md](DEPLOY.md)**.
+Production target: **riimshospitals.com on the Hostinger VPS** (IP `187.127.132.106`), which runs
+**Docker + Traefik**. Recommended path = deploy RIIMS as its **own Docker container** (`riims-web`,
+nginx serving `site/`) on the same network as the other apps, routed by the existing Traefik with
+auto Let's Encrypt SSL — fully isolated. Full runbook: **[DEPLOY.md](DEPLOY.md)** (includes GoDaddy
+DNS + discovery commands to find the Traefik network + cert resolver).
 
-Summary: DNS A-records (apex + www) → VPS IP; `git clone` the repo into `/var/www/riimshospitals`
-(web root = its `site/` folder); install `deploy/nginx-riimshospitals.conf` (or the Apache vhost /
-the bundled `site/.htaccess`); `nginx -t` then reload; certbot for SSL. Update later with
-`deploy/update.sh` (git pull). The site is fully static, so it serves **1000+ concurrent** from
-cache with the provided HTTP/2 + gzip + long-cache config. You can alternatively host the `site/`
-folder on any static host (Netlify/Vercel/GitHub Pages/Cloudflare).
+Summary: GoDaddy A-records (`@` + `www`) → `187.127.132.106`; `git clone` into `/opt/riims`; set
+`<TRAEFIK_NETWORK>` + `<CERTRESOLVER>` in `docker-compose.yml` (copy from a working app's labels);
+`docker compose up -d`. Update later with `git pull` (site/ is bind-mounted → served instantly).
+The site is fully static, so it serves **1000+ concurrent** from cache. Non-Docker alternatives
+(system nginx/Apache, or any static host like Netlify/Vercel/GitHub Pages) are in DEPLOY.md §B.
 
 ## 19. How to make common changes
 

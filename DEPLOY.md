@@ -1,12 +1,118 @@
 # DEPLOY.md — Putting RIIMS live on the Hostinger VPS (safely)
 
 This guides you through deploying the RIIMS website to **riimshospitals.com** on your
-Hostinger VPS, **in its own isolated folder + its own web-server site block**, without
-touching the 6–7 apps already running there.
+Hostinger VPS, **fully isolated** from the apps already running there.
 
 > The site is **fully static** (plain HTML/CSS/JS). It handles **1000+ concurrent visitors**
-> trivially — the only "scaling" work is the caching/compression/HTTP-2 already written into
-> the provided web-server config. No Node, PHP, or database runs in production.
+> trivially. No Node, PHP, or database runs in production.
+
+> **Your VPS runs Docker + Traefik** (projects: `nirogidhara-command`, `postzyo`,
+> `hermes-agent`, `traefik-*`). So the **recommended path is Section A — deploy RIIMS as its
+> own Docker container** routed by your existing Traefik (auto-SSL, fully isolated). The
+> system-level nginx/Apache steps further down are only an alternative if you ever stop using
+> Docker. **VPS IP: `187.127.132.106`** (from your panel; confirm it matches).
+
+---
+
+## A. ⭐ Recommended: deploy as a Docker container behind your existing Traefik
+
+This adds ONE new container (`riims-web`) on the same Docker network as your other apps and
+lets Traefik route `riimshospitals.com` to it with automatic Let's Encrypt SSL. It does **not**
+modify any existing project.
+
+### A1. First — GoDaddy DNS (do this now; it propagates while you set up)
+
+In **GoDaddy → My Products → riimshospitals.com → DNS → Manage Zones**:
+
+| Type | Name | Value | TTL |
+|------|------|-------|-----|
+| A | `@`   | `187.127.132.106` | 600 |
+| A | `www` | `187.127.132.106` | 600 |
+
+- **Edit GoDaddy's existing default records** rather than adding duplicates: GoDaddy ships a
+  parked `A @ → <parking IP>` and often a `CNAME www → @`. Change the `A @` value to your VPS
+  IP. For `www`, either an `A www → 187.127.132.106` **or** keep `CNAME www → @` (both work —
+  Traefik redirects www → apex anyway).
+- Remove any GoDaddy **Domain Forwarding** on the root (it overrides A records).
+- Ensure the domain uses **GoDaddy nameservers** (default). If its nameservers point elsewhere,
+  make the A records there instead.
+- Verify after a few minutes: `ping riimshospitals.com` → `187.127.132.106`.
+
+### A2. Discover your Traefik network + cert resolver (so we match what already works)
+
+Open the Hostinger **Terminal** (or SSH `ssh root@187.127.132.106`) and run — then send me the
+output, or read it yourself:
+
+```bash
+# 1) all docker networks (look for the one Traefik + your apps share, e.g. *_default or 'web')
+docker network ls
+
+# 2) copy the EXACT traefik labels an already-working app uses (network, entrypoint, certresolver)
+for c in $(docker ps --format '{{.Names}}'); do
+  echo "=== $c ==="; docker inspect "$c" --format '{{json .Config.Labels}}' | tr ',' '\n' | grep -i traefik
+done
+
+# 3) which network is that working app attached to?
+docker inspect nirogidhara-command --format '{{json .NetworkSettings.Networks}}' 2>/dev/null | tr ',' '\n'
+```
+
+From the output note two values:
+- **`<TRAEFIK_NETWORK>`** — the shared external network name (e.g. `root_default`, `traefik`, `web`).
+- **`<CERTRESOLVER>`** — the value after `tls.certresolver=` in a working app's labels
+  (e.g. `letsencrypt`, `le`, `myresolver`). Also note the **entrypoint** name (the value after
+  `entrypoints=` — usually `websecure`; if it differs, change it in `docker-compose.yml`).
+
+### A3. Clone the repo into a new folder and configure
+
+```bash
+mkdir -p /opt/riims && cd /opt/riims
+git clone https://github.com/prarit0097/Riims-Website.git .
+nano docker-compose.yml      # replace <TRAEFIK_NETWORK> (2 places) and <CERTRESOLVER>
+```
+
+### A4. Launch (isolated — only creates the riims-web container)
+
+```bash
+cd /opt/riims
+docker compose up -d
+docker compose logs -f riims-web    # Ctrl-C to exit; check it started cleanly
+docker ps | grep riims-web          # should be running
+```
+
+Traefik picks up the new labels automatically and requests the SSL certificate on first hit.
+Your other containers are untouched.
+
+### A5. Verify
+
+```bash
+curl -I https://riimshospitals.com/                         # 200 + headers (after DNS+cert)
+curl -I https://www.riimshospitals.com/                     # 301 -> https://riimshospitals.com/
+curl -s -o /dev/null -w "%{http_code}\n" https://riimshospitals.com/conditions/ckd.html   # 200
+```
+Then open it in a browser and test booking modal / search / WhatsApp / map.
+
+### A6. Update later (after any GitHub push)
+
+```bash
+cd /opt/riims && git pull        # site/ is bind-mounted → served instantly, no restart
+```
+(If you ever change `docker-compose.yml` or `nginx.conf`: `docker compose up -d` to re-apply.)
+
+### A7. Safety notes (shared VPS)
+
+- Only `docker compose up -d` from `/opt/riims` — it creates just `riims-web`. It cannot
+  affect other projects.
+- Use the **same external network + cert resolver** as your other apps (A2) — do **not** create
+  a new Traefik or publish host ports 80/443 (those belong to Traefik). The container exposes
+  port 80 **inside** the Docker network only; Traefik handles public 80/443 + TLS.
+- To remove cleanly later: `cd /opt/riims && docker compose down`.
+
+---
+
+## B. Alternative: system nginx / Apache (only if NOT using Docker)
+
+Use this **only** if you stop using Traefik/Docker for this site. On your current VPS, prefer
+Section A.
 
 ---
 

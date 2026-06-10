@@ -1,0 +1,44 @@
+# ============================================================================
+# RIIMS — deploy the static site as its OWN container, routed by your existing
+# Traefik (the same proxy that already serves your other apps). Isolated: this
+# does NOT touch nirogidhara-command / postzyo / hermes-agent.
+#
+# BEFORE `docker compose up -d`, replace the two placeholders below:
+#   <TRAEFIK_NETWORK>  = the external docker network your Traefik watches
+#   <CERTRESOLVER>     = the Let's Encrypt cert resolver name your Traefik uses
+# Find both by copying an already-working app's settings (see DEPLOY.md §A).
+#
+# Content updates later: just `git pull` — the site/ folder is bind-mounted,
+# so new files are served immediately (no rebuild, no restart).
+# ============================================================================
+
+services:
+  riims-web:
+    image: nginx:1.27-alpine
+    container_name: riims-web
+    restart: unless-stopped
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+      - ./deploy/docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=<TRAEFIK_NETWORK>"
+      # Route both apex + www to this container
+      - "traefik.http.routers.riims.rule=Host(`riimshospitals.com`) || Host(`www.riimshospitals.com`)"
+      - "traefik.http.routers.riims.entrypoints=websecure"
+      - "traefik.http.routers.riims.tls=true"
+      - "traefik.http.routers.riims.tls.certresolver=<CERTRESOLVER>"
+      - "traefik.http.services.riims.loadbalancer.server.port=80"
+      # Redirect www -> non-www (canonical https://riimshospitals.com)
+      - "traefik.http.middlewares.riims-www.redirectregex.regex=^https?://www\\.riimshospitals\\.com/(.*)"
+      - "traefik.http.middlewares.riims-www.redirectregex.replacement=https://riimshospitals.com/$${1}"
+      - "traefik.http.middlewares.riims-www.redirectregex.permanent=true"
+      - "traefik.http.routers.riims.middlewares=riims-www"
+
+networks:
+  # Use the SAME external network your Traefik + other apps are on.
+  traefik:
+    external: true
+    name: <TRAEFIK_NETWORK>
