@@ -95,7 +95,7 @@ export function aboutPage(base) {
     + `<p style="color:var(--text-body)">RIIMS focuses on early diagnosis, doctor consultation, personalized care plans and clear patient education. We combine evidence-aware medical guidance with Ayurveda-supported lifestyle care — always alongside, never instead of, proper medical treatment.</p>`
     + `<p style="color:var(--text-body)">Every plan starts from your actual reports. We believe hopeful care and honesty belong together.</p>`
     + `<div style="margin-top:1.4rem">${button('Book a consultation', { variant: 'primary', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })}</div></div>`
-    + `<div class="img-cover img-hospital" style="aspect-ratio:4 / 5;border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border-subtle);box-shadow:var(--shadow-lg)"></div>`
+    + `<div class="img-cover img-hospital" role="img" aria-label="RIIMS institute building, Baraut" style="aspect-ratio:4 / 5;border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border-subtle);box-shadow:var(--shadow-lg)"></div>`
     + `</div>`
     + `<div class="riims-container" style="margin-top:var(--space-16)">`
     + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${valueCards}</div>`
@@ -118,9 +118,9 @@ export function doctorsPage(base) {
 function featuredPost(base, p) {
   const g = { blue: 'linear-gradient(135deg,var(--surface-blue-soft),var(--surface-green-soft))', green: 'linear-gradient(135deg,var(--surface-green-soft),var(--cream-100))', cream: 'linear-gradient(135deg,var(--surface-cream-deep),var(--surface-blue-soft))' }[p.tone];
   const cover = p.img
-    ? `<div class="img-cover ${p.img}" style="min-height:260px"></div>`
+    ? `<div class="img-cover ${p.img}" role="img" aria-label="${p.title}" style="min-height:260px"></div>`
     : `<div style="min-height:260px;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 40, style: 'color:var(--teal-300)' })}</div>`;
-  return `<a href="${base}blog.html" data-featured class="about-grid riims-card riims-card--hover" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);overflow:hidden;text-decoration:none;color:inherit;margin-bottom:var(--space-8)">`
+  return `<a href="${base}blog/${p.slug}.html" data-featured class="about-grid riims-card riims-card--hover" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);overflow:hidden;text-decoration:none;color:inherit;margin-bottom:var(--space-8)">`
     + cover
     + `<div style="padding:clamp(1.4rem, 1rem + 2vw, 2.4rem);display:flex;flex-direction:column;gap:.7rem;justify-content:center">`
     + `<span style="display:inline-flex;align-items:center;gap:.5rem">${badge('Featured', { tone: 'green' })}<span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-accent)">${p.cat}</span></span>`
@@ -174,3 +174,102 @@ export function contactPage(base) {
     + S.contactSection()
     + S.faqSection();
 }
+
+/* ---------- Blog article (one page per post) ---------- */
+export function blogPostPage(base, p) {
+  const rc = p.related ? CONDITIONS[p.related] : null;
+  const related = POSTS.filter((x) => x.slug !== p.slug).slice(0, 3);
+  const half = rc ? Math.ceil(rc.symptoms.length / 2) : 0;
+
+  let depth = '';
+  if (rc) {
+    depth = `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">${rc.aboutTitle}</h2><p style="color:var(--text-body)">${rc.about}</p>`
+      + `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">Signs to discuss with your doctor</h2>`
+      + `<div class="g2" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem">`
+      + infoList(rc.symptoms.slice(0, half), { icon: 'dot', color: 'var(--icon-brand)' })
+      + infoList(rc.symptoms.slice(half), { icon: 'dot', color: 'var(--icon-brand)' })
+      + `</div>`
+      + card(
+        `<h3 style="font-size:var(--fs-xl);margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem">${icon('route', { size: 20, style: 'color:var(--icon-brand)' })} How RIIMS approaches it</h3>`
+        + infoList(rc.approach),
+        { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)', marginTop: 'var(--space-6)' } })
+      + `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">When to consult a kidney doctor</h2><p style="color:var(--text-body)">${rc.when}</p>`;
+  }
+
+  const cta = card(
+    `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Talk to a kidney care expert</h3>`
+    + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your reports for doctor-guided, evidence-aware guidance — no false promises.</p>`
+    + `<div style="display:flex;flex-wrap:wrap;gap:.6rem">`
+    + button('Book Consultation', { variant: 'primary', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
+    + button('WhatsApp Now', { variant: 'whatsapp', iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
+    + (rc ? button('Full condition guide', { variant: 'outline', iconRight: icon('arrow-right', { size: 16 }), href: `${base}conditions/${p.related}.html` }) : '')
+    + `</div>`,
+    { accent: true, pad: 'lg', style: { boxShadow: 'var(--shadow-md)', margin: 'var(--space-10) 0' } });
+
+  const article = `<article style="max-width:760px;margin:0 auto">`
+    + `<span style="display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--text-faint);font-size:var(--fs-sm);font-family:var(--font-sans);margin-bottom:var(--space-5)">`
+    + `<span style="color:var(--text-muted);font-weight:600">${p.author}</span>`
+    + `<span style="display:inline-flex;align-items:center;gap:.35rem">${icon('clock', { size: 14 })} ${p.date} · ${p.time}</span></span>`
+    + `<p class="riims-lead" style="margin:0 0 1rem">${p.excerpt}</p>`
+    + `<p style="color:var(--text-body)">This guide is written for patients and families in plain language. It explains the essentials, what to watch for, and how RIIMS supports you with ethical, report-based, doctor-led care — always alongside, never instead of, your treating doctor.</p>`
+    + depth
+    + disclaimer()
+    + cta
+    + `<h2 style="font-size:var(--fs-2xl);margin:0 0 var(--space-5)">Related reading</h2>`
+    + `<div class="blog-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
+    + related.map((x) => S.blogCard(base, x)).join('')
+    + `</div></article>`;
+
+  return pageHero(base, { crumb: `Blog · ${p.cat}`, icon: 'book-open', title: p.title, intro: p.excerpt })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container">${article}</div></section>`
+    + S.ctaBand();
+}
+
+/* ---------- Legal / disclaimer pages ---------- */
+const LEGAL = {
+  privacy: {
+    title: 'Privacy Policy', crumb: 'Privacy Policy', icon: 'shield-check',
+    intro: 'How RIIMS handles the information you share with us.',
+    sections: [
+      ['What we collect', 'When you submit the appointment form, call, or message us on WhatsApp, we may collect your name, phone number, city, health concern and any reports you choose to share. We only collect what is needed to respond to your query and guide your care.'],
+      ['How we use it', 'Your information is used solely to contact you, review your reports, and provide doctor-guided guidance. We do not sell your data or share it with advertisers. Reports are handled confidentially by our care team.'],
+      ['Data security', 'We take reasonable steps to protect the information you share. Please avoid sending sensitive information over unsecured channels where possible; you can share reports securely with our team on request.'],
+      ['Your choices', 'You may ask us to update or delete your details at any time by calling or messaging us on +91 85120 40000. Submitting the form means you agree to be contacted by RIIMS about your query.'],
+      ['Contact', 'For any privacy question, contact RIIMS, Near Baraut Medicity Hospital, Kotana Rd, Baraut, Uttar Pradesh 250611, or call +91 85120 40000.'],
+    ],
+  },
+  terms: {
+    title: 'Terms of Use', crumb: 'Terms of Use', icon: 'file-text',
+    intro: 'The terms that apply when you use the RIIMS website.',
+    sections: [
+      ['Educational information only', 'The content on this website is for awareness and patient education. It is not medical advice and does not create a doctor–patient relationship. Always consult a qualified doctor for diagnosis and treatment.'],
+      ['No guarantees', 'RIIMS does not promise guaranteed cure or recovery, and never claims that dialysis can be stopped permanently. Outcomes depend on each patient’s reports, condition and doctor evaluation.'],
+      ['Use of the site', 'You agree to use this website lawfully and not to misuse the forms, contact channels or content. Information may be updated or changed at any time without notice.'],
+      ['External links', 'This site may link to third-party services (such as WhatsApp, Facebook, Instagram and maps). RIIMS is not responsible for the content or practices of those external services.'],
+      ['Contact', 'Questions about these terms? Call +91 85120 40000 or visit RIIMS, Baraut, Uttar Pradesh 250611.'],
+    ],
+  },
+  disclaimer: {
+    title: 'Medical Disclaimer', crumb: 'Medical Disclaimer', icon: 'info',
+    intro: 'Please read this important note about the information on this site.',
+    sections: [
+      ['For awareness only', 'Information on this site is for awareness only and does not replace medical consultation. Treatment depends on doctor evaluation and patient reports. Never delay seeking medical advice because of something you read here.'],
+      ['No false claims', 'RIIMS provides ethical, evidence-aware, integrated kidney care. We do not make claims of “100% cure”, “guaranteed kidney recovery”, or “permanently stopping dialysis”. Ayurveda-supported lifestyle care is offered alongside, and in coordination with, medical treatment — never as a replacement for it.'],
+      ['Individual results vary', 'Patient stories and examples reflect individual experiences. Results vary from person to person and depend on the underlying cause, stage, and doctor-led care plan.'],
+      ['Not an emergency service', 'This website and its contact channels are not for medical emergencies. If you have a medical emergency, contact your nearest hospital immediately.'],
+    ],
+  },
+};
+
+export function legalPage(base, key) {
+  const L = LEGAL[key];
+  const body = L.sections.map((s) =>
+    `<h2 style="font-size:var(--fs-xl);margin:var(--space-6) 0 .5rem">${s[0]}</h2><p style="color:var(--text-body)">${s[1]}</p>`
+  ).join('');
+  return pageHero(base, { crumb: L.crumb, icon: L.icon, title: L.title, intro: L.intro })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
+    + `<div class="riims-container" style="max-width:820px">${body}`
+    + `<div style="margin-top:var(--space-8)">${disclaimer()}</div>`
+    + `</div></section>`;
+}
+export const LEGAL_KEYS = Object.keys(LEGAL);

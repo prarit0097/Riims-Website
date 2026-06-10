@@ -27,6 +27,13 @@ html, body { overflow-x: clip; }
 .riims-check-input:checked + .riims-check-box svg { opacity: 1; }
 .riims-check-input:focus-visible + .riims-check-box { box-shadow: var(--shadow-focus); }
 
+/* hidden must win over inline display (appt steps, newsletter success, etc.).
+   The booking modal is shown via the .is-open class after JS removes [hidden]. */
+[hidden] { display: none !important; }
+
+/* White button hover (used on the dark CTA band) */
+.riims-btn--white:hover { background: var(--neutral-50) !important; box-shadow: var(--shadow-lg) !important; }
+
 /* Nav visibility toggles */
 .nav-mobile { display: none; }
 

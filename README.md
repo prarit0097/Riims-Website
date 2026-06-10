@@ -20,11 +20,15 @@ multi-page site gives the strongest, simplest SEO footing:
 - `sitemap.xml` and `robots.txt`
 - Fast loads (no JS framework), great Core Web Vitals
 
-## Pages
+## Pages (25 total)
 
-Home · About · Doctors · Blog · Contact · and **8 condition pages**
+Home · About · Doctors · Blog · Contact · **8 condition pages**
 (High Creatinine, CKD, Kidney Failure, Dialysis, Protein in Urine, Swelling,
-Diabetes/BP Kidney Risk, Kidney Stone/UTI).
+Diabetes/BP Kidney Risk, Kidney Stone/UTI) · **9 blog-article pages**
+(one URL per post, under `/blog/`) · and **Privacy Policy / Terms / Medical Disclaimer**.
+
+Every link is active — no dead `#` anchors. Each page has its own URL, metadata and
+JSON-LD; the sitemap lists all 25.
 
 Interactive (vanilla JS): home disease search, Health Reels, count-up stat strip,
 FAQ accordion, blog category filter, newsletter, sticky header, mobile bottom nav,
@@ -60,7 +64,9 @@ build/                 # generator (run once; output is static)
   check.mjs            # link/asset integrity check  (node build/check.mjs)
 site/                  # ← deployable output
   index.html, about.html, doctors.html, blog.html, contact.html
+  privacy.html, terms.html, disclaimer.html
   conditions/*.html    # 8 SEO pages
+  blog/*.html          # 9 article pages (one per post)
   css/styles.css       # imports tokens + base layer
   css/site.css         # layout, responsive, imagery, component states
   css/tokens/*.css     # design tokens (verbatim from the handoff)
@@ -84,9 +90,10 @@ icon name.
   live Google Business numbers before launch (`build/sections.mjs` → `statsStrip`).
 - **Reels and the patient-story video are thumbnails** linking to Instagram; embed real
   reels when available.
-- **Blog cards link to the blog listing**, not individual article pages. For maximum SEO,
-  the strongest next step is a full page + long-form article per post (one URL each),
-  plus a Google Business Profile and Search Console submission of `sitemap.xml`.
+- **Blog article bodies are templated** — each post now has its own page (`/blog/<slug>.html`)
+  built from the post excerpt plus the vetted, doctor-reviewed copy of its related condition.
+  For maximum SEO, replace these with full, original long-form articles over time, then submit
+  `sitemap.xml` in Google Search Console and set up a Google Business Profile.
 - **Fonts** (Spectral / Plus Jakarta Sans / Mukta) load from Google Fonts — swap for
   licensed files if required.
 - **Contact map** is a styled placeholder; drop in a Google Maps embed for the Baraut clinic.

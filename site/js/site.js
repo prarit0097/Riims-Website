@@ -110,7 +110,7 @@
     for (const k of Object.keys(HEALTH_DB)) if (s.includes(k.toLowerCase())) return k;
     return null;
   }
-  function ic(n, size, style) { return `<i data-lucide="${n}" style="width:${size}px;height:${size}px;${style || ''}"></i>`; }
+  function ic(n, size, style) { return `<i data-lucide="${n}" aria-hidden="true" style="width:${size}px;height:${size}px;${style || ''}"></i>`; }
 
   function renderSearch(container, q) {
     const topic = resolveTopic(q);
@@ -159,6 +159,7 @@
         const cat = btn.getAttribute('data-blog-cat');
         $$('[data-blog-cat]').forEach((b) => {
           const on = b === btn;
+          b.classList.toggle('is-active', on);
           b.style.background = on ? 'var(--brand-primary)' : 'var(--white)';
           b.style.color = on ? '#fff' : 'var(--text-body)';
           b.style.borderColor = on ? 'var(--brand-primary)' : 'var(--border-default)';

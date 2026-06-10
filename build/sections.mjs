@@ -4,7 +4,7 @@
 import { icon, button, badge, card, eyebrow, sectionHead, starRow } from './components.mjs';
 import { appointmentForm } from './chrome.mjs';
 import {
-  SITE, PROBLEMS, WHY, STEPS, DOCTORS, DOCTORS_FULL, EXPERTS, POSTS,
+  SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
   TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR,
 } from './data.mjs';
 
@@ -24,7 +24,7 @@ export function searchBanner() {
     + `<div class="riims-container" style="padding-block:var(--section-pad-y);position:relative">`
     + `<div style="max-width:780px;margin:0 auto;text-align:center">`
     + eyebrow(`${icon('heart-pulse', { size: 15 })} Rashtriya Institute of Integrated Medical Sciences`)
-    + `<h2 style="font-size:var(--fs-3xl);margin:0 0 .6rem">Search any disease, symptom or report</h2>`
+    + `<h1 style="font-size:var(--fs-3xl);margin:0 0 .6rem">Search any disease, symptom or report</h1>`
     + `<p class="riims-lead" style="margin:0 auto 1.5rem;max-width:56ch">Type a condition to see related articles, the right specialist, and a helpful video — for kidney, liver, diabetes, heart and more.</p>`
     + `<form data-search style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
     + icon('search', { size: 20, style: 'color:var(--icon-default);flex:0 0 auto' })
@@ -41,7 +41,7 @@ export function searchBanner() {
 /* ---------- Health reels ---------- */
 function reelCard(r) {
   const badgeTone = r.tone === 'blue' ? 'blue' : r.tone === 'green' ? 'green' : 'cream';
-  return `<div class="reel riims-card--hover" style="flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start">`
+  return `<a href="${SITE.instagram}" target="_blank" rel="noopener" aria-label="Watch reel: ${r.title}" class="reel riims-card--hover" style="display:block;flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
     + `<div style="aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--teal-600), var(--teal-900))">`
     + `<span aria-hidden="true" class="reel-bg img-cover ${r.img || ''}" style="position:absolute;inset:0"></span>`
     + badge(r.tag, { tone: badgeTone, style: { alignSelf: 'flex-start', position: 'relative' } })
@@ -49,7 +49,7 @@ function reelCard(r) {
     + `<div style="color:#fff;position:relative;text-shadow:0 1px 8px rgba(0,0,0,.45)">`
     + `<p style="margin:0 0 .25rem;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1.25">${r.title}</p>`
     + `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);color:rgba(255,255,255,.8)">${r.views}</span>`
-    + `</div></div></div>`;
+    + `</div></div></a>`;
 }
 export function healthReels() {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
@@ -155,7 +155,7 @@ export function howItWorks() {
 export function doctorCard(d) {
   const specs = d.specialties ? d.specialties.map((sp) => `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:600;color:var(--text-brand);background:var(--surface-blue-soft);padding:.25rem .6rem;border-radius:var(--radius-pill)">${sp}</span>`).join('') : '';
   return `<div class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);overflow:hidden">`
-    + `<div class="img-cover ${d.photo}" style="height:190px;display:flex;align-items:center;justify-content:center"></div>`
+    + `<div class="img-cover ${d.photo}" role="img" aria-label="${d.name}, ${d.title}" style="height:190px;display:flex;align-items:center;justify-content:center"></div>`
     + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
     + `<div><h3 style="font-size:var(--fs-xl);margin:0">${d.name}</h3><p style="margin:.15rem 0 0;color:var(--text-accent);font-weight:600;font-size:var(--fs-sm)">${d.title}</p></div>`
     + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${d.quals}</p>`
@@ -178,7 +178,7 @@ function expertCard(d) {
     .map(([ic, tx]) => `<span style="display:inline-flex;align-items:center;gap:.45rem;color:var(--text-muted);font-size:var(--fs-sm);font-family:var(--font-sans)">${icon(ic, { size: 15, style: 'color:var(--icon-accent);flex:0 0 auto' })} ${tx}</span>`)
     .join('');
   return `<div class="expert riims-card--hover" style="flex:0 0 auto;width:248px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;scroll-snap-align:start">`
-    + `<div class="img-cover ${d.photo}" style="height:170px;display:flex;align-items:center;justify-content:center"></div>`
+    + `<div class="img-cover ${d.photo}" role="img" aria-label="${d.name}, ${d.title}" style="height:170px;display:flex;align-items:center;justify-content:center"></div>`
     + `<div style="padding:var(--space-4) var(--space-5);display:flex;flex-direction:column;gap:.45rem">`
     + `<strong style="font-size:var(--fs-lg);font-family:var(--font-display)">${d.name}</strong>${rows}`
     + button('View profile', { variant: 'primary', size: 'sm', fullWidth: true, style: { marginTop: '.5rem' }, extraAttrs: { 'data-book': true } })
@@ -200,9 +200,9 @@ export function meetExperts(base) {
 export function blogCard(base, p) {
   const g = { blue: 'linear-gradient(135deg,var(--surface-blue-soft),var(--surface-green-soft))', green: 'linear-gradient(135deg,var(--surface-green-soft),var(--cream-100))', cream: 'linear-gradient(135deg,var(--surface-cream-deep),var(--surface-blue-soft))' }[p.tone];
   const cover = p.img
-    ? `<div class="img-cover ${p.img}" style="aspect-ratio:16 / 9"></div>`
+    ? `<div class="img-cover ${p.img}" role="img" aria-label="${p.title}" style="aspect-ratio:16 / 9"></div>`
     : `<div style="aspect-ratio:16 / 9;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 28, style: 'color:var(--teal-300)' })}</div>`;
-  return `<a href="${base}blog.html" class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;text-decoration:none;color:inherit">`
+  return `<a href="${base}blog/${p.slug}.html" class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;text-decoration:none;color:inherit">`
     + cover
     + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
     + `<span style="align-self:flex-start;font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-accent)">${p.cat}</span>`

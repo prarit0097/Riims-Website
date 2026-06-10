@@ -8,8 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage } from './pages.mjs';
-import { CONDITIONS, SITE } from './data.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, LEGAL_KEYS } from './pages.mjs';
+import { esc } from './components.mjs';
+import { CONDITIONS, POSTS, SITE } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
@@ -80,9 +81,9 @@ function head(p) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${p.title}</title>
-  <meta name="description" content="${p.desc}" />
-  ${p.keywords ? `<meta name="keywords" content="${p.keywords}" />` : ''}
+  <title>${esc(p.title)}</title>
+  <meta name="description" content="${esc(p.desc)}" />
+  ${p.keywords ? `<meta name="keywords" content="${esc(p.keywords)}" />` : ''}
   <meta name="author" content="RIIMS — Rashtriya Institute of Integrated Medical Sciences" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#0a6168" />
@@ -90,14 +91,14 @@ function head(p) {
   <link rel="icon" type="image/png" href="${p.base}assets/riims-logo-sm.png" />
   <meta property="og:type" content="${p.path === '/' ? 'website' : 'article'}" />
   <meta property="og:site_name" content="RIIMS — Integrated Kidney Care" />
-  <meta property="og:title" content="${p.title}" />
-  <meta property="og:description" content="${p.desc}" />
+  <meta property="og:title" content="${esc(p.title)}" />
+  <meta property="og:description" content="${esc(p.desc)}" />
   <meta property="og:url" content="${url}" />
   <meta property="og:image" content="${ogImg}" />
   <meta property="og:locale" content="en_IN" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${p.title}" />
-  <meta name="twitter:description" content="${p.desc}" />
+  <meta name="twitter:title" content="${esc(p.title)}" />
+  <meta name="twitter:description" content="${esc(p.desc)}" />
   <meta name="twitter:image" content="${ogImg}" />
   ${ldScript(graph)}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -125,14 +126,14 @@ const pages = [
   {
     out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home',
     title: 'RIIMS Baraut | Kidney Care, High Creatinine, CKD & Dialysis Guidance',
-    desc: 'RIIMS — Rashtriya Institute of Integrated Medical Sciences, Baraut (UP). Ethical, doctor-led kidney care for high creatinine, CKD, kidney failure, dialysis guidance, kidney diet and report review, with Ayurveda-supported integrated lifestyle care.',
+    desc: 'Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
     keywords: 'kidney care, high creatinine treatment, CKD, chronic kidney disease, kidney failure, dialysis guidance, kidney diet chart, ayurvedic kidney care, integrated kidney treatment, nephrologist Baraut, kidney specialist Uttar Pradesh, protein in urine, creatinine reduce, second opinion kidney, RIIMS',
     body: homePage(''), ld: [FAQ_GRAPH],
   },
   {
     out: 'about.html', base: '', path: '/about.html', nav: 'about.html', mobile: '',
     title: 'About RIIMS | Ethical Integrated Kidney Care in Baraut, UP',
-    desc: 'About RIIMS — a kidney-focused institute for ethical, evidence-aware, report-based care, combining nephrology with Ayurveda-supported lifestyle guidance in Baraut, Uttar Pradesh.',
+    desc: 'A kidney-focused institute in Baraut, UP for ethical, evidence-aware, report-based care — nephrology with Ayurveda-supported lifestyle guidance.',
     body: aboutPage(''),
   },
   {
@@ -144,7 +145,7 @@ const pages = [
   {
     out: 'blog.html', base: '', path: '/blog.html', nav: 'blog.html', mobile: '',
     title: 'Kidney Health Blog & Patient Education | RIIMS',
-    desc: 'Honest, doctor-aligned articles on high creatinine, CKD, dialysis guidance, kidney diet and Ayurveda-supported integrated care — plain-language education for patients across India.',
+    desc: 'Doctor-aligned articles on high creatinine, CKD, dialysis, kidney diet and Ayurveda-supported integrated care — plain-language kidney education.',
     keywords: 'kidney blog, high creatinine, CKD diet chart, dialysis myths, ayurvedic kidney care, kidney diet hindi, proteinuria, diabetic kidney disease',
     body: blogPage(''),
   },
@@ -161,8 +162,8 @@ for (const slug of Object.keys(CONDITIONS)) {
   const path = `/conditions/${slug}.html`;
   pages.push({
     out: `conditions/${slug}.html`, base: '../', path, nav: `conditions/${slug}.html`, mobile: '',
-    title: `${c.title} | Causes, Symptoms & Care — RIIMS Baraut`,
-    desc: `${c.intro} Doctor-led, report-based guidance at RIIMS, Baraut (UP).`,
+    title: `${c.title} — Symptoms & Care | RIIMS Baraut`,
+    desc: c.intro,
     keywords: `${c.title.toLowerCase()}, kidney care, nephrologist Baraut, ${slug.replace(/-/g, ' ')}, integrated kidney treatment`,
     body: conditionPage('../', slug),
     ld: [breadcrumb(c.crumb, `${SITE.origin}${path}`), {
@@ -173,16 +174,64 @@ for (const slug of Object.keys(CONDITIONS)) {
   });
 }
 
+/* Blog article pages (one per post) */
+for (const p of POSTS) {
+  const path = `/blog/${p.slug}.html`;
+  pages.push({
+    out: `blog/${p.slug}.html`, base: '../', path, nav: 'blog.html', mobile: '',
+    title: `${p.title} | RIIMS Kidney Care Blog`,
+    desc: p.excerpt,
+    keywords: `${p.cat.toLowerCase()}, kidney care, ${p.title.toLowerCase()}, RIIMS Baraut`,
+    body: blogPostPage('../', p),
+    ld: [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE.origin}/blog.html` },
+          { '@type': 'ListItem', position: 3, name: p.title, item: `${SITE.origin}${path}` },
+        ],
+      },
+      {
+        '@type': 'Article', headline: p.title, description: p.excerpt,
+        author: { '@type': 'Organization', name: p.author }, image: `${SITE.origin}/assets/riims-logo.png`,
+        publisher: { '@id': `${SITE.origin}/#clinic` }, mainEntityOfPage: `${SITE.origin}${path}`,
+        inLanguage: 'en-IN', articleSection: p.cat,
+      },
+    ],
+  });
+}
+
+/* Legal / disclaimer pages */
+const LEGAL_META = {
+  privacy: ['Privacy Policy | RIIMS', 'How RIIMS handles the information you share when you book a consultation or contact us.'],
+  terms: ['Terms of Use | RIIMS', 'The terms that apply when you use the RIIMS website and its contact channels.'],
+  disclaimer: ['Medical Disclaimer | RIIMS', 'Information on this site is for awareness only and does not replace medical consultation.'],
+};
+for (const key of LEGAL_KEYS) {
+  pages.push({
+    out: `${key}.html`, base: '', path: `/${key}.html`, nav: '', mobile: '',
+    title: LEGAL_META[key][0], desc: LEGAL_META[key][1], body: legalPage('', key),
+  });
+}
+
 /* ---------- Write ---------- */
 mkdirSync(join(OUT, 'conditions'), { recursive: true });
+mkdirSync(join(OUT, 'blog'), { recursive: true });
 for (const p of pages) {
   writeFileSync(join(OUT, p.out), render(p), 'utf8');
 }
 
 /* sitemap + robots */
+const today = new Date().toISOString().slice(0, 10);
+const legalPaths = new Set(['/privacy.html', '/terms.html', '/disclaimer.html']);
 const urls = pages.map((p) => {
-  const priority = p.path === '/' ? '1.0' : p.path.startsWith('/conditions') ? '0.8' : '0.7';
-  return `  <url><loc>${SITE.origin}${p.path}</loc><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
+  const priority = p.path === '/' ? '1.0'
+    : p.path.startsWith('/conditions') ? '0.8'
+    : p.path.startsWith('/blog/') ? '0.6'
+    : legalPaths.has(p.path) ? '0.3'
+    : '0.7';
+  return `  <url><loc>${SITE.origin}${p.path}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
 }).join('\n');
 writeFileSync(join(OUT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, 'utf8');

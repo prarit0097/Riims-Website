@@ -59,8 +59,9 @@ export function header(base, current) {
     + `<a href="${SITE.instagram}" aria-label="Instagram" style="color:inherit;display:inline-flex">${icon('instagram', { size: 15 })}</a>`
     + `</div></div></div>`;
 
+  const onCondition = current && current.startsWith('conditions/');
   const links = NAV.map((n) => {
-    const active = current && (n.href.startsWith(current));
+    const active = onCondition ? (n.label === 'Kidney Diseases') : (current && n.href === current);
     return `<a href="${base}${n.href}" style="font-family:var(--font-sans);font-size:.95rem;font-weight:600;text-decoration:none;color:${active ? 'var(--text-brand)' : 'var(--text-body)'}">${n.label}</a>`;
   }).join('');
 
@@ -84,7 +85,7 @@ export function header(base, current) {
 /* ---------- Footer ---------- */
 export function footer(base) {
   const cols = [
-    { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html']] },
+    { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html'], ['Swelling (Edema)', 'conditions/swelling.html'], ['Kidney Stone / UTI', 'conditions/stone-uti.html']] },
     { h: 'Care', links: [['Kidney Diet', 'blog.html'], ['Lifestyle Support', 'conditions/diabetes-bp.html'], ['Report Review', 'contact.html'], ['Second Opinion', 'contact.html']] },
     { h: 'Institute', links: [['About RIIMS', 'about.html'], ['Our Doctors', 'doctors.html'], ['Blog', 'blog.html'], ['Contact', 'contact.html']] },
   ];
@@ -112,9 +113,9 @@ export function footer(base) {
     + `<div style="margin-top:var(--space-8);padding-top:var(--space-6);border-top:1px solid rgba(255,255,255,.12);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-size:var(--fs-sm)">`
     + `<span>© ${SITE.year} RIIMS. All rights reserved.</span>`
     + `<div style="display:flex;gap:1.2rem">`
-    + `<a href="#" style="color:rgba(255,255,255,.72);text-decoration:none">Privacy Policy</a>`
-    + `<a href="#" style="color:rgba(255,255,255,.72);text-decoration:none">Terms</a>`
-    + `<a href="#" style="color:rgba(255,255,255,.72);text-decoration:none">Disclaimer</a>`
+    + `<a href="${base}privacy.html" style="color:rgba(255,255,255,.72);text-decoration:none">Privacy Policy</a>`
+    + `<a href="${base}terms.html" style="color:rgba(255,255,255,.72);text-decoration:none">Terms</a>`
+    + `<a href="${base}disclaimer.html" style="color:rgba(255,255,255,.72);text-decoration:none">Disclaimer</a>`
     + `</div></div></div></footer>`;
 }
 
