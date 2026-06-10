@@ -14,7 +14,65 @@ Hostinger VPS, **fully isolated** from the apps already running there.
 
 ---
 
-## A. ⭐ Recommended: deploy RIIMS as its own Docker container
+## A0. ⭐ THIS VPS: add a site to the existing host nginx (no Docker needed)
+
+Diagnostics showed a **host nginx** already on `:80`/`:443` (it reverse-proxies your other apps;
+Traefik is dormant). RIIMS is static, so the simplest, most consistent path is to **add one new
+nginx server block** that serves the files directly, then certbot for SSL. Your other sites are
+untouched (a failed `nginx -t` blocks the reload).
+
+### A0.1 — GoDaddy DNS (do first; certbot needs it)
+GoDaddy → riimshospitals.com → **DNS → Manage Zones**: set `A @` and `A www` →
+`187.127.132.106` (TTL 600). Edit GoDaddy's existing default `A @` (no duplicates); remove any
+root **Forwarding**. Verify: `ping riimshospitals.com` → `187.127.132.106`.
+
+### A0.2 — Confirm the nginx layout + certbot (read-only, safe)
+```bash
+echo "== host nginx? =="; systemctl is-active nginx; nginx -v 2>&1
+echo "== any CONTAINER owns 80/443? =="; docker ps --format '{{.Names}} -> {{.Ports}}' | grep -E ':80->|:443->' || echo "none -> it is HOST nginx (good)"
+echo "== config dir =="; ls /etc/nginx/sites-enabled/ 2>/dev/null && echo "(uses sites-enabled)"; ls /etc/nginx/conf.d/ 2>/dev/null && echo "(uses conf.d)"
+echo "== certbot? =="; which certbot || ls /etc/letsencrypt/live 2>/dev/null || echo "NO certbot — install: apt-get install -y certbot python3-certbot-nginx"
+```
+
+### A0.3 — Clone the site + install the server block
+```bash
+mkdir -p /opt/riims && cd /opt/riims
+git clone https://github.com/prarit0097/Riims-Website.git .
+
+# If nginx uses sites-enabled:
+sudo cp deploy/nginx-riims-bootstrap.conf /etc/nginx/sites-available/riimshospitals
+sudo ln -s /etc/nginx/sites-available/riimshospitals /etc/nginx/sites-enabled/
+# If it uses conf.d instead:
+# sudo cp deploy/nginx-riims-bootstrap.conf /etc/nginx/conf.d/riimshospitals.conf
+
+sudo nginx -t                 # MUST say "test is successful" (protects other sites)
+sudo systemctl reload nginx
+```
+
+### A0.4 — SSL (certbot adds the 443 block + http→https redirect to THIS site only)
+```bash
+sudo certbot --nginx -d riimshospitals.com -d www.riimshospitals.com
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### A0.5 — Verify
+```bash
+curl -I https://riimshospitals.com/                 # 200 + headers
+curl -I https://www.riimshospitals.com/             # 301 -> https://riimshospitals.com/
+curl -s -o /dev/null -w "%{http_code}\n" https://riimshospitals.com/conditions/ckd.html  # 200
+```
+
+### A0.6 — Update later
+```bash
+cd /opt/riims && git pull        # static files — served instantly, no reload needed
+```
+
+> Permissions: nginx (user `www-data`) must be able to read `/opt/riims/site`. If you get 403,
+> run `sudo chmod -R a+rX /opt/riims`.
+
+---
+
+## A. Alternative: deploy RIIMS as its own Docker container
 
 This adds ONE new container (`riims-web`) and does **not** modify any existing project.
 
