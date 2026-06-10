@@ -65,7 +65,26 @@ curl -s -o /dev/null -w "%{http_code}\n" https://riimshospitals.com/conditions/c
 ### A0.6 — Update later
 ```bash
 cd /opt/riims && git pull        # static files — served instantly, no reload needed
+# If the admin panel is in use, rebuild so admin content is re-applied:
+docker run --rm -v /opt/riims:/app -w /app node:24-alpine node build/generate.mjs
+# (or just run deploy/update.sh, which does both)
 ```
+
+### A0.7 — Admin panel (leads + content management)
+
+The admin panel lives at **`/admin/`** (lead management, doctors/reels/stories/FAQs/blogs
+editing, phone-number settings). One-time setup:
+
+```bash
+cd /opt/riims && git pull
+docker run --rm -v /opt/riims:/app -w /app node:24-alpine node admin/set-password.mjs 'STRONG-PASSWORD'
+docker compose -f docker-compose.admin.yml up -d         # admin server on 127.0.0.1:5500
+cp deploy/nginx-riims-bootstrap.conf /etc/nginx/sites-available/riimshospitals   # adds /admin + /api proxy
+certbot --nginx -d riimshospitals.com -d www.riimshospitals.com --redirect --non-interactive --reinstall
+nginx -t && systemctl reload nginx
+```
+Then open **https://riimshospitals.com/admin/** and log in. Form leads from the website are
+stored via `/api/lead` and appear in the Leads tab. Details: RIIMS.md §23.
 
 > Permissions: nginx (user `www-data`) must be able to read `/opt/riims/site`. If you get 403,
 > run `sudo chmod -R a+rX /opt/riims`.

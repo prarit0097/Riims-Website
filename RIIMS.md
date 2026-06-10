@@ -4,9 +4,6 @@ This file explains **everything** about the RIIMS website: what it is, why it ex
 exactly how it works — design, build system, data, wiring, interactivity, SEO and deployment.
 If you are new here, read this top to bottom and you will understand the whole project.
 
-> **Status: 🟢 LIVE** at **https://riimshospitals.com** (Hostinger VPS `187.127.132.106`,
-> project at `/opt/riims`). Full deployment facts + commands in **§18**.
-
 > Maintenance rule: per [CLAUDE.md](CLAUDE.md), **every change to this project must be
 > reflected here**, down to the smallest detail.
 
@@ -90,7 +87,17 @@ RiimS/
 │   ├── serve.mjs             # zero-dependency local preview server (port 5173)
 │   └── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors, stale domain
 │
-├── docker-compose.yml        # ⭐ deploy as a container behind the VPS's existing Traefik
+├── admin/                    # ── ADMIN PANEL (see §23) ──
+│   ├── server.mjs            # zero-dep Node server: leads API, content CRUD, uploads, rebuild
+│   ├── set-password.mjs      # one-time: set admin password (writes data/admin-config.json)
+│   └── ui/                   # the /admin/ panel (index.html + admin.js + admin.css)
+├── data/                     # ── CONTENT + RUNTIME DATA ──
+│   ├── content.json          # admin-editable content defaults (in git)
+│   ├── content.local.json    # VPS admin edits — overrides content.json (GITIGNORED)
+│   ├── leads.json            # stored appointment leads (GITIGNORED)
+│   └── admin-config.json     # admin password hash + session secret (GITIGNORED)
+├── docker-compose.admin.yml  # runs the admin server in Docker on 127.0.0.1:5500
+├── docker-compose.yml        # alt: site as a container behind Traefik (not used)
 ├── deploy/                   # ── DEPLOYMENT (see DEPLOY.md) ──
 │   ├── docker/nginx.conf     # in-container nginx (gzip, cache, headers, CSP, clean URLs, 404)
 │   ├── nginx-riimshospitals.conf   # alt: system nginx server block (if not using Docker)
@@ -180,9 +187,14 @@ Pure functions that return HTML strings. Key helpers:
 - **Form fields:** `input`, `select`, `checkbox` (styled), used by the appointment form.
 - **`eyebrow`, `sectionHead`, `infoList`, `disclaimer`** — section building blocks.
 
-## 8. The data layer (`build/data.mjs`)
+## 8. The data layer (`build/data.mjs` + `data/content.json`)
 
-**This is where all content lives. Change copy/contact here, not in HTML.**
+**Admin-editable content** (phone numbers, doctors, reels, testimonials, FAQs, blog posts)
+lives in **`data/content.json`**; on the VPS the admin panel writes overrides to
+`data/content.local.json` (gitignored, section-level replace). `build/data.mjs` reads/merges
+both and derives the phone formats. **Fixed content** (conditions, services, WHY/STEPS,
+search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site, or via
+`data/content.json` in the repo.
 
 - **`SITE`** — name, fullName, `origin` (**`https://riimshospitals.com`** — the production
   domain; non-www is canonical, the server 301-redirects www → apex), `phone`
@@ -213,8 +225,9 @@ Pure functions that return HTML strings. Key helpers:
 Global UI wrapped around every page by the generator:
 
 - **`header(base, current)`** — sticky top. A dark utility bar (phone, address, hours,
-  WhatsApp, Facebook, Instagram) + the main nav (logo, 6 links, Call icon, Upload Reports +
-  Book Consultation buttons). On tablet/mobile the text nav collapses (CSS) and a mobile group
+  WhatsApp, Facebook, Instagram) + the main nav (logo, 6 links, Call icon, WhatsApp Now +
+  Book Consultation buttons — "Upload Reports" was removed sitewide by owner request). On
+  tablet/mobile the text nav collapses (CSS) and a mobile group
   shows Call + WhatsApp icons. Active nav state: the matching link is highlighted; on any
   condition page the "Kidney Diseases" link is highlighted.
 - **`footer(base)`** — dark footer: brand + social, three link columns (Conditions = all 8,
@@ -296,13 +309,13 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 
 - **Booking modal** — `[data-book]` opens it (delegated click), `[data-modal-close]`/overlay/
   Esc close it; body scroll locked while open.
-- **2-step appointment form** — `[data-apptform]`: step 0 submit → step 1; step 1 submit →
-  success; Back/Reset return to step 0 (toggles the `hidden` attribute). **Lead capture:** on
-  the final submit, `leadToWhatsApp()` composes a prefilled WhatsApp message from the named
-  fields (name/phone/city/concern/creatinine/mode) and opens `wa.me/<SITE.waNumber>` — so every
-  enquiry reaches the clinic with **zero backend** (fits the WhatsApp-first workflow). The
-  `data-wa` attribute on the form carries the number. (If you later want an emailed/DB copy, add
-  a hosted form service or a PHP handler — see DEPLOY.md / audit notes.)
+- **2-step appointment form** — `[data-apptform]`: Step 1 = Name + Phone + **Problem/Disease**
+  select + consent (+ hidden honeypot); Step 2 = City, Consultation mode, Creatinine (optional).
+  **Lead capture:** `postLead()` POSTs to `/api/lead` at BOTH steps (partial at step 1, complete
+  at step 2, same lead id) → stored by the admin server and managed at `/admin/` (see §23). The
+  success screen has a **"Send on WhatsApp too"** button (`[data-appt-wa]`) that opens a
+  prefilled `wa.me` message; `data-wa` on the form carries the number. In local dev (no admin
+  server) the POST fails silently and the WhatsApp button still works.
 - **Select placeholder color** — adds `has-value` when a real option is chosen.
 - **FAQ accordion** — `[data-faq]` items; clicking a question opens it (and closes siblings),
   rotates the chevron, animates `grid-template-rows: 0fr→1fr`.
@@ -515,3 +528,44 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - Remote: **https://github.com/prarit0097/Riims-Website** (`main`).
 - Per [CLAUDE.md](CLAUDE.md): every change → update this file → `npm test` (0 problems) →
   commit → push.
+
+## 23. Admin Panel (website control)
+
+**URL:** `https://riimshospitals.com/admin/` (password login). Runs as the `riims-admin`
+Docker container (`docker-compose.admin.yml`, Node 24 alpine, bound to `127.0.0.1:5500`);
+host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-dependency)
++ `admin/ui/` (vanilla JS SPA).
+
+### What it controls
+| Tab | What you can do |
+|-----|-----------------|
+| **Leads** | Every appointment-form submission lands here (captured at Step 1 AND completed at Step 2). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
+| **Doctors** | Add/remove/edit doctors — name, title, qualifications, specialties, languages, photo upload. Drives the doctors page, home experts carousel, and the about-page trio (first 3). |
+| **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
+| **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote). |
+| **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
+| **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
+| **Settings** | Change the **Call number** and **WhatsApp number** (10 digits each) — updates every button/link/schema sitewide. |
+
+### How it works
+- Content edits are written to **`data/content.local.json`** (gitignored) which overrides
+  `data/content.json` section-by-section, then the server **auto-runs the generator** — the
+  static site updates within seconds. Git pulls never clobber admin edits.
+- Image uploads go to `site/assets/uploads/` (gitignored) via base64 JSON (10MB nginx cap).
+- The public form (`site/js/site.js`) POSTs to **`/api/lead`** at Step 1 (partial) and Step 2
+  (complete) — so even abandoned forms are captured. Honeypot field + 10/min/IP rate limit.
+  The success screen offers a "Send on WhatsApp too" button (prefilled message).
+- Auth: scrypt password hash + HMAC-signed 7-day session cookie (`data/admin-config.json`,
+  created by `node admin/set-password.mjs '<password>'`). UI is `noindex`.
+
+### VPS setup (one-time)
+```bash
+cd /opt/riims && git pull
+docker run --rm -v /opt/riims:/app -w /app node:24-alpine node admin/set-password.mjs 'STRONG-PASSWORD'
+docker compose -f docker-compose.admin.yml up -d
+cp deploy/nginx-riims-bootstrap.conf /etc/nginx/sites-available/riimshospitals   # adds /admin + /api proxy
+certbot --nginx -d riimshospitals.com -d www.riimshospitals.com --redirect --non-interactive --reinstall
+nginx -t && systemctl reload nginx
+```
+Update flow note: `deploy/update.sh` now rebuilds after `git reset` so admin content survives
+code updates (it uses host node, or the node:24-alpine image if node isn't installed).

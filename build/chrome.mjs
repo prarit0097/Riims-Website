@@ -8,26 +8,28 @@ import { NAV, SITE } from './data.mjs';
 /* attributes for off-site links (social, WhatsApp) */
 const OFFSITE = { target: '_blank', rel: 'noopener noreferrer' };
 
-/* ---------- Appointment form (2-step, toggled by site.js) ---------- */
+/* ---------- Appointment form (2-step, toggled by site.js) ----------
+   Leads POST to /api/lead (stored by the admin server; managed in /admin/).
+   The success screen offers a prefilled-WhatsApp button as a second channel. */
 export function appointmentForm({ compact = false } = {}) {
+  const PROBLEM_OPTIONS = ['High creatinine', 'CKD / Kidney disease', 'Kidney failure', 'Dialysis guidance', 'Protein in urine', 'Swelling (edema)', 'Kidney stone / UTI', 'Diabetes & BP kidney risk', 'Other'];
+
   const step0 = `<form data-step="0" class="appt-step" style="display:flex;flex-direction:column;gap:.9rem">`
     + input({ label: 'Full name', required: true, icon: icon('user'), placeholder: 'Your name', name: 'name' })
     + input({ label: 'Phone / WhatsApp', type: 'tel', required: true, icon: icon('phone'), placeholder: '10-digit mobile', name: 'phone' })
+    + select({ label: 'Problem / Disease', name: 'problem', icon: icon('activity'), options: PROBLEM_OPTIONS, placeholder: 'Select your problem' })
+    + `<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:1px;width:1px;opacity:0">`
     + checkbox({ label: 'I agree to be contacted by RIIMS about my query.', name: 'agree', checked: true })
     + button('Continue', { variant: 'primary', size: 'lg', fullWidth: true, type: 'submit', iconRight: icon('arrow-right', { size: 18 }) })
     + `<p style="margin:0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Step 1 of 2 · takes ~30 seconds</p>`
     + `</form>`;
 
-  const uploadRow = `<div style="grid-column:1 / -1;display:flex;align-items:center;gap:.7rem;background:var(--surface-muted);border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:.8rem 1rem;color:var(--text-muted);font-family:var(--font-sans);font-size:var(--fs-sm)">`
-    + icon('upload-cloud', { size: 20 }) + ` Upload reports (PDF/JPG) — optional`
-    + `<span style="margin-left:auto;color:var(--text-link);font-weight:700;cursor:pointer">Browse</span></div>`;
-
   const step1 = `<form data-step="1" class="appt-step riims-apptform" hidden style="display:grid;grid-template-columns:${compact ? '1fr' : '1fr 1fr'};gap:.9rem">`
     + select({ label: 'City', name: 'city', icon: icon('map-pin'), options: ['Baraut', 'Baghpat', 'Meerut', 'Shamli', 'Other'], placeholder: 'Select city' })
-    + select({ label: 'Health concern', name: 'concern', icon: icon('activity'), options: ['High creatinine', 'CKD', 'Dialysis guidance', 'Kidney diet', 'Second opinion'], placeholder: 'Select concern' })
-    + input({ label: 'Creatinine level (optional)', name: 'creatinine', icon: icon('flask-conical'), placeholder: 'e.g. 3.2 mg/dL' })
     + select({ label: 'Consultation mode', name: 'mode', icon: icon('video'), options: ['In-clinic visit', 'Video consultation', 'Phone call'], placeholder: 'Select mode' })
-    + uploadRow
+    + `<div style="grid-column:1 / -1">`
+    + input({ label: 'Creatinine level (optional)', name: 'creatinine', icon: icon('flask-conical'), placeholder: 'e.g. 3.2 mg/dL' })
+    + `</div>`
     + `<div style="grid-column:1 / -1;display:flex;gap:.7rem;align-items:center">`
     + button('Back', { variant: 'ghost', size: 'sm', type: 'button', iconLeft: icon('arrow-left', { size: 15 }), extraAttrs: { 'data-appt-back': true } })
     + `<span style="margin-left:auto;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Step 2 of 2 · all fields optional</span></div>`
@@ -38,12 +40,12 @@ export function appointmentForm({ compact = false } = {}) {
   const success = `<div data-step="2" class="appt-step" hidden style="text-align:center;padding:1rem .5rem">`
     + `<span style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center;margin-bottom:.8rem">${icon('check', { size: 28 })}</span>`
     + `<h3 style="margin:0 0 .3rem;font-size:var(--fs-xl)">Request received</h3>`
-    + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-base)">Our care team will reach out on WhatsApp shortly. This is not an emergency service.</p>`
-    + `<button type="button" data-appt-reset style="margin-top:1rem;background:none;border:none;color:var(--text-link);font-weight:700;cursor:pointer;font-family:var(--font-sans)">Send another request</button>`
+    + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-base)">Our care team will reach out shortly. This is not an emergency service.</p>`
+    + button('Send on WhatsApp too', { variant: 'whatsapp', size: 'md', type: 'button', iconLeft: icon('message-circle', { size: 18 }), extraAttrs: { 'data-appt-wa': true } })
+    + `<div><button type="button" data-appt-reset style="margin-top:1rem;background:none;border:none;color:var(--text-link);font-weight:700;cursor:pointer;font-family:var(--font-sans)">Send another request</button></div>`
     + `</div>`;
 
-  // data-wa lets site.js compose a prefilled WhatsApp lead from the fields on submit,
-  // so enquiries always reach the clinic (zero backend; matches WhatsApp-first ops).
+  // data-wa: number used for the optional prefilled-WhatsApp message.
   return `<div data-apptform data-wa="${SITE.waNumber}">${step0}${step1}${success}</div>`;
 }
 
@@ -76,7 +78,7 @@ export function header(base, current) {
     + `<nav class="nav-links" aria-label="Main navigation" style="display:flex;align-items:center;gap:1.4rem">${links}</nav>`
     + `<div class="nav-cta" style="display:flex;align-items:center;gap:.6rem">`
     + iconButton(icon('phone', { size: 18 }), { label: 'Call now', variant: 'solid', href: tel })
-    + button('Upload Reports', { variant: 'outline', size: 'sm', iconLeft: icon('upload', { size: 16 }), extraAttrs: { 'data-book': true } })
+    + button('WhatsApp Now', { variant: 'whatsapp', size: 'sm', iconLeft: icon('message-circle', { size: 16 }), href: SITE.whatsapp, extraAttrs: OFFSITE })
     + button('Book Consultation', { variant: 'primary', size: 'sm', iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
     + `</div>`
     + `<div class="nav-mobile" style="display:none;align-items:center;gap:.5rem">`

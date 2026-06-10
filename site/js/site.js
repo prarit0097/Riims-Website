@@ -47,31 +47,59 @@
     });
     refreshIcons();
   }
+  function formValues(form) {
+    const v = (n) => { const el = form.querySelector(`[name="${n}"]`); return el ? el.value.trim() : ''; };
+    return {
+      name: v('name'), phone: v('phone'), problem: v('problem'),
+      city: v('city'), creatinine: v('creatinine'), mode: v('mode'),
+      website: v('website'), // honeypot — must stay empty
+      page: location.pathname,
+    };
+  }
+
+  /* Store the lead via the admin API (managed at /admin/). Fails silently in
+     local dev / if the admin server is down — the WhatsApp button still works. */
+  function postLead(form, stage) {
+    const data = formValues(form);
+    data.stage = stage;
+    const id = form.getAttribute('data-lead-id');
+    if (id) data.id = id;
+    return fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).then((r) => (r.ok ? r.json() : null)).then((res) => {
+      if (res && res.id) form.setAttribute('data-lead-id', res.id);
+    }).catch(() => {});
+  }
+
   function leadToWhatsApp(form) {
     const wa = form.getAttribute('data-wa') || '918512040000';
-    const v = (n) => { const el = form.querySelector(`[name="${n}"]`); return el ? el.value.trim() : ''; };
+    const d = formValues(form);
     const lines = [
       'New appointment request from riimshospitals.com',
-      v('name') && `Name: ${v('name')}`,
-      v('phone') && `Phone: ${v('phone')}`,
-      v('city') && `City: ${v('city')}`,
-      v('concern') && `Concern: ${v('concern')}`,
-      v('creatinine') && `Creatinine: ${v('creatinine')}`,
-      v('mode') && `Mode: ${v('mode')}`,
+      d.name && `Name: ${d.name}`,
+      d.phone && `Phone: ${d.phone}`,
+      d.problem && `Problem: ${d.problem}`,
+      d.city && `City: ${d.city}`,
+      d.creatinine && `Creatinine: ${d.creatinine}`,
+      d.mode && `Mode: ${d.mode}`,
     ].filter(Boolean);
     try { window.open(`https://wa.me/${wa}?text=` + encodeURIComponent(lines.join('\n')), '_blank', 'noopener'); }
-    catch (e) { /* popup blocked — confirmation still shows below */ }
+    catch (e) { /* popup blocked */ }
   }
 
   $$('[data-apptform]').forEach((form) => {
     const s0 = $('[data-step="0"]', form);
     const s1 = $('[data-step="1"]', form);
-    if (s0) s0.addEventListener('submit', (e) => { e.preventDefault(); showStep(form, 1); });
-    if (s1) s1.addEventListener('submit', (e) => { e.preventDefault(); leadToWhatsApp(form); showStep(form, 2); });
+    if (s0) s0.addEventListener('submit', (e) => { e.preventDefault(); postLead(form, 'partial'); showStep(form, 1); });
+    if (s1) s1.addEventListener('submit', (e) => { e.preventDefault(); postLead(form, 'complete'); showStep(form, 2); });
     const back = $('[data-appt-back]', form);
     if (back) back.addEventListener('click', () => showStep(form, 0));
     const reset = $('[data-appt-reset]', form);
-    if (reset) reset.addEventListener('click', () => showStep(form, 0));
+    if (reset) reset.addEventListener('click', () => { form.removeAttribute('data-lead-id'); showStep(form, 0); });
+    const waBtn = $('[data-appt-wa]', form);
+    if (waBtn) waBtn.addEventListener('click', () => leadToWhatsApp(form));
   });
 
   /* ---------------- Select placeholder colour ---------------- */

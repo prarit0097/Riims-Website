@@ -18,6 +18,15 @@ fi
 cd "$REPO_DIR"
 echo "Updating RIIMS site in $REPO_DIR ..."
 git fetch origin main
-git reset --hard origin/main          # output is generated & committed, so this is the source of truth
+git reset --hard origin/main          # tracked files only; admin data (data/*.local*, leads) is gitignored and survives
+
+# Rebuild so admin-edited content (data/content.local.json) is re-applied on top
+# of the fresh code. Uses host node if present, else the node docker image.
+if command -v node >/dev/null 2>&1; then
+  node build/generate.mjs
+else
+  docker run --rm -v "$REPO_DIR":/app -w /app node:24-alpine node build/generate.mjs
+fi
+
 echo "Done. Live web root: $REPO_DIR/site"
 echo "Tip: no web-server reload needed for content changes (static files)."

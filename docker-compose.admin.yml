@@ -1,0 +1,26 @@
+# ============================================================================
+# RIIMS Admin server — runs the zero-dependency Node admin (admin/server.mjs)
+# in a container, bound to 127.0.0.1:5500 ONLY (the host nginx proxies
+# /admin/ and /api/ to it). Isolated: does not touch any other app.
+#
+# First-time setup on the VPS:
+#   cd /opt/riims
+#   docker run --rm -v /opt/riims:/app -w /app node:24-alpine \
+#       node admin/set-password.mjs 'YourStrongPassword'
+#   docker compose -f docker-compose.admin.yml up -d
+#
+# The repo is bind-mounted, so the admin can write data/ (leads, content
+# overrides) and regenerate site/ in place.
+# ============================================================================
+
+services:
+  riims-admin:
+    image: node:24-alpine
+    container_name: riims-admin
+    working_dir: /app
+    command: node admin/server.mjs
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5500:5500"
+    volumes:
+      - .:/app

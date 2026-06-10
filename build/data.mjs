@@ -1,17 +1,36 @@
 /* RIIMS static-site generator — content data.
-   Ported verbatim from the design's ui_kits/website JSX data so copy and
-   structure match the approved prototype. Copy is medically responsible:
-   no cure / guarantee claims. */
+   Copy is medically responsible: no cure / guarantee claims.
+
+   ADMIN-EDITABLE content (doctors, reels, testimonials, faqs, posts, phone
+   numbers) lives in data/content.json. On the VPS, the admin panel writes
+   overrides to data/content.local.json (gitignored) — sections there replace
+   the same section from content.json, so `git pull` never clobbers live edits. */
+
+import { readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const CONTENT_PATH = join(__dirname, '..', 'data', 'content.json');
+const LOCAL_PATH = join(__dirname, '..', 'data', 'content.local.json');
+
+const baseContent = JSON.parse(readFileSync(CONTENT_PATH, 'utf8'));
+const localContent = existsSync(LOCAL_PATH) ? JSON.parse(readFileSync(LOCAL_PATH, 'utf8')) : {};
+const CONTENT = { ...baseContent, ...localContent };   // section-level override
+
+/* Phone numbers come from the admin-editable content (10-digit inputs). */
+const CALL = (CONTENT.site && CONTENT.site.callNumber) || '8512040000';
+const WA = (CONTENT.site && CONTENT.site.whatsappNumber) || '8512040000';
 
 export const SITE = {
   name: 'RIIMS',
   fullName: 'Rashtriya Institute of Integrated Medical Sciences',
   // Production domain (non-www canonical; the server 301-redirects www -> apex).
   origin: 'https://riimshospitals.com',
-  phone: '+91 85120 40000',
-  phoneTel: '+918512040000',           // E.164 — used for tel:, wa.me and schema
-  waNumber: '918512040000',            // bare digits for wa.me deep links
-  whatsapp: 'https://wa.me/918512040000',
+  phone: `+91 ${CALL.slice(0, 5)} ${CALL.slice(5)}`,
+  phoneTel: `+91${CALL}`,              // E.164 — used for tel: and schema
+  waNumber: `91${WA}`,                 // bare digits for wa.me deep links
+  whatsapp: `https://wa.me/91${WA}`,
   facebook: 'https://www.facebook.com/profile.php?id=61590269039418',
   instagram: 'https://www.instagram.com/riimshospital/',
   city: 'Baraut, Uttar Pradesh 250611',
@@ -148,36 +167,21 @@ export const STEPS = [
   { n: 4, icon: 'repeat', title: 'Follow-up & lifestyle plan', desc: 'Ongoing diet, lifestyle and monitoring support as you progress.' },
 ];
 
-export const DOCTORS = [
-  { name: 'Dr. A. Sharma', title: 'Senior Nephrologist', quals: 'MD, DM (Nephrology)', specialties: ['CKD', 'Dialysis', 'Transplant care'], init: 'AS', photo: 'img-doc-AS' },
-  { name: 'Dr. R. Verma', title: 'Consultant Physician', quals: 'MD (Internal Medicine)', specialties: ['Diabetes & kidney', 'Hypertension'], init: 'RV', photo: 'img-doc-RV' },
-  { name: 'Dr. S. Iyer', title: 'Ayurveda Lifestyle Lead', quals: 'BAMS, Integrative Care', specialties: ['Kidney diet', 'Lifestyle'], init: 'SI', photo: 'img-doc-SI' },
-];
+/* ---- Admin-editable content (from data/content.json + content.local.json) ---- */
 
-export const DOCTORS_FULL = [
-  ...DOCTORS,
-  { name: 'Dr. M. Khan', title: 'Nephrology Associate', quals: 'MD (Medicine)', specialties: ['Hypertension', 'Follow-up care'], init: 'MK', photo: 'img-doc-MK' },
-  { name: 'Dr. P. Nair', title: 'Dietitian (Renal)', quals: 'PG Dip. Renal Nutrition', specialties: ['Kidney diet', 'Diabetes diet'], init: 'PN', photo: 'img-doc-PN' },
-  { name: 'Dr. T. Roy', title: 'Consultant Nephrologist', quals: 'MD, DM (Nephrology)', specialties: ['CKD', 'Stones'], init: 'TR', photo: 'img-doc-TR' },
-];
+/* Doctors: one list drives everything. First 3 appear in the compact
+   "Doctors & integrated care specialists" section; all appear on the
+   doctors page and the home "Meet our experts" carousel. */
+export const DOCTORS_FULL = (CONTENT.doctors || []).map((d) => ({
+  languages: 'Hindi, English',
+  init: d.name.replace(/^Dr\.?\s*/i, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(),
+  specialties: [],
+  ...d,
+}));
+export const DOCTORS = DOCTORS_FULL.slice(0, 3);
+export const EXPERTS = DOCTORS_FULL;
 
-export const EXPERTS = [
-  ...DOCTORS,
-  { name: 'Dr. M. Khan', title: 'Nephrology Associate', quals: 'MD (Medicine)', init: 'MK', photo: 'img-doc-MK' },
-  { name: 'Dr. T. Roy', title: 'Consultant Nephrologist', quals: 'MD, DM (Nephrology)', init: 'TR', photo: 'img-doc-TR' },
-];
-
-export const POSTS = [
-  { slug: 'high-creatinine-symptoms-causes', related: 'high-creatinine', cat: 'Symptoms', title: 'High Creatinine: Symptoms, Causes & When to Worry', excerpt: 'Tiredness, swelling and foamy urine — understand what a raised creatinine level really means and the safe next steps.', time: '6 min read', tone: 'blue', date: 'Jun 2026', author: 'RIIMS Nephrology Team', img: 'img-reel-1' },
-  { slug: 'ckd-diet-chart-indian-veg', related: 'ckd', cat: 'Diet', title: 'CKD Diet Chart (Indian, Veg): Foods to Eat and Avoid', excerpt: 'A practical, doctor-aligned Indian kidney diet for chronic kidney disease — dal, vegetables, salt, potassium and protein explained.', time: '8 min read', tone: 'green', date: 'Jun 2026', author: 'Dr. P. Nair (Renal Dietitian)', img: 'img-reel-2' },
-  { slug: 'ayurveda-kidney-care-integrated', related: 'ckd', cat: 'Integrated Care', title: 'Can Ayurveda Help Kidney Patients? An Honest, Integrated View', excerpt: 'How Ayurveda-supported lifestyle care works alongside — not instead of — nephrology, and what claims to be cautious about.', time: '7 min read', tone: 'cream', date: 'May 2026', author: 'Dr. S. Iyer (Integrative Care)', img: 'img-reel-4' },
-  { slug: 'reduce-creatinine-safely', related: 'high-creatinine', cat: 'Creatinine', title: 'How to Reduce Creatinine Safely: Doctor-Guided Steps', excerpt: 'Evidence-aware ways to manage high creatinine — diet, hydration, BP and sugar control — without unsafe shortcuts or false promises.', time: '7 min read', tone: 'blue', date: 'May 2026', author: 'RIIMS Nephrology Team', img: 'img-reel-5' },
-  { slug: 'dialysis-myths-vs-facts', related: 'dialysis', cat: 'Dialysis', title: 'Dialysis Explained: Myths vs Facts for Indian Patients', excerpt: 'Separating fear-driven myths from what dialysis actually involves, when it is needed, and how to prepare with your doctor.', time: '6 min read', tone: 'green', date: 'May 2026', author: 'RIIMS Nephrology Team', img: 'img-reel-3' },
-  { slug: 'protein-in-urine-meaning', related: 'proteinuria', cat: 'Symptoms', title: 'Protein in Urine (Proteinuria): What It Means', excerpt: 'Why protein leaks into urine, how it is tested, and what foamy urine can signal about your kidney health.', time: '5 min read', tone: 'cream', date: 'Apr 2026', author: 'RIIMS Nephrology Team', img: 'img-reel-6' },
-  { slug: 'diabetes-kidney-disease', related: 'diabetes-bp', cat: 'Risk', title: 'Diabetes & Kidney Disease: Protecting Your Kidneys', excerpt: 'Diabetic kidney disease is common in India. Learn the early signs and how tight sugar and BP control protects your kidneys.', time: '6 min read', tone: 'blue', date: 'Apr 2026', author: 'Dr. R. Verma', img: 'img-video' },
-  { slug: 'swelling-feet-face-kidneys', related: 'swelling', cat: 'Symptoms', title: 'Swelling in Feet & Face: Could It Be Your Kidneys?', excerpt: 'When edema points to the kidneys, what tests help, and when swelling means you should consult a kidney doctor.', time: '4 min read', tone: 'green', date: 'Apr 2026', author: 'RIIMS Nephrology Team' },
-  { slug: 'kidney-stones-uti-prevention', related: 'stone-uti', cat: 'Prevention', title: 'Kidney Stones & UTI: Prevention Tips for India', excerpt: 'Hydration, diet and lifestyle habits that lower your risk of kidney stones and urinary infections in a hot climate.', time: '5 min read', tone: 'cream', date: 'Mar 2026', author: 'RIIMS Nephrology Team' },
-];
+export const POSTS = (CONTENT.posts || []).map((p) => ({ body: '', ...p }));
 
 export const POPULAR_TOPICS = [
   'High creatinine treatment in India', 'Kidney diet chart (Hindi)', 'Ayurvedic kidney care', 'CKD stage 3 & 4 diet',
@@ -185,28 +189,11 @@ export const POPULAR_TOPICS = [
   'Foamy urine treatment', 'Diabetic kidney disease', 'Second opinion for kidney', 'Kidney failure symptoms',
 ];
 
-export const TESTIMONIALS = [
-  { rating: 5, name: 'Ramesh K.', loc: 'Baraut', quote: 'They explained my reports clearly and gave me a kidney diet I could actually follow at home.' },
-  { rating: 5, name: 'Sunita D.', loc: 'Baghpat', quote: 'Honest guidance without scary promises. My creatinine is being monitored properly now.' },
-  { rating: 5, name: 'Imran S.', loc: 'Meerut', quote: 'The video consultation saved us a long trip. The team was patient and answered every question.' },
-];
+export const TESTIMONIALS = CONTENT.testimonials || [];
 
-export const FAQS = [
-  { q: 'Can high creatinine always be reduced?', a: 'It depends on the underlying cause. A doctor reviews your reports, history and medications to plan care. We do not promise guaranteed outcomes.' },
-  { q: 'Do you guarantee that dialysis can be stopped?', a: 'No. We never make such claims. Dialysis decisions are strictly doctor- and report-led, based on your kidney function.' },
-  { q: 'Is the first consultation online or in clinic?', a: 'You choose — video, phone, or an in-clinic visit. Reports can be shared securely before your appointment.' },
-  { q: 'Is the Ayurveda support safe with my medicines?', a: 'Lifestyle and dietary support is given alongside, and in coordination with, your medical treatment — never as a replacement for it.' },
-  { q: 'How quickly will someone contact me?', a: 'Our care team usually responds the same day during working hours. This is not an emergency service.' },
-];
+export const FAQS = CONTENT.faqs || [];
 
-export const REELS = [
-  { tag: 'Kidney Health', tone: 'green', title: '5 signs your creatinine is rising', views: '12.4K views', img: 'img-reel-1' },
-  { tag: 'Diet', tone: 'blue', title: 'CKD diet: what to eat & avoid', views: '8.7K views', img: 'img-reel-2' },
-  { tag: 'Dialysis', tone: 'cream', title: 'Dialysis explained calmly', views: '15.2K views', img: 'img-reel-3' },
-  { tag: 'Integrated Care', tone: 'green', title: 'How Ayurveda supports kidneys', views: '9.1K views', img: 'img-reel-4' },
-  { tag: 'Lifestyle', tone: 'blue', title: 'Daily habits for kidney health', views: '21.3K views', img: 'img-reel-5' },
-  { tag: 'Patient Story', tone: 'cream', title: 'From scared to in-control', views: '18.6K views', img: 'img-reel-6' },
-];
+export const REELS = CONTENT.reels || [];
 
 export const SERVICES = [
   { icon: 'video', t: 'Video Consultation', d: 'Consult expert doctors online' },

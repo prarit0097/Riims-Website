@@ -40,11 +40,13 @@ export function searchBanner() {
 }
 
 /* ---------- Health reels ---------- */
-function reelCard(r) {
+function reelCard(base, r) {
   const badgeTone = r.tone === 'blue' ? 'blue' : r.tone === 'green' ? 'green' : 'cream';
-  return `<a href="${SITE.instagram}" target="_blank" rel="noopener" aria-label="Watch reel: ${r.title}" class="reel riims-card--hover" style="display:block;flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
+  const href = r.url || SITE.instagram;
+  const bg = r.img ? `background-image:url('${base}${r.img}')` : '';
+  return `<a href="${href}" target="_blank" rel="noopener" aria-label="Watch reel: ${r.title}" class="reel riims-card--hover" style="display:block;flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
     + `<div style="aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--teal-600), var(--teal-900))">`
-    + `<span aria-hidden="true" class="reel-bg img-cover ${r.img || ''}" style="position:absolute;inset:0"></span>`
+    + `<span aria-hidden="true" class="reel-bg img-cover" style="position:absolute;inset:0;${bg}"></span>`
     + badge(r.tag, { tone: badgeTone, style: { alignSelf: 'flex-start', position: 'relative' } })
     + `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 20 })}</span>`
     + `<div style="color:#fff;position:relative;text-shadow:0 1px 8px rgba(0,0,0,.45)">`
@@ -52,7 +54,7 @@ function reelCard(r) {
     + `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);color:rgba(255,255,255,.8)">${r.views}</span>`
     + `</div></div></a>`;
 }
-export function healthReels() {
+export function healthReels(base = '') {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container">`
     + `<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:var(--space-6)">`
@@ -60,7 +62,7 @@ export function healthReels() {
     + button('View all reels', { variant: 'ghost', iconRight: icon('arrow-right', { size: 16 }), href: SITE.instagram, extraAttrs: { target: '_blank', rel: 'noopener' } })
     + `</div>`
     + `<div class="reel-track" style="display:flex;gap:var(--space-4);overflow-x:auto;padding-bottom:.6rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch">`
-    + REELS.map(reelCard).join('')
+    + REELS.map((r) => reelCard(base, r)).join('')
     + `</div></div></section>`;
 }
 
@@ -153,10 +155,16 @@ export function howItWorks() {
 }
 
 /* ---------- Doctor card + sections ---------- */
-export function doctorCard(d) {
+function photoTile(base, d, height) {
+  if (d.photo) {
+    return `<div class="img-cover" role="img" aria-label="${d.name}, ${d.title}" style="height:${height}px;background-image:url('${base}${d.photo}')"></div>`;
+  }
+  return `<div style="height:${height}px;background:var(--surface-blue-soft);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--teal-300)">${d.init || ''}</span></div>`;
+}
+export function doctorCard(base, d) {
   const specs = d.specialties ? d.specialties.map((sp) => `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:600;color:var(--text-brand);background:var(--surface-blue-soft);padding:.25rem .6rem;border-radius:var(--radius-pill)">${sp}</span>`).join('') : '';
   return `<div class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);overflow:hidden">`
-    + `<div class="img-cover ${d.photo}" role="img" aria-label="${d.name}, ${d.title}" style="height:190px;display:flex;align-items:center;justify-content:center"></div>`
+    + photoTile(base, d, 190)
     + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
     + `<div><h3 style="font-size:var(--fs-xl);margin:0">${d.name}</h3><p style="margin:.15rem 0 0;color:var(--text-accent);font-weight:600;font-size:var(--fs-sm)">${d.title}</p></div>`
     + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${d.quals}</p>`
@@ -164,22 +172,22 @@ export function doctorCard(d) {
     + button('Book consultation', { variant: 'outline', size: 'sm', style: { marginTop: '.6rem' }, iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
     + `</div></div>`;
 }
-export function doctorsSection() {
+export function doctorsSection(base = '') {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container">`
     + sectionHead({ eyebrow: `${icon('stethoscope', { size: 15 })} Meet the team`, title: 'Doctors & integrated care specialists', intro: 'A kidney-focused team combining nephrology with safe, evidence-aware lifestyle support.' })
     + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:var(--space-5)">`
-    + DOCTORS.map(doctorCard).join('')
+    + DOCTORS.map((d) => doctorCard(base, d)).join('')
     + `</div></div></section>`;
 }
 
 /* ---------- Meet our experts (horizontal) ---------- */
-function expertCard(d) {
-  const rows = [['award', d.quals], ['stethoscope', d.title], ['languages', 'Hindi, English']]
+function expertCard(base, d) {
+  const rows = [['award', d.quals], ['stethoscope', d.title], ['languages', d.languages || 'Hindi, English']]
     .map(([ic, tx]) => `<span style="display:inline-flex;align-items:center;gap:.45rem;color:var(--text-muted);font-size:var(--fs-sm);font-family:var(--font-sans)">${icon(ic, { size: 15, style: 'color:var(--icon-accent);flex:0 0 auto' })} ${tx}</span>`)
     .join('');
   return `<div class="expert riims-card--hover" style="flex:0 0 auto;width:248px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;scroll-snap-align:start">`
-    + `<div class="img-cover ${d.photo}" role="img" aria-label="${d.name}, ${d.title}" style="height:170px;display:flex;align-items:center;justify-content:center"></div>`
+    + photoTile(base, d, 170)
     + `<div style="padding:var(--space-4) var(--space-5);display:flex;flex-direction:column;gap:.45rem">`
     + `<strong style="font-size:var(--fs-lg);font-family:var(--font-display)">${d.name}</strong>${rows}`
     + button('View profile', { variant: 'primary', size: 'sm', fullWidth: true, style: { marginTop: '.5rem' }, extraAttrs: { 'data-book': true } })
@@ -193,7 +201,7 @@ export function meetExperts(base) {
     + button('View all doctors', { variant: 'ghost', iconRight: icon('arrow-right', { size: 16 }), href: `${base}doctors.html` })
     + `</div>`
     + `<div class="reel-track" style="display:flex;gap:var(--space-5);overflow-x:auto;padding-bottom:.6rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch">`
-    + EXPERTS.map(expertCard).join('')
+    + EXPERTS.map((d) => expertCard(base, d)).join('')
     + `</div></div></section>`;
 }
 
@@ -201,7 +209,7 @@ export function meetExperts(base) {
 export function blogCard(base, p) {
   const g = { blue: 'linear-gradient(135deg,var(--surface-blue-soft),var(--surface-green-soft))', green: 'linear-gradient(135deg,var(--surface-green-soft),var(--cream-100))', cream: 'linear-gradient(135deg,var(--surface-cream-deep),var(--surface-blue-soft))' }[p.tone];
   const cover = p.img
-    ? `<div class="img-cover ${p.img}" role="img" aria-label="${p.title}" style="aspect-ratio:16 / 9"></div>`
+    ? `<div class="img-cover" role="img" aria-label="${p.title}" style="aspect-ratio:16 / 9;background-image:url('${base}${p.img}')"></div>`
     : `<div style="aspect-ratio:16 / 9;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 28, style: 'color:var(--teal-300)' })}</div>`;
   return `<a href="${base}blog/${p.slug}.html" class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;text-decoration:none;color:inherit">`
     + cover

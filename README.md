@@ -32,7 +32,12 @@ JSON-LD; the sitemap lists all 25.
 
 Interactive (vanilla JS): home disease search, Health Reels, count-up stat strip,
 FAQ accordion, blog category filter, newsletter, sticky header, mobile bottom nav,
-floating WhatsApp/Call, and a 2-step booking modal.
+floating WhatsApp/Call, and a 2-step booking modal (leads POST to `/api/lead`).
+
+**Admin panel** at `/admin/` (zero-dependency Node server in `admin/`): lead management
+(status/notes/CSV/WhatsApp reply), and add/edit/remove for doctors, health reels, patient
+stories, FAQs and blogs (with image uploads), plus call/WhatsApp number settings — every
+save auto-rebuilds the static site. See RIIMS.md §23.
 
 ## Run it
 

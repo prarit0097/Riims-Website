@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>RIIMS Admin</title>
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <!-- Login -->
+  <div id="login" class="login hidden">
+    <form id="login-form" class="login-card">
+      <h1>RIIMS Admin</h1>
+      <p class="muted">Website control panel</p>
+      <input id="login-pass" type="password" placeholder="Admin password" autocomplete="current-password" required>
+      <button type="submit" class="btn primary">Login</button>
+      <p id="login-err" class="err"></p>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div id="app" class="app hidden">
+    <aside class="side">
+      <div class="brand">RIIMS<span>Admin</span></div>
+      <nav id="nav">
+        <button data-view="leads" class="active">📋 Leads</button>
+        <button data-view="doctors">🩺 Doctors</button>
+        <button data-view="reels">🎬 Health Reels</button>
+        <button data-view="stories">💬 Patient Stories</button>
+        <button data-view="faqs">❓ FAQs</button>
+        <button data-view="blogs">📝 Blogs</button>
+        <button data-view="settings">⚙️ Settings</button>
+      </nav>
+      <div class="side-foot">
+        <button id="rebuild" class="btn ghost small">🔄 Rebuild site</button>
+        <button id="logout" class="btn ghost small">Logout</button>
+      </div>
+    </aside>
+    <main class="main">
+      <div id="toast" class="toast hidden"></div>
+      <section id="view"></section>
+    </main>
+  </div>
+
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

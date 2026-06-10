@@ -11,7 +11,7 @@ import {
 /* ---------- Home ---------- */
 export function homePage(base) {
   return S.searchBanner()
-    + S.healthReels()
+    + S.healthReels(base)
     + S.problemsSection(base)
     + S.statsStrip()
     + S.completeCare()
@@ -57,7 +57,7 @@ export function conditionPage(base, slug) {
       + `<div style="display:flex;flex-direction:column;gap:.6rem">`
       + button('Book Consultation', { variant: 'primary', fullWidth: true, iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
       + button('WhatsApp Now', { variant: 'whatsapp', fullWidth: true, iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
-      + button('Upload Reports', { variant: 'outline', fullWidth: true, iconLeft: icon('upload', { size: 18 }), extraAttrs: { 'data-book': true } })
+      + button('Call Now', { variant: 'outline', fullWidth: true, iconLeft: icon('phone', { size: 18 }), href: `tel:${SITE.phoneTel}` })
       + `</div>`,
       { accent: true, pad: 'lg', style: { boxShadow: 'var(--shadow-lg)' } })
     + card(
@@ -100,7 +100,7 @@ export function aboutPage(base) {
     + `<div class="riims-container" style="margin-top:var(--space-16)">`
     + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${valueCards}</div>`
     + `</div></section>`
-    + S.doctorsSection()
+    + S.doctorsSection(base)
     + S.ctaBand();
 }
 
@@ -109,7 +109,7 @@ export function doctorsPage(base) {
   return pageHero(base, { crumb: 'Doctors', icon: 'stethoscope', title: 'Our doctors & care team', intro: 'A kidney-focused team combining nephrology with safe, evidence-aware lifestyle support.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container"><div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
-    + DOCTORS_FULL.map(S.doctorCard).join('')
+    + DOCTORS_FULL.map((d) => S.doctorCard(base, d)).join('')
     + `</div></div></section>`
     + S.ctaBand();
 }
@@ -118,7 +118,7 @@ export function doctorsPage(base) {
 function featuredPost(base, p) {
   const g = { blue: 'linear-gradient(135deg,var(--surface-blue-soft),var(--surface-green-soft))', green: 'linear-gradient(135deg,var(--surface-green-soft),var(--cream-100))', cream: 'linear-gradient(135deg,var(--surface-cream-deep),var(--surface-blue-soft))' }[p.tone];
   const cover = p.img
-    ? `<div class="img-cover ${p.img}" role="img" aria-label="${p.title}" style="min-height:260px"></div>`
+    ? `<div class="img-cover" role="img" aria-label="${p.title}" style="min-height:260px;background-image:url('${base}${p.img}')"></div>`
     : `<div style="min-height:260px;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 40, style: 'color:var(--teal-300)' })}</div>`;
   return `<a href="${base}blog/${p.slug}.html" data-featured class="about-grid riims-card riims-card--hover" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);overflow:hidden;text-decoration:none;color:inherit;margin-bottom:var(--space-8)">`
     + cover
@@ -176,13 +176,27 @@ export function contactPage(base) {
 }
 
 /* ---------- Blog article (one page per post) ---------- */
+
+/* Markdown-lite for admin-written bodies: blank-line paragraphs, "## " => h2. */
+function renderBody(body) {
+  return String(body).split(/\n\s*\n/).map((block) => {
+    const t = block.trim();
+    if (!t) return '';
+    if (t.startsWith('## ')) return `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">${t.slice(3)}</h2>`;
+    return `<p style="color:var(--text-body)">${t.replace(/\n/g, '<br>')}</p>`;
+  }).join('');
+}
+
 export function blogPostPage(base, p) {
   const rc = p.related ? CONDITIONS[p.related] : null;
   const related = POSTS.filter((x) => x.slug !== p.slug).slice(0, 3);
   const half = rc ? Math.ceil(rc.symptoms.length / 2) : 0;
+  const hasCustomBody = p.body && p.body.trim().length > 0;
 
   let depth = '';
-  if (rc) {
+  if (hasCustomBody) {
+    depth = renderBody(p.body);
+  } else if (rc) {
     depth = `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">${rc.aboutTitle}</h2><p style="color:var(--text-body)">${rc.about}</p>`
       + `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">Signs to discuss with your doctor</h2>`
       + `<div class="g2" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem">`
