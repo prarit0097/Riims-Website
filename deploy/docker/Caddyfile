@@ -1,0 +1,45 @@
+# RIIMS — Caddy config. Caddy auto-provisions Let's Encrypt SSL for the domain
+# and serves the static site. Used by docker-compose.caddy.yml.
+# Change the ACME email below to a real address you control.
+
+{
+	email admin@riimshospitals.com
+}
+
+riimshospitals.com {
+	root * /srv
+	encode gzip zstd
+
+	# Clean URLs (/about -> about.html); fall through to a real 404 page.
+	try_files {path} {path}.html {path}/ =404
+	file_server
+
+	# Caching
+	@static path *.css *.js *.woff2 *.woff *.ttf *.svg *.ico *.png *.jpg *.jpeg *.webp *.avif *.gif
+	header @static Cache-Control "public, max-age=2592000"
+	@html path *.html
+	header @html Cache-Control "public, max-age=3600, must-revalidate"
+
+	# Security headers (CSP allows self-hosted Lucide, Google Fonts, the Google
+	# Maps embed, WhatsApp form-action, and required inline styles).
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src https://www.google.com; form-action 'self' https://wa.me; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; connect-src 'self'; upgrade-insecure-requests"
+		-Server
+	}
+
+	# Branded 404
+	handle_errors {
+		rewrite * /404.html
+		file_server
+	}
+}
+
+# www -> non-www (canonical)
+www.riimshospitals.com {
+	redir https://riimshospitals.com{uri} permanent
+}

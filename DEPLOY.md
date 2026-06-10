@@ -14,11 +14,19 @@ Hostinger VPS, **fully isolated** from the apps already running there.
 
 ---
 
-## A. ⭐ Recommended: deploy as a Docker container behind your existing Traefik
+## A. ⭐ Recommended: deploy RIIMS as its own Docker container
 
-This adds ONE new container (`riims-web`) on the same Docker network as your other apps and
-lets Traefik route `riimshospitals.com` to it with automatic Let's Encrypt SSL. It does **not**
-modify any existing project.
+This adds ONE new container (`riims-web`) and does **not** modify any existing project.
+
+> **Which compose file?** A `docker network ls` + label check on this VPS showed **no running
+> Traefik** (per-app networks: `hermes-agent-fdph_default`, `nirogidhara_network`,
+> `postzyo_default`). So use **`docker-compose.caddy.yml`** — a standalone **Caddy** container
+> that serves the static site and gets **automatic Let's Encrypt HTTPS** itself (no Traefik, no
+> certbot). It just needs host ports **80 + 443 free**.
+>
+> `docker-compose.yml` (Traefik-label version) is only for if you later run a shared Traefik.
+> Trying Caddy is **safe**: if 80/443 are already taken, `up -d` errors with "port already
+> allocated" and nothing else is affected — then tell me and we route via that proxy instead.
 
 ### A1. First — GoDaddy DNS (do this now; it propagates while you set up)
 

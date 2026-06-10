@@ -1,0 +1,35 @@
+# ============================================================================
+# RIIMS — deploy as a standalone Caddy container with AUTOMATIC HTTPS.
+# Use this when host ports 80 + 443 are FREE on the VPS (no other reverse
+# proxy is running). Caddy gets the Let's Encrypt cert itself — no certbot,
+# no Traefik needed. Fully isolated: only creates the `riims-web` container.
+#
+#   1) Point riimshospitals.com (A @ and www) at the VPS IP (DNS) FIRST.
+#   2) Edit the email in deploy/docker/Caddyfile.
+#   3) docker compose -f docker-compose.caddy.yml up -d
+#
+# If `up -d` errors with "port is already allocated", something else owns
+# 80/443 — STOP and tell me; we'll route via that proxy instead (nothing
+# breaks; the container just won't start).
+#
+# Content updates later: `git pull` (site/ is bind-mounted, served instantly).
+# ============================================================================
+
+services:
+  riims-web:
+    image: caddy:2-alpine
+    container_name: riims-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./site:/srv:ro
+      - riims_caddy_data:/data
+      - riims_caddy_config:/config
+
+volumes:
+  riims_caddy_data:
+  riims_caddy_config:
