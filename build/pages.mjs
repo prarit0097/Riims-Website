@@ -19,7 +19,7 @@ export function homePage(base) {
     + S.howItWorks()
     + S.meetExperts(base)
     + S.educationSection(base)
-    + S.testimonials()
+    + S.testimonials(base)
     + S.faqSection()
     + S.ctaBand()
     + S.contactSection()

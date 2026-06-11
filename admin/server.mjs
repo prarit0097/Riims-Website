@@ -31,7 +31,7 @@ const LOCAL_PATH = join(DATA, 'content.local.json');
 const CONFIG_PATH = join(DATA, 'admin-config.json');
 const PORT = process.env.PORT || 5500;
 
-const SECTIONS = ['site', 'tracking', 'stats', 'doctors', 'reels', 'testimonials', 'faqs', 'posts'];
+const SECTIONS = ['site', 'tracking', 'stats', 'storyVideo', 'doctors', 'reels', 'testimonials', 'faqs', 'posts'];
 const LEAD_STATUSES = ['new', 'contacted', 'booked', 'closed'];
 const MAX_BODY = 8 * 1024 * 1024; // 8MB (base64 image uploads)
 
@@ -198,7 +198,7 @@ createServer(async (req, res) => {
       if (p === '/api/admin/content' && req.method === 'GET') {
         return send(res, 200, mergedContent());
       }
-      const secMatch = p.match(/^\/api\/admin\/content\/([a-z]+)$/);
+      const secMatch = p.match(/^\/api\/admin\/content\/([a-zA-Z]+)$/);
       if (secMatch && req.method === 'PUT') {
         const section = secMatch[1];
         if (!SECTIONS.includes(section)) return send(res, 400, { error: 'unknown section' });

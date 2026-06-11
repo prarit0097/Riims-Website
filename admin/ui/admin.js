@@ -210,10 +210,26 @@
   /* ---- Patient stories ---- */
   function renderStories(v) {
     const list = content.testimonials;
+    const sv = content.storyVideo || { enabled: true, title: 'Watch patient video stories', img: '', url: '' };
     v.innerHTML = `
       <div class="head"><h2>Patient Stories (${list.length})</h2>
         <div class="row"><button id="add" class="btn light small">＋ Add story</button>
         <button id="save" class="btn primary">Save stories</button></div></div>
+      <div class="card">
+        <h3 style="margin:0 0 10px">🎥 Patient video tile (stories ke neeche wala video box)</h3>
+        <div class="row" style="margin-bottom:10px">
+          <img class="thumb wide" src="${imgSrc(sv.img)}" alt="">
+          <button class="btn light small" id="sv-img">📷 Thumbnail badlo</button>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-left:8px">
+            <input type="checkbox" id="sv-on" ${sv.enabled ? 'checked' : ''}> Website par dikhao
+          </label>
+        </div>
+        <div class="grid2">
+          <label class="f">Title<input id="sv-title" value="${esc(sv.title || '')}"></label>
+          <label class="f">Video link (YouTube/Instagram URL — blank = Instagram profile)<input id="sv-url" value="${esc(sv.url || '')}" placeholder="https://youtube.com/watch?v=… ya reel link"></label>
+        </div>
+        <p class="muted" style="font-size:13px;margin-bottom:0">Click karne par visitor isi link par jaata hai. "Save stories" dabane par yeh bhi save ho jaata hai.</p>
+      </div>
       ${list.map((t, i) => `
         <div class="card">
           <div class="grid3">
@@ -227,7 +243,20 @@
     bindFields(v, list);
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this story?')) { list.splice(Number(b.dataset.del), 1); render(); } });
     $('#add').onclick = () => { list.push({ id: newId(), rating: 5, name: '', loc: '', quote: '' }); render(); };
-    $('#save').onclick = () => saveSection('testimonials', list, 'Patient stories');
+    $('#sv-img').onclick = () => {
+      content.storyVideo = content.storyVideo || { ...sv };
+      pickImage(content.storyVideo, 'img');
+    };
+    $('#save').onclick = () => {
+      content.storyVideo = {
+        enabled: $('#sv-on').checked,
+        title: $('#sv-title').value.trim() || 'Watch patient video stories',
+        img: (content.storyVideo && content.storyVideo.img) || sv.img,
+        url: $('#sv-url').value.trim(),
+      };
+      saveSection('testimonials', list, 'Patient stories');
+      saveSection('storyVideo', content.storyVideo, 'Patient video');
+    };
   }
 
   /* ---- FAQs ---- */

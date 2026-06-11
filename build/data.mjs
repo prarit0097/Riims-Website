@@ -208,6 +208,12 @@ export const POPULAR_TOPICS = [
 
 export const TESTIMONIALS = CONTENT.testimonials || [];
 
+/* The "patient video stories" tile under testimonials (admin: Patient Stories tab). */
+export const STORY_VIDEO = {
+  enabled: true, title: 'Watch patient video stories', img: 'assets/video-testimonial.png', url: '',
+  ...(CONTENT.storyVideo || {}),
+};
+
 export const FAQS = CONTENT.faqs || [];
 
 export const REELS = CONTENT.reels || [];

@@ -5,7 +5,7 @@ import { icon, button, badge, card, eyebrow, sectionHead, starRow } from './comp
 import { appointmentForm } from './chrome.mjs';
 import {
   SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
-  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS,
+  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO,
 } from './data.mjs';
 
 const TONE = {
@@ -251,17 +251,22 @@ function testimonialCard(t) {
     + `<span><strong style="display:block;font-size:var(--fs-base)">${t.name}</strong><span style="font-size:var(--fs-sm);color:var(--text-muted)">${t.loc}</span></span></figcaption>`
     + `<p style="margin:0;font-size:var(--fs-xs);color:var(--text-faint);font-style:italic">Individual experience. Results vary by patient and depend on doctor evaluation.</p></figure>`;
 }
-export function testimonials() {
+export function testimonials(base = '') {
+  const sv = STORY_VIDEO;
+  const videoTile = (sv.enabled && sv.img)
+    ? `<div style="margin-top:var(--space-8);display:flex;justify-content:center">`
+      + `<a href="${sv.url || SITE.instagram}" target="_blank" rel="noopener noreferrer" aria-label="${sv.title}" class="riims-card--hover img-cover" style="position:relative;display:block;width:100%;max-width:560px;aspect-ratio:16/10;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.14);background-image:url('${base}${sv.img}');background-position:center">`
+      + `<span style="position:absolute;left:16px;bottom:14px;color:#fff;font-family:var(--font-sans);font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.5)">${sv.title}</span></a>`
+      + `</div>`
+    : '';
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-inverse)">`
     + `<div class="riims-container">`
     + sectionHead({ onDark: true, eyebrow: `${icon('quote', { size: 15 })} Patient stories`, title: 'Care that patients remember', intro: 'Real experiences shared with consent. We never promise guaranteed outcomes.' })
     + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:var(--space-5)">`
     + TESTIMONIALS.map(testimonialCard).join('')
     + `</div>`
-    + `<div style="margin-top:var(--space-8);display:flex;justify-content:center">`
-    + `<a href="${SITE.instagram}" class="riims-card--hover img-cover img-video" style="position:relative;display:block;width:100%;max-width:560px;aspect-ratio:16/10;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.14)">`
-    + `<span style="position:absolute;left:16px;bottom:14px;color:#fff;font-family:var(--font-sans);font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.5)">Watch patient video stories</span></a>`
-    + `</div></div></section>`;
+    + videoTile
+    + `</div></section>`;
 }
 
 /* ---------- FAQ ---------- */

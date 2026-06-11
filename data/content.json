@@ -30,6 +30,12 @@
     { "id": "r5", "tag": "Lifestyle", "tone": "blue", "title": "Daily habits for kidney health", "views": "", "img": "assets/reels/reel-5.png", "url": "" },
     { "id": "r6", "tag": "Patient Story", "tone": "cream", "title": "From scared to in-control", "views": "", "img": "assets/reels/reel-6.png", "url": "" }
   ],
+  "storyVideo": {
+    "enabled": true,
+    "title": "Watch patient video stories",
+    "img": "assets/video-testimonial.png",
+    "url": ""
+  },
   "testimonials": [
     { "id": "t1", "rating": 5, "name": "Ramesh K.", "loc": "Baraut", "quote": "They explained my reports clearly and gave me a kidney diet I could actually follow at home." },
     { "id": "t2", "rating": 5, "name": "Sunita D.", "loc": "Baghpat", "quote": "Honest guidance without scary promises. My creatinine is being monitored properly now." },
