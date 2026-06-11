@@ -21,14 +21,10 @@ export function searchBanner(base = '') {
   ).join('');
 
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
-    + `<div class="riims-container" style="padding-block:var(--section-pad-y);position:relative">`
-    + `<div style="max-width:780px;margin:0 auto;text-align:center">`
-    + `<p style="margin:0 0 1.1rem;text-align:center">`
-    + `<span aria-hidden="true" style="display:inline-flex;color:var(--green-500);margin-bottom:.45rem">${icon('leaf', { size: 18 })}</span>`
-    + `<span style="display:block;font-family:var(--font-display);font-size:clamp(.95rem, .85rem + .6vw, 1.2rem);font-weight:600;letter-spacing:.13em;text-transform:uppercase;line-height:1.55;color:var(--teal-700);background:linear-gradient(90deg, var(--teal-700), var(--teal-500) 35%, var(--green-500) 70%, var(--green-600));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Rashtriya Institute of Integrated Medical Sciences</span>`
-    + `</p>`
-    + `<h1 style="font-size:var(--fs-3xl);margin:0 0 .6rem">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
-    + `<p class="riims-lead" style="margin:0 auto 1.5rem;max-width:56ch">Ethical, doctor-led, report-based kidney care with integrated Ayurveda support. Search a disease, symptom or report to see related articles, the right specialist, and a helpful video.</p>`
+    + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`
+    + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
+    + `<img src="${base}assets/hometop.jpg" width="1600" height="900" fetchpriority="high" alt="RIIMS Baraut kidney care team — Dr. Vikas Gupta (Director & Chief Nephrologist), Dr. Abhishek and Dr. Rachna Gupta — Advanced Care, Compassionate Healing" style="display:block;width:100%;height:auto;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);border:1px solid var(--border-subtle)">`
+    + `<div style="max-width:780px;margin:clamp(1.2rem, 1rem + 1.5vw, 2rem) auto 0;text-align:center">`
     + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
     + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
     + icon('search', { size: 20, style: 'color:var(--icon-default);flex:0 0 auto' })
