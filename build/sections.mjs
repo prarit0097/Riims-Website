@@ -23,7 +23,9 @@ export function searchBanner(base = '') {
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
     + `<div class="riims-container" style="padding-block:var(--section-pad-y);position:relative">`
     + `<div style="max-width:780px;margin:0 auto;text-align:center">`
-    + eyebrow(`${icon('heart-pulse', { size: 15 })} Rashtriya Institute of Integrated Medical Sciences`)
+    + `<p style="margin:0 0 1rem;display:inline-flex;align-items:center;gap:.55rem;background:linear-gradient(135deg, var(--teal-600), var(--green-500));color:#fff;font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:.55rem 1.2rem;border-radius:var(--radius-pill);box-shadow:var(--shadow-brand)">`
+    + `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--teal-600);flex:0 0 auto">${icon('heart-pulse', { size: 13 })}</span>`
+    + `Rashtriya Institute of Integrated Medical Sciences</p>`
     + `<h1 style="font-size:var(--fs-3xl);margin:0 0 .6rem">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
     + `<p class="riims-lead" style="margin:0 auto 1.5rem;max-width:56ch">Ethical, doctor-led, report-based kidney care with integrated Ayurveda support. Search a disease, symptom or report to see related articles, the right specialist, and a helpful video.</p>`
     + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
