@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # ============================================================================
-# RIIMS — update the live site on the VPS (git pull only; safe & isolated).
-# Usage:  ./deploy/update.sh  [REPO_DIR]
-#   REPO_DIR defaults to /var/www/riimshospitals
-# The web root is REPO_DIR/site (configured in nginx/Apache).
-# This NEVER touches other apps on the VPS.
+# RIIMS — update the live site on the VPS (safe & isolated).
+# Usage:  bash deploy/update.sh  [REPO_DIR]
+#   REPO_DIR defaults to /opt/riims (the live deployment folder)
+# The web root is REPO_DIR/site (configured in nginx).
+# Admin data (data/leads.json, content.local.json, admin-config.json, uploads)
+# is gitignored and survives the reset. This NEVER touches other apps.
 # ============================================================================
 set -euo pipefail
 
-REPO_DIR="${1:-/var/www/riimshospitals}"
+REPO_DIR="${1:-/opt/riims}"
 
 if [ ! -d "$REPO_DIR/.git" ]; then
   echo "ERROR: $REPO_DIR is not a git repo. Clone it first (see deploy/DEPLOY.md)." >&2
