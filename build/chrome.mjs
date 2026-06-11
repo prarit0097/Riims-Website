@@ -12,7 +12,11 @@ const OFFSITE = { target: '_blank', rel: 'noopener noreferrer' };
    Name + Phone + Problem/Disease only. On submit the lead POSTs to /api/lead
    (stored by the admin server; managed in the /admin/ Leads tab). */
 export function appointmentForm() {
-  const PROBLEM_OPTIONS = ['High creatinine', 'CKD / Kidney disease', 'Kidney failure', 'Dialysis guidance', 'Protein in urine', 'Swelling (edema)', 'Kidney stone / UTI', 'Diabetes & BP kidney risk', 'Other'];
+  const PROBLEM_OPTIONS = [
+    'Kidney (creatinine / CKD / dialysis)', 'Liver', 'Heart', 'Diabetes / Sugar',
+    'BP / Hypertension', 'Cancer', 'Lungs / Breathing', 'Skin', 'Stomach / Digestion',
+    'Pain (joints / back / body)', 'Parkinson / Neuro', 'Thyroid', 'Other',
+  ];
 
   const form = `<form data-step="0" class="appt-step" style="display:flex;flex-direction:column;gap:.9rem">`
     + input({ label: 'Full name', required: true, icon: icon('user'), placeholder: 'Your name', name: 'name' })

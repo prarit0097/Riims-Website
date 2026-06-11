@@ -97,8 +97,9 @@
   /* ---- Leads ---- */
   function renderLeads(v) {
     const count = (s) => leads.filter((l) => l.status === s).length;
-    const rows = leads.map((l) => `
+    const rows = leads.map((l, i) => `
       <tr data-id="${l.id}">
+        <td><b>${leads.length - i}</b></td>
         <td>${new Date(l.ts).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</td>
         <td><b>${esc(l.name)}</b><br><a href="tel:+91${esc(l.phone)}">${esc(l.phone)}</a></td>
         <td>${esc(l.problem || '—')}${l.city ? `<br><span class="muted">${esc(l.city)} ${esc(l.mode || '')}</span>` : ''}</td>
@@ -123,15 +124,15 @@
         <div class="stat"><b>${count('booked')}</b><span>Booked</span></div>
       </div>
       ${leads.length ? `<div style="overflow-x:auto"><table>
-        <tr><th>When</th><th>Patient</th><th>Problem</th><th>Status</th><th>Notes</th><th></th></tr>
+        <tr><th>#</th><th>When</th><th>Patient</th><th>Problem</th><th>Status</th><th>Notes</th><th></th></tr>
         ${rows}</table></div>` : `<div class="card muted">No leads yet. They appear here the moment someone submits the website form.</div>`}`;
 
     $('#refresh').onclick = async () => { leads = await api('/api/admin/leads'); render(); };
     const csvBtn = $('#csv');
     if (csvBtn) csvBtn.onclick = () => {
-      const head = ['date', 'name', 'phone', 'problem', 'city', 'mode', 'creatinine', 'status', 'notes', 'stage'];
-      const lines = [head.join(',')].concat(leads.map((l) =>
-        [l.ts, l.name, l.phone, l.problem, l.city, l.mode, l.creatinine, l.status, l.notes, l.stage]
+      const head = ['sno', 'date', 'name', 'phone', 'problem', 'status', 'notes'];
+      const lines = [head.join(',')].concat(leads.map((l, i) =>
+        [leads.length - i, l.ts, l.name, l.phone, l.problem, l.status, l.notes]
           .map((x) => `"${String(x ?? '').replace(/"/g, '""')}"`).join(',')));
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
