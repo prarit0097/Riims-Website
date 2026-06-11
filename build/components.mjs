@@ -210,9 +210,14 @@ export function sectionHead({ eyebrow: eb, title, intro, align = 'center', onDar
 }
 
 /* ---------------- Form fields ---------------- */
-function field({ label, required, hint, error, control }) {
+/* Deterministic per-build id sequence so every label/input pair is associated
+   via for/id (WCAG 2.1 A — 1.3.1). Unique within each generated document. */
+let _fieldSeq = 0;
+const nextFieldId = (name) => `fld-${name || 'x'}-${++_fieldSeq}`;
+
+function field({ label, required, hint, error, control, controlId }) {
   const lbl = label
-    ? `<label style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-sm);color:var(--text-strong)">${label}${required ? '<span style="color:var(--danger)"> *</span>' : ''}</label>`
+    ? `<label${controlId ? ` for="${controlId}"` : ''} style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-sm);color:var(--text-strong)">${label}${required ? '<span style="color:var(--danger)"> *</span>' : ''}</label>`
     : '';
   const note = error
     ? `<span style="font-size:var(--fs-sm);color:var(--danger)">${error}</span>`
@@ -223,22 +228,24 @@ function field({ label, required, hint, error, control }) {
 const INPUT_CSS = 'width:100%;font-family:var(--font-sans);font-size:var(--fs-md);color:var(--text-strong);background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-md);padding:.72rem .95rem;min-height:48px;outline:none;';
 
 export function input({ label, required, hint, icon: ic, type = 'text', name, placeholder } = {}) {
+  const id = nextFieldId(name);
   const control = `<div style="position:relative;display:flex;align-items:center">`
     + (ic ? `<span style="position:absolute;left:.85rem;color:var(--icon-default);pointer-events:none;display:inline-flex">${ic}</span>` : '')
-    + `<input class="riims-input" type="${type}"${name ? ` name="${name}"` : ''}${placeholder ? ` placeholder="${esc(placeholder)}"` : ''}${required ? ' required' : ''} style="${INPUT_CSS}padding-left:${ic ? '2.5rem' : '.95rem'}">`
+    + `<input id="${id}" class="riims-input" type="${type}"${name ? ` name="${name}"` : ''}${placeholder ? ` placeholder="${esc(placeholder)}"` : ''}${required ? ' required' : ''} style="${INPUT_CSS}padding-left:${ic ? '2.5rem' : '.95rem'}">`
     + `</div>`;
-  return field({ label, required, hint, control });
+  return field({ label, required, hint, control, controlId: id });
 }
 
 export function select({ label, required, hint, icon: ic, options = [], placeholder = 'Select…', name } = {}) {
+  const id = nextFieldId(name);
   const opts = `<option value="" disabled selected>${esc(placeholder)}</option>`
     + options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
   const control = `<div style="position:relative;display:flex;align-items:center">`
     + (ic ? `<span style="position:absolute;left:.85rem;color:var(--icon-default);pointer-events:none;display:inline-flex">${ic}</span>` : '')
-    + `<select class="riims-input riims-select"${name ? ` name="${name}"` : ''} style="${INPUT_CSS}appearance:none;cursor:pointer;color:var(--text-faint);padding-left:${ic ? '2.5rem' : '.95rem'};padding-right:2.4rem">${opts}</select>`
+    + `<select id="${id}" class="riims-input riims-select"${name ? ` name="${name}"` : ''} style="${INPUT_CSS}appearance:none;cursor:pointer;color:var(--text-faint);padding-left:${ic ? '2.5rem' : '.95rem'};padding-right:2.4rem">${opts}</select>`
     + `<span style="position:absolute;right:.95rem;pointer-events:none;color:var(--icon-default);display:inline-flex">${icon('chevron-down')}</span>`
     + `</div>`;
-  return field({ label, required, hint, control });
+  return field({ label, required, hint, control, controlId: id });
 }
 
 export function checkbox({ label, name, checked = true } = {}) {

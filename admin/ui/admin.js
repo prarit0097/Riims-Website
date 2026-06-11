@@ -318,7 +318,13 @@
       render();
     };
     $('#save').onclick = () => {
-      for (const p of list) { if (!p.slug) { toast('Every blog needs a slug', true); return; } }
+      const slugs = new Set();
+      for (const p of list) {
+        if (!p.slug) { toast('Every blog needs a slug', true); return; }
+        p.slug = slugify(p.slug);
+        if (slugs.has(p.slug)) { toast(`Duplicate slug "${p.slug}" — each blog needs a unique URL`, true); return; }
+        slugs.add(p.slug);
+      }
       saveSection('posts', list, 'Blogs');
     };
   }

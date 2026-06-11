@@ -63,6 +63,20 @@ async function readJsonBody(req) {
 }
 const newId = () => Date.now().toString(36) + randomBytes(4).toString('hex');
 
+/* Magic-byte sniff so a renamed non-image (e.g. .php as .png) is rejected. */
+function isRealImage(buf) {
+  if (!buf || buf.length < 12) return false;
+  const h = [...buf.slice(0, 12)];
+  const starts = (sig) => sig.every((b, i) => b === null || h[i] === b);
+  if (starts([0x89, 0x50, 0x4e, 0x47])) return true;                       // PNG
+  if (starts([0xff, 0xd8, 0xff])) return true;                             // JPEG
+  if (starts([0x47, 0x49, 0x46, 0x38])) return true;                       // GIF
+  if (starts([0x52, 0x49, 0x46, 0x46]) && h[8] === 0x57 && h[9] === 0x45) return true; // WEBP (RIFF....WE)
+  const head = buf.slice(0, 256).toString('utf8').trim().toLowerCase();
+  if (head.startsWith('<?xml') || head.startsWith('<svg')) return true;    // SVG
+  return false;
+}
+
 /* ---------------- auth ---------------- */
 function getConfig() { return readJson(CONFIG_PATH, null); }
 function verifyPassword(cfg, password) {
@@ -78,7 +92,8 @@ function makeToken(cfg) {
 function checkToken(cfg, token) {
   if (!cfg || !token) return false;
   const [exp, sig] = String(token).split('.');
-  if (!exp || !sig || Number(exp) < Date.now()) return false;
+  const expNum = Number(exp);
+  if (!exp || !sig || !Number.isFinite(expNum) || expNum < Date.now()) return false;
   const want = createHmac('sha256', cfg.secret).update(exp).digest('hex');
   return sig.length === want.length && timingSafeEqual(Buffer.from(sig), Buffer.from(want));
 }
@@ -233,9 +248,11 @@ createServer(async (req, res) => {
         if (!b || !b.data || !b.name) return send(res, 400, { error: 'need {name, data}' });
         const ext = (extname(b.name) || '.png').toLowerCase();
         if (!['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].includes(ext)) return send(res, 400, { error: 'images only' });
+        const buf = Buffer.from(String(b.data).replace(/^data:[^,]+,/, ''), 'base64');
+        if (!isRealImage(buf)) return send(res, 400, { error: 'file is not a valid image' });
         const file = `${Date.now().toString(36)}-${b.name.replace(/[^a-z0-9._-]/gi, '_').slice(0, 60)}`;
         mkdirSync(UPLOADS, { recursive: true });
-        writeFileSync(join(UPLOADS, file), Buffer.from(b.data.replace(/^data:[^,]+,/, ''), 'base64'));
+        writeFileSync(join(UPLOADS, file), buf);
         return send(res, 200, { ok: true, path: `assets/uploads/${file}` });
       }
 
