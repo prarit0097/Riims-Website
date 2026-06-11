@@ -23,12 +23,9 @@ export function searchBanner(base = '') {
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
     + `<div class="riims-container" style="padding-block:var(--section-pad-y);position:relative">`
     + `<div style="max-width:780px;margin:0 auto;text-align:center">`
-    + `<p style="margin:0 0 1.1rem;display:flex;align-items:center;justify-content:center;gap:.8rem">`
-    + `<span aria-hidden="true" style="flex:1 1 0;max-width:72px;height:1.5px;background:linear-gradient(90deg, transparent, var(--sand-400))"></span>`
-    + `<span aria-hidden="true" style="flex:0 0 auto;width:6px;height:6px;transform:rotate(45deg);background:var(--sand-400)"></span>`
-    + `<span style="font-family:var(--font-sans);font-size:clamp(.7rem, .62rem + .45vw, .88rem);font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--teal-700);line-height:1.6">Rashtriya Institute <span style="color:var(--sand-500)">of</span> Integrated Medical Sciences</span>`
-    + `<span aria-hidden="true" style="flex:0 0 auto;width:6px;height:6px;transform:rotate(45deg);background:var(--sand-400)"></span>`
-    + `<span aria-hidden="true" style="flex:1 1 0;max-width:72px;height:1.5px;background:linear-gradient(270deg, transparent, var(--sand-400))"></span>`
+    + `<p style="margin:0 0 1.1rem;text-align:center">`
+    + `<span aria-hidden="true" style="display:inline-flex;color:var(--green-500);margin-bottom:.45rem">${icon('leaf', { size: 18 })}</span>`
+    + `<span style="display:block;font-family:var(--font-display);font-size:clamp(.95rem, .85rem + .6vw, 1.2rem);font-weight:600;letter-spacing:.13em;text-transform:uppercase;line-height:1.55;color:var(--teal-700);background:linear-gradient(90deg, var(--teal-700), var(--teal-500) 35%, var(--green-500) 70%, var(--green-600));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Rashtriya Institute of Integrated Medical Sciences</span>`
     + `</p>`
     + `<h1 style="font-size:var(--fs-3xl);margin:0 0 .6rem">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
     + `<p class="riims-lead" style="margin:0 auto 1.5rem;max-width:56ch">Ethical, doctor-led, report-based kidney care with integrated Ayurveda support. Search a disease, symptom or report to see related articles, the right specialist, and a helpful video.</p>`
