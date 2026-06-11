@@ -22,6 +22,13 @@ const CONTENT = { ...baseContent, ...localContent };   // section-level override
 const CALL = (CONTENT.site && CONTENT.site.callNumber) || '8512040000';
 const WA = (CONTENT.site && CONTENT.site.whatsappNumber) || '8512040000';
 
+/* Tracking tags (admin "Tracking" tab): Google tag id (G-/AW-/GTM-) + raw
+   verification meta tags pasted into every page's <head>. */
+export const TRACKING = {
+  gtagId: '', metaTags: '',
+  ...(CONTENT.tracking || {}),
+};
+
 export const SITE = {
   name: 'RIIMS',
   fullName: 'Rashtriya Institute of Integrated Medical Sciences',

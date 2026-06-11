@@ -3,6 +3,10 @@
     "callNumber": "8512040000",
     "whatsappNumber": "8512040000"
   },
+  "tracking": {
+    "gtagId": "",
+    "metaTags": ""
+  },
   "doctors": [
     { "id": "d1", "name": "Dr. A. Sharma", "title": "Senior Nephrologist", "quals": "MD, DM (Nephrology)", "specialties": ["CKD", "Dialysis", "Transplant care"], "languages": "Hindi, English", "photo": "assets/doctors/doc-AS.png" },
     { "id": "d2", "name": "Dr. R. Verma", "title": "Consultant Physician", "quals": "MD (Internal Medicine)", "specialties": ["Diabetes & kidney", "Hypertension"], "languages": "Hindi, English", "photo": "assets/doctors/doc-RV.png" },

@@ -545,6 +545,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote). |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
+| **Tracking / Tags** | Set the **Google Tag ID** (`G-…` GA4 / `AW-…` Ads) → gtag.js loads on every page (generator writes `site/js/gtag.js`, external file so CSP `script-src 'self'` covers the config; the loader comes from `googletagmanager.com`, allowed in CSP). Paste **verification meta tags** (Search Console, Bing, FB) — one per line; only `<meta>`/`<link>` lines are accepted (scripts are stripped), injected into every page's `<head>`. |
 | **Settings** | Change the **Call number** and **WhatsApp number** (10 digits each) — updates every button/link/schema sitewide. |
 
 ### How it works

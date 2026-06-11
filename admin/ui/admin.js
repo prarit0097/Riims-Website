@@ -91,6 +91,7 @@
     if (view === 'stories') return renderStories(v);
     if (view === 'faqs') return renderFaqs(v);
     if (view === 'blogs') return renderBlogs(v);
+    if (view === 'tracking') return renderTracking(v);
     if (view === 'settings') return renderSettings(v);
   }
 
@@ -290,6 +291,25 @@
     $('#save').onclick = () => {
       for (const p of list) { if (!p.slug) { toast('Every blog needs a slug', true); return; } }
       saveSection('posts', list, 'Blogs');
+    };
+  }
+
+  /* ---- Tracking / Tags (gtag + verification meta tags) ---- */
+  function renderTracking(v) {
+    const t = content.tracking || { gtagId: '', metaTags: '' };
+    v.innerHTML = `
+      <div class="head"><h2>Tracking / Tags</h2><button id="save" class="btn primary">Save & apply to whole site</button></div>
+      <div class="card">
+        <label class="f">Google Tag ID (gtag)<input id="gtagid" value="${esc(t.gtagId || '')}" placeholder="G-XXXXXXXXXX  ya  AW-XXXXXXXXX"></label>
+        <p class="muted" style="font-size:13px">Google Analytics 4 ya Google Ads ka tag ID. Milega: <b>analytics.google.com</b> → Admin → Data Streams → apni site → "Measurement ID" (G- se shuru). Save karte hi har page par Google tracking lag jaayegi.</p>
+      </div>
+      <div class="card">
+        <label class="f">Meta tags (verification)<textarea id="metatags" style="min-height:110px" placeholder='&lt;meta name="google-site-verification" content="..." /&gt;\n&lt;meta name="msvalidate.01" content="..." /&gt;'>${esc(t.metaTags || '')}</textarea></label>
+        <p class="muted" style="font-size:13px">Yahan verification tags paste karo — jaise <b>Google Search Console</b>, Bing, ya Facebook domain verification ka <b>&lt;meta&gt;</b> tag (ek per line). Sirf <b>&lt;meta&gt;</b> / <b>&lt;link&gt;</b> tags lagenge (script yahan nahi chalega — gtag upar wale box se lagta hai). Har page ke &lt;head&gt; mein add ho jaayenge.</p>
+      </div>`;
+    $('#save').onclick = () => {
+      content.tracking = { gtagId: $('#gtagid').value.trim(), metaTags: $('#metatags').value };
+      saveSection('tracking', content.tracking, 'Tracking tags');
     };
   }
 

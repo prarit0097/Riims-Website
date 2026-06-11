@@ -11,16 +11,31 @@ import { dirname, join } from 'node:path';
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
 import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, LEGAL_KEYS } from './pages.mjs';
 import { esc } from './components.mjs';
-import { CONDITIONS, POSTS, SITE } from './data.mjs';
+import { CONDITIONS, POSTS, SITE, TRACKING } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
+
+/* Google tag (admin "Tracking" tab): write js/gtag.js with the configured id.
+   External file (not inline) so CSP script-src 'self' covers the config call. */
+const GTAG_ID = String(TRACKING.gtagId || '').trim();
+if (GTAG_ID) {
+  writeFileSync(join(OUT, 'js', 'gtag.js'),
+    `window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '${GTAG_ID.replace(/[^A-Za-z0-9_-]/g, '')}');\n`, 'utf8');
+}
+
+/* Verification/meta tags (admin "Tracking" tab): only <meta>/<link> lines pass. */
+const META_TAGS = String(TRACKING.metaTags || '')
+  .split(/\r?\n/).map((l) => l.trim())
+  .filter((l) => /^<(meta|link)\s[^>]*\/?>$/i.test(l))
+  .join('\n  ');
 
 /* Asset version: content hash of all CSS/JS. Appended as ?v= to asset URLs so
    browsers (30-day cache) pick up changes immediately after a deploy. */
 const ASSET_FILES = [
   'css/tokens/fonts.css', 'css/tokens/colors.css', 'css/tokens/typography.css',
   'css/tokens/spacing.css', 'css/tokens/base.css', 'css/site.css', 'js/site.js',
+  ...(GTAG_ID ? ['js/gtag.js'] : []),
 ];
 const _h = createHash('md5');
 for (const f of ASSET_FILES) { try { _h.update(readFileSync(join(OUT, f))); } catch { /* missing in fresh checkout */ } }
@@ -125,7 +140,7 @@ function head(p) {
   ${ldScript(graph)}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="${p.base}css/tokens/fonts.css?v=${V}" />
+  ${META_TAGS ? META_TAGS + '\n  ' : ''}${GTAG_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GTAG_ID)}"></script>\n  <script src="${p.base}js/gtag.js?v=${V}"></script>\n  ` : ''}<link rel="stylesheet" href="${p.base}css/tokens/fonts.css?v=${V}" />
   <link rel="stylesheet" href="${p.base}css/tokens/colors.css?v=${V}" />
   <link rel="stylesheet" href="${p.base}css/tokens/typography.css?v=${V}" />
   <link rel="stylesheet" href="${p.base}css/tokens/spacing.css?v=${V}" />
