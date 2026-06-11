@@ -248,7 +248,7 @@ Global UI wrapped around every page by the generator:
 
 ## 10. Sections (`build/sections.mjs`)
 
-Reusable content sections (composed into pages): `searchBanner` (home H1 + disease search),
+Reusable content sections (composed into pages): `searchBanner`,
 `healthReels` (horizontal video-thumbnail cards, each links to Instagram), `problemsSection`
 (8 condition cards), `statsStrip` (Google rating + 4 count-up stats), `completeCare` (11
 services), `whyRiims`, `howItWorks`, `doctorsSection` + `doctorCard`, `meetExperts` +
@@ -346,7 +346,7 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 ## 15. SEO implementation
 
 - Per page: unique `<title>`, meta description, canonical (`https://riimshospitals.com`...),
-  OG + Twitter (share image = `assets/hospital.png` 640x400 with width/height meta — not the heavy logo; no meta-keywords tag).
+  OG + Twitter (share image = `assets/hometop.jpg` 1600x900 brand banner with width/height meta; no meta-keywords tag). Home page preloads the hero image (`preload` field in the page manifest).
   `<html lang="en-IN">`.
 - **JSON-LD** (`<script type="application/ld+json">`): `["MedicalClinic","LocalBusiness"]` +
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
@@ -518,6 +518,7 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
   original long-form articles for peak SEO.
 - **Contact map** is now a live Google Maps embed using a generic "RIIMS Baraut" query —
   refine `SITE.geo`/`mapsQuery` to the exact verified Business-Profile place after launch.
+- **Home hero** comes from the owner-supplied `hometop.png` (2MB original, gitignored at repo root), shipped compressed as `site/assets/hometop.jpg` (1600x900, ~190KB via sharp-cli). The banner shows REAL doctors (Dr. Vikas Gupta — Director & Chief Nephrologist, Dr. Abhishek, Dr. Rachna Gupta) — update Admin → Doctors with these real names/photos.
 - **Images not yet optimized** — `assets/riims-logo.png` (1.46 MB, used only for social cards) and
   the reel PNGs (~770 KB) should be compressed to WebP/AVIF for faster LCP (no image tool was
   available locally to convert them here).

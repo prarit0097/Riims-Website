@@ -110,8 +110,8 @@ function ldScript(graph) {
 function head(p) {
   const url = `${SITE.origin}${p.path}`;
   const graph = [clinicGraph(), websiteGraph(), ...(p.ld || [])];
-  // Social share image: real photo-style image (640x400, 35KB) — not the heavy logo.
-  const ogImg = `${SITE.origin}/assets/hospital.png`;
+  // Social share image: the brand hero banner (1600x900 JPEG, ~190KB).
+  const ogImg = `${SITE.origin}/assets/hometop.jpg`;
   return `<!doctype html>
 <html lang="en-IN">
 <head>
@@ -123,7 +123,7 @@ function head(p) {
   <meta name="robots" content="${p.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}" />
   <meta name="theme-color" content="#0a6168" />
   <link rel="canonical" href="${url}" />
-  <link rel="icon" type="image/png" href="${p.base}assets/riims-logo-sm.png" />
+  ${p.preload ? `<link rel="preload" as="image" href="${p.base}${p.preload}" fetchpriority="high" />\n  ` : ''}<link rel="icon" type="image/png" href="${p.base}assets/riims-logo-sm.png" />
   <link rel="apple-touch-icon" href="${p.base}assets/riims-logo-sm.png" />
   <link rel="manifest" href="${p.base}site.webmanifest" />
   <meta property="og:type" content="${p.path === '/' ? 'website' : 'article'}" />
@@ -132,8 +132,8 @@ function head(p) {
   <meta property="og:description" content="${esc(p.desc)}" />
   <meta property="og:url" content="${url}" />
   <meta property="og:image" content="${ogImg}" />
-  <meta property="og:image:width" content="640" />
-  <meta property="og:image:height" content="400" />
+  <meta property="og:image:width" content="1600" />
+  <meta property="og:image:height" content="900" />
   <meta property="og:locale" content="en_IN" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(p.title)}" />
@@ -167,7 +167,7 @@ function render(p) {
 /* ---------- Page manifest ---------- */
 const pages = [
   {
-    out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home',
+    out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home', preload: 'assets/hometop.jpg',
     title: 'RIIMS Baraut | Kidney Care: High Creatinine, CKD, Dialysis',
     desc: 'Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
     body: homePage(''), ld: [FAQ_GRAPH],

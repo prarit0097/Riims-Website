@@ -10,7 +10,7 @@ import {
 
 /* ---------- Home ---------- */
 export function homePage(base) {
-  return S.searchBanner()
+  return S.searchBanner(base)
     + S.healthReels(base)
     + S.problemsSection(base)
     + S.statsStrip()

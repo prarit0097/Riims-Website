@@ -31,6 +31,34 @@ html, body { overflow-x: clip; }
    The booking modal is shown via the .is-open class after JS removes [hidden]. */
 [hidden] { display: none !important; }
 
+/* Visually hidden but available to screen readers + crawlers (e.g. the home H1). */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Home hero banner: brand image with the search form overlaid on the empty
+   bottom-left area. On phones the form drops below the image. */
+.hero-banner { position: relative; }
+.hero-banner .hero-search {
+  position: absolute;
+  left: 3.5%;
+  bottom: 7%;
+  width: 44%;
+  min-width: 280px;
+  max-width: 560px;
+  z-index: 2;
+}
+@media (max-width: 760px) {
+  .hero-banner .hero-search {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    margin-top: .9rem;
+  }
+}
+
 /* White button hover (used on the dark CTA band) */
 .riims-btn--white:hover { background: var(--neutral-50) !important; box-shadow: var(--shadow-lg) !important; }
 

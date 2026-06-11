@@ -10,6 +10,9 @@ Thumbs.db
 # Design source handoff (large binary, not code)
 RIIMS Design System-handoff.zip
 
+# Source image for the home hero (2MB original; compressed copy ships in site/assets/)
+/hometop.png
+
 # Admin runtime data (VPS-only; never in git)
 data/leads.json
 data/content.local.json
