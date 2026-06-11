@@ -99,11 +99,9 @@
     const count = (s) => leads.filter((l) => l.status === s).length;
     const rows = leads.map((l) => `
       <tr data-id="${l.id}">
-        <td>${new Date(l.ts).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}<br><span class="muted">${l.stage === 'complete' ? 'Full form' : 'Step 1 only'}</span></td>
+        <td>${new Date(l.ts).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</td>
         <td><b>${esc(l.name)}</b><br><a href="tel:+91${esc(l.phone)}">${esc(l.phone)}</a></td>
-        <td>${esc(l.problem || '—')}</td>
-        <td>${esc(l.city || '—')}<br><span class="muted">${esc(l.mode || '')}</span></td>
-        <td>${esc(l.creatinine || '—')}</td>
+        <td>${esc(l.problem || '—')}${l.city ? `<br><span class="muted">${esc(l.city)} ${esc(l.mode || '')}</span>` : ''}</td>
         <td><select data-act="status">${['new', 'contacted', 'booked', 'closed'].map((s) => `<option ${l.status === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td>
         <td><input data-act="notes" value="${esc(l.notes)}" placeholder="Notes…"></td>
         <td class="row">
@@ -125,7 +123,7 @@
         <div class="stat"><b>${count('booked')}</b><span>Booked</span></div>
       </div>
       ${leads.length ? `<div style="overflow-x:auto"><table>
-        <tr><th>When</th><th>Patient</th><th>Problem</th><th>City / Mode</th><th>Creatinine</th><th>Status</th><th>Notes</th><th></th></tr>
+        <tr><th>When</th><th>Patient</th><th>Problem</th><th>Status</th><th>Notes</th><th></th></tr>
         ${rows}</table></div>` : `<div class="card muted">No leads yet. They appear here the moment someone submits the website form.</div>`}`;
 
     $('#refresh').onclick = async () => { leads = await api('/api/admin/leads'); render(); };

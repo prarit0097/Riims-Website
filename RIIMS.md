@@ -78,7 +78,7 @@ RiimS/
 │   │                         #   icon, form fields, eyebrow, sectionHead, infoList, disclaimer)
 │   │                         #   + s() style serializer + esc() HTML escaper
 │   ├── chrome.mjs            # header, footer, mobile bottom bar, floating contact, booking
-│   │                         #   modal, page hero, 2-step appointment form
+│   │                         #   modal, page hero, single-step appointment form
 │   ├── sections.mjs          # page sections (search banner, reels, conditions grid, stats,
 │   │                         #   complete care, why, how, doctors, experts, blog cards,
 │   │                         #   testimonials, FAQ, CTA band, contact)
@@ -139,8 +139,10 @@ RiimS/
 
 1. **Imports** content (`data.mjs`), the chrome (`chrome.mjs`), and page bodies (`pages.mjs`).
 2. Defines `head(p)` → returns the full `<head>`: title, description, keywords, canonical,
-   Open Graph + Twitter tags, favicon, theme-color, **JSON-LD**, font preconnects, the two
-   stylesheets, the Lucide icon script (CDN), and `js/site.js`. All text values are run
+   Open Graph + Twitter tags, favicon, theme-color, **JSON-LD**, font preconnects, the six
+   CSS files (linked directly, each with a `?v=<content-hash>` cache-buster so deployed
+   asset changes bypass the 30-day browser cache), the self-hosted Lucide script, and
+   `js/site.js?v=<hash>`. All text values are run
    through `esc()` so characters like `&` are valid in attributes.
 3. Defines `render(p)` → `head(p)` + `<body>` = `header` + `<main>{page body}</main>` +
    `footer` + `mobileBar` + `bookingModal`.
@@ -240,10 +242,9 @@ Global UI wrapped around every page by the generator:
 - **`bookingModal()`** — hidden dialog containing the appointment form; opened by any
   `[data-book]` control, closed by the ✕, overlay click, or Esc.
 - **`pageHero(base, {crumb, title, intro, icon})`** — the breadcrumb + H1 hero for inner pages.
-- **`appointmentForm({compact})`** — a **2-step** form: Step 1 = Name + Phone + consent →
-  Step 2 = optional city/concern/creatinine/mode + report upload → success state. Steps are
-  toggled by `site.js` via the `hidden` attribute (CSS `[hidden]{display:none!important}`
-  guarantees only the active step shows).
+- **`appointmentForm()`** — single-step form: Name + Phone + Problem/Disease + consent →
+  success state. Toggled by `site.js` via the `hidden` attribute (CSS
+  `[hidden]{display:none!important}` guarantees only the active view shows).
 
 ## 10. Sections (`build/sections.mjs`)
 
@@ -309,13 +310,12 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 
 - **Booking modal** — `[data-book]` opens it (delegated click), `[data-modal-close]`/overlay/
   Esc close it; body scroll locked while open.
-- **2-step appointment form** — `[data-apptform]`: Step 1 = Name + Phone + **Problem/Disease**
-  select + consent (+ hidden honeypot); Step 2 = City, Consultation mode, Creatinine (optional).
-  **Lead capture:** `postLead()` POSTs to `/api/lead` at BOTH steps (partial at step 1, complete
-  at step 2, same lead id) → stored by the admin server and managed at `/admin/` (see §23). The
-  success screen has a **"Send on WhatsApp too"** button (`[data-appt-wa]`) that opens a
-  prefilled `wa.me` message; `data-wa` on the form carries the number. In local dev (no admin
-  server) the POST fails silently and the WhatsApp button still works.
+- **Appointment form (single step)** — `[data-apptform]`: **Name + Phone + Problem/Disease
+  select** + consent (+ hidden honeypot). On submit, `postLead()` POSTs to `/api/lead` →
+  stored by the admin server, managed in the `/admin/` Leads tab (see §23) — **no WhatsApp
+  redirect** (owner request: leads go only to the admin panel). Success screen confirms a
+  call-back. In local dev (no admin server) the POST fails silently; the form still shows
+  the confirmation.
 - **Select placeholder color** — adds `has-value` when a real option is chosen.
 - **FAQ accordion** — `[data-faq]` items; clicking a question opens it (and closes siblings),
   rotates the chevron, animates `grid-template-rows: 0fr→1fr`.
@@ -539,7 +539,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 ### What it controls
 | Tab | What you can do |
 |-----|-----------------|
-| **Leads** | Every appointment-form submission lands here (captured at Step 1 AND completed at Step 2). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
+| **Leads** | Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, specialties, languages, photo upload. Drives the doctors page, home experts carousel, and the about-page trio (first 3). |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote). |
@@ -552,9 +552,9 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
   `data/content.json` section-by-section, then the server **auto-runs the generator** — the
   static site updates within seconds. Git pulls never clobber admin edits.
 - Image uploads go to `site/assets/uploads/` (gitignored) via base64 JSON (10MB nginx cap).
-- The public form (`site/js/site.js`) POSTs to **`/api/lead`** at Step 1 (partial) and Step 2
-  (complete) — so even abandoned forms are captured. Honeypot field + 10/min/IP rate limit.
-  The success screen offers a "Send on WhatsApp too" button (prefilled message).
+- The public form (`site/js/site.js`) POSTs to **`/api/lead`** on submit (single step:
+  name/phone/problem). Honeypot field + 10/min/IP rate limit. Leads go ONLY to the admin
+  panel (no WhatsApp redirect, per owner request).
 - Auth: scrypt password hash + HMAC-signed 7-day session cookie (`data/admin-config.json`,
   created by `node admin/set-password.mjs '<password>'`). UI is `noindex`.
 

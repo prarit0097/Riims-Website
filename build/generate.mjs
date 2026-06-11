@@ -3,7 +3,8 @@
    each page body, then writes static HTML + sitemap.xml + robots.txt into /site.
    Run: node build/generate.mjs  (or `npm run build`). */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -14,6 +15,16 @@ import { CONDITIONS, POSTS, SITE } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
+
+/* Asset version: content hash of all CSS/JS. Appended as ?v= to asset URLs so
+   browsers (30-day cache) pick up changes immediately after a deploy. */
+const ASSET_FILES = [
+  'css/tokens/fonts.css', 'css/tokens/colors.css', 'css/tokens/typography.css',
+  'css/tokens/spacing.css', 'css/tokens/base.css', 'css/site.css', 'js/site.js',
+];
+const _h = createHash('md5');
+for (const f of ASSET_FILES) { try { _h.update(readFileSync(join(OUT, f))); } catch { /* missing in fresh checkout */ } }
+const V = _h.digest('hex').slice(0, 10);
 
 /* ---------- JSON-LD ---------- */
 function clinicGraph() {
@@ -114,10 +125,14 @@ function head(p) {
   ${ldScript(graph)}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="${p.base}css/styles.css" />
-  <link rel="stylesheet" href="${p.base}css/site.css" />
+  <link rel="stylesheet" href="${p.base}css/tokens/fonts.css?v=${V}" />
+  <link rel="stylesheet" href="${p.base}css/tokens/colors.css?v=${V}" />
+  <link rel="stylesheet" href="${p.base}css/tokens/typography.css?v=${V}" />
+  <link rel="stylesheet" href="${p.base}css/tokens/spacing.css?v=${V}" />
+  <link rel="stylesheet" href="${p.base}css/tokens/base.css?v=${V}" />
+  <link rel="stylesheet" href="${p.base}css/site.css?v=${V}" />
   <script src="${p.base}assets/vendor/lucide.min.js" defer></script>
-  <script src="${p.base}js/site.js" defer></script>
+  <script src="${p.base}js/site.js?v=${V}" defer></script>
 </head>`;
 }
 

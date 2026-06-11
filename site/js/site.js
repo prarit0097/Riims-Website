@@ -51,55 +51,26 @@
     const v = (n) => { const el = form.querySelector(`[name="${n}"]`); return el ? el.value.trim() : ''; };
     return {
       name: v('name'), phone: v('phone'), problem: v('problem'),
-      city: v('city'), creatinine: v('creatinine'), mode: v('mode'),
       website: v('website'), // honeypot — must stay empty
       page: location.pathname,
+      stage: 'complete',
     };
   }
 
-  /* Store the lead via the admin API (managed at /admin/). Fails silently in
-     local dev / if the admin server is down — the WhatsApp button still works. */
-  function postLead(form, stage) {
-    const data = formValues(form);
-    data.stage = stage;
-    const id = form.getAttribute('data-lead-id');
-    if (id) data.id = id;
+  /* Store the lead via the admin API — it appears in the /admin/ Leads tab. */
+  function postLead(form) {
     return fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    }).then((r) => (r.ok ? r.json() : null)).then((res) => {
-      if (res && res.id) form.setAttribute('data-lead-id', res.id);
+      body: JSON.stringify(formValues(form)),
     }).catch(() => {});
   }
 
-  function leadToWhatsApp(form) {
-    const wa = form.getAttribute('data-wa') || '918512040000';
-    const d = formValues(form);
-    const lines = [
-      'New appointment request from riimshospitals.com',
-      d.name && `Name: ${d.name}`,
-      d.phone && `Phone: ${d.phone}`,
-      d.problem && `Problem: ${d.problem}`,
-      d.city && `City: ${d.city}`,
-      d.creatinine && `Creatinine: ${d.creatinine}`,
-      d.mode && `Mode: ${d.mode}`,
-    ].filter(Boolean);
-    try { window.open(`https://wa.me/${wa}?text=` + encodeURIComponent(lines.join('\n')), '_blank', 'noopener'); }
-    catch (e) { /* popup blocked */ }
-  }
-
   $$('[data-apptform]').forEach((form) => {
-    const s0 = $('[data-step="0"]', form);
-    const s1 = $('[data-step="1"]', form);
-    if (s0) s0.addEventListener('submit', (e) => { e.preventDefault(); postLead(form, 'partial'); showStep(form, 1); });
-    if (s1) s1.addEventListener('submit', (e) => { e.preventDefault(); postLead(form, 'complete'); showStep(form, 2); });
-    const back = $('[data-appt-back]', form);
-    if (back) back.addEventListener('click', () => showStep(form, 0));
+    const f = $('[data-step="0"]', form);
+    if (f) f.addEventListener('submit', (e) => { e.preventDefault(); postLead(form); showStep(form, 2); });
     const reset = $('[data-appt-reset]', form);
-    if (reset) reset.addEventListener('click', () => { form.removeAttribute('data-lead-id'); showStep(form, 0); });
-    const waBtn = $('[data-appt-wa]', form);
-    if (waBtn) waBtn.addEventListener('click', () => leadToWhatsApp(form));
+    if (reset) reset.addEventListener('click', () => { if (f) f.reset(); showStep(form, 0); });
   });
 
   /* ---------------- Select placeholder colour ---------------- */
