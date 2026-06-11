@@ -133,7 +133,7 @@ function head(p) {
   <meta property="og:url" content="${url}" />
   <meta property="og:image" content="${ogImg}" />
   <meta property="og:image:width" content="1600" />
-  <meta property="og:image:height" content="900" />
+  <meta property="og:image:height" content="800" />
   <meta property="og:locale" content="en_IN" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(p.title)}" />
