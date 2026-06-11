@@ -14,31 +14,29 @@ const TONE = {
   cream: { bg: 'var(--surface-cream-deep)', fg: 'var(--sand-500)' },
 };
 
-/* ---------- Home hero: brand banner image + overlaid search ----------
-   The banner (assets/hometop.jpg) carries the visual branding; the page H1
-   stays in the DOM as .sr-only so SEO and the one-h1 test are unaffected.
-   The search form sits over the image's empty bottom-left area on desktop
-   and drops below the image on phones (see .hero-banner rules in site.css). */
+/* ---------- Home hero: full-bleed brand banner + centered search below ----------
+   The banner (assets/hometop.jpg) runs edge-to-edge like a true hero; the
+   search block sits centered below it in the site's own styling so it stays
+   on-theme. The page H1 is .sr-only (SEO + one-h1 test preserved). */
 export function searchBanner(base = '') {
   const chips = POPULAR.map((p) =>
     `<button type="button" data-search-term="${p}" style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:600;cursor:pointer;padding:.35rem .8rem;border-radius:var(--radius-pill);border:1px solid var(--border-brand);background:var(--white);color:var(--text-brand)">${p}</button>`
   ).join('');
 
-  const searchForm = `<form data-search class="hero-search" aria-label="Search any disease, symptom or report" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
+  return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
+    + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
+    + `<img src="${base}assets/hometop.jpg" width="1600" height="900" fetchpriority="high" alt="RIIMS Baraut kidney care team — Dr. Vikas Gupta (Director & Chief Nephrologist), Dr. Abhishek and Dr. Rachna Gupta — Advanced Care, Compassionate Healing" style="display:block;width:100%;height:auto">`
+    + `<div class="riims-container" style="padding-block:clamp(1.6rem, 1.2rem + 2vw, 2.8rem);position:relative">`
+    + `<div style="max-width:780px;margin:0 auto;text-align:center">`
+    + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
+    + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
     + icon('search', { size: 20, style: 'color:var(--icon-default);flex:0 0 auto' })
     + `<input data-search-input placeholder="Search disease, symptom or treatment…" aria-label="Search disease, symptom or treatment" style="flex:1;border:none;outline:none;background:transparent;font-family:var(--font-sans);font-size:var(--fs-md);color:var(--text-strong);min-width:0">`
     + button('Search', { variant: 'primary', type: 'submit', iconLeft: icon('search', { size: 18 }) })
-    + `</form>`;
-
-  return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
-    + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 2vw, 2.5rem);position:relative">`
-    + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
-    + `<div class="hero-banner">`
-    + `<img src="${base}assets/hometop.jpg" width="1600" height="900" fetchpriority="high" alt="RIIMS Baraut kidney care team — Dr. Vikas Gupta (Director & Chief Nephrologist), Dr. Abhishek and Dr. Rachna Gupta — Advanced Care, Compassionate Healing" style="display:block;width:100%;height:auto;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg)">`
-    + searchForm
-    + `</div>`
+    + `</form>`
     + `<div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1.1rem">`
     + `<span style="font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);font-weight:600">Popular:</span>${chips}</div>`
+    + `</div>`
     + `<div data-search-results></div>`
     + `</div></section>`;
 }
