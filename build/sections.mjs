@@ -105,7 +105,6 @@ export function statsStrip() {
       + `<div style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:600;color:var(--text-muted);margin-top:.2rem">${sx.label}</div></div>`
     ).join('')
     + `</div>`
-    + `<p style="margin:var(--space-6) 0 0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Demo figures — replace with live Google Business numbers before launch.</p>`
     + `</div></section>`;
 }
 
