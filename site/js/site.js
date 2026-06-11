@@ -159,6 +159,8 @@
     const inputEl = $('[data-search-input]', searchForm);
     const results = $('[data-search-results]');
     searchForm.addEventListener('submit', (e) => { e.preventDefault(); renderSearch(results, inputEl.value.trim()); });
+    // Clear the results as soon as the box is emptied (typing, backspace, or the X).
+    inputEl.addEventListener('input', () => { if (!inputEl.value.trim()) renderSearch(results, ''); });
     $$('[data-search-term]').forEach((chip) => {
       chip.addEventListener('click', () => { inputEl.value = chip.getAttribute('data-search-term'); renderSearch(results, inputEl.value.trim()); });
     });
