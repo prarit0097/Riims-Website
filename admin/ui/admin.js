@@ -316,6 +316,7 @@
   /* ---- Settings ---- */
   function renderSettings(v) {
     const s = content.site;
+    const st = content.stats || { enabled: false, rating: '', reviews: '', patients: '', specialists: '' };
     v.innerHTML = `
       <div class="head"><h2>Settings</h2><button id="save" class="btn primary">Save settings</button></div>
       <div class="card">
@@ -324,12 +325,31 @@
           <label class="f">WhatsApp number (10 digits)<input id="wanum" maxlength="10" value="${esc(s.whatsappNumber)}"></label>
         </div>
         <p class="muted" style="font-size:13px;margin-bottom:0">These update every Call / WhatsApp button, the header, footer, contact page and schema across the whole website (after rebuild).</p>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 10px">Homepage stats strip (Google rating &amp; numbers)</h3>
+        <label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:12px">
+          <input type="checkbox" id="st-on" ${st.enabled ? 'checked' : ''}> Show the stats strip on the homepage
+        </label>
+        <div class="grid2">
+          <label class="f">Google rating (e.g. 4.8)<input id="st-rating" value="${esc(st.rating || '')}" placeholder="4.8"></label>
+          <label class="f">Google reviews count<input id="st-reviews" value="${esc(st.reviews || '')}" placeholder="310"></label>
+          <label class="f">Patients guided<input id="st-patients" value="${esc(st.patients || '')}" placeholder="12000"></label>
+          <label class="f">Kidney specialists<input id="st-specialists" value="${esc(st.specialists || '')}" placeholder="6"></label>
+        </div>
+        <p class="muted" style="font-size:13px;margin-bottom:0">⚠️ Sirf <b>REAL numbers</b> daalo (Google Business Profile se). Medical site par fake rating/reviews Google ranking ko nuksan pahunchate hain. Jo box khali hoga wo stat website par nahi dikhega; checkbox off = poori strip hidden.</p>
       </div>`;
     $('#save').onclick = () => {
       const call = $('#callnum').value.replace(/\D/g, ''), wa = $('#wanum').value.replace(/\D/g, '');
       if (call.length !== 10 || wa.length !== 10) { toast('Both numbers must be exactly 10 digits', true); return; }
       content.site = { callNumber: call, whatsappNumber: wa };
+      content.stats = {
+        enabled: $('#st-on').checked,
+        rating: $('#st-rating').value.trim(), reviews: $('#st-reviews').value.trim(),
+        patients: $('#st-patients').value.trim(), specialists: $('#st-specialists').value.trim(),
+      };
       saveSection('site', content.site, 'Numbers');
+      saveSection('stats', content.stats, 'Stats strip');
     };
   }
 

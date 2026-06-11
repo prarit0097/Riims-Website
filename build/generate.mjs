@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, LEGAL_KEYS } from './pages.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, LEGAL_KEYS } from './pages.mjs';
 import { esc } from './components.mjs';
 import { CONDITIONS, POSTS, SITE, TRACKING } from './data.mjs';
 
@@ -110,7 +110,8 @@ function ldScript(graph) {
 function head(p) {
   const url = `${SITE.origin}${p.path}`;
   const graph = [clinicGraph(), websiteGraph(), ...(p.ld || [])];
-  const ogImg = `${SITE.origin}/assets/riims-logo.png`;
+  // Social share image: real photo-style image (640x400, 35KB) — not the heavy logo.
+  const ogImg = `${SITE.origin}/assets/hospital.png`;
   return `<!doctype html>
 <html lang="en-IN">
 <head>
@@ -118,7 +119,6 @@ function head(p) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(p.title)}</title>
   <meta name="description" content="${esc(p.desc)}" />
-  ${p.keywords ? `<meta name="keywords" content="${esc(p.keywords)}" />` : ''}
   <meta name="author" content="RIIMS — Rashtriya Institute of Integrated Medical Sciences" />
   <meta name="robots" content="${p.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}" />
   <meta name="theme-color" content="#0a6168" />
@@ -132,6 +132,8 @@ function head(p) {
   <meta property="og:description" content="${esc(p.desc)}" />
   <meta property="og:url" content="${url}" />
   <meta property="og:image" content="${ogImg}" />
+  <meta property="og:image:width" content="640" />
+  <meta property="og:image:height" content="400" />
   <meta property="og:locale" content="en_IN" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(p.title)}" />
@@ -166,9 +168,8 @@ function render(p) {
 const pages = [
   {
     out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home',
-    title: 'RIIMS Baraut | Kidney Care, High Creatinine, CKD & Dialysis Guidance',
+    title: 'RIIMS Baraut | Kidney Care: High Creatinine, CKD, Dialysis',
     desc: 'Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
-    keywords: 'kidney care, high creatinine treatment, CKD, chronic kidney disease, kidney failure, dialysis guidance, kidney diet chart, ayurvedic kidney care, integrated kidney treatment, nephrologist Baraut, kidney specialist Uttar Pradesh, protein in urine, creatinine reduce, second opinion kidney, RIIMS',
     body: homePage(''), ld: [FAQ_GRAPH],
   },
   {
@@ -187,8 +188,33 @@ const pages = [
     out: 'blog.html', base: '', path: '/blog.html', nav: 'blog.html', mobile: '',
     title: 'Kidney Health Blog & Patient Education | RIIMS',
     desc: 'Doctor-aligned articles on high creatinine, CKD, dialysis, kidney diet and Ayurveda-supported integrated care — plain-language kidney education.',
-    keywords: 'kidney blog, high creatinine, CKD diet chart, dialysis myths, ayurvedic kidney care, kidney diet hindi, proteinuria, diabetic kidney disease',
     body: blogPage(''),
+  },
+  {
+    out: 'conditions/index.html', base: '../', path: '/conditions/', nav: 'conditions/index.html', mobile: '',
+    title: 'Kidney Diseases We Treat | RIIMS Baraut',
+    desc: 'High creatinine, CKD, kidney failure, dialysis guidance, protein in urine, swelling, diabetes/BP kidney risk and stones — doctor-led care at RIIMS, Baraut.',
+    body: conditionsHubPage('../'),
+    ld: [FAQ_GRAPH, {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+        { '@type': 'ListItem', position: 2, name: 'Kidney Diseases', item: `${SITE.origin}/conditions/` },
+      ],
+    }],
+  },
+  {
+    out: 'services.html', base: '', path: '/services.html', nav: 'services.html', mobile: '',
+    title: 'Kidney Treatments & Services | RIIMS Baraut',
+    desc: 'Consultations (clinic, video, phone), report review, dialysis guidance, kidney diet plans, Ayurveda-supported lifestyle care and follow-up — at RIIMS, Baraut, UP.',
+    body: servicesPage(''),
+    ld: [{
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+        { '@type': 'ListItem', position: 2, name: 'Treatments & Services', item: `${SITE.origin}/services.html` },
+      ],
+    }],
   },
   {
     out: 'contact.html', base: '', path: '/contact.html', nav: 'contact.html', mobile: '',
@@ -203,14 +229,21 @@ for (const slug of Object.keys(CONDITIONS)) {
   const path = `/conditions/${slug}.html`;
   pages.push({
     out: `conditions/${slug}.html`, base: '../', path, nav: `conditions/${slug}.html`, mobile: '',
-    title: `${c.title} — Symptoms & Care | RIIMS Baraut`,
+    title: `${c.title} — Symptoms & Care | RIIMS`,
     desc: `${c.intro} Doctor-led, report-based kidney care at RIIMS, Baraut, UP.`,
-    keywords: `${c.title.toLowerCase()}, kidney care, nephrologist Baraut, ${slug.replace(/-/g, ' ')}, integrated kidney treatment`,
     body: conditionPage('../', slug),
     ld: [breadcrumb(c.crumb, `${SITE.origin}${path}`), {
       '@type': 'MedicalWebPage', name: c.title, description: c.intro, url: `${SITE.origin}${path}`,
       about: { '@type': 'MedicalCondition', name: c.title }, inLanguage: 'en-IN',
       isPartOf: { '@id': `${SITE.origin}/#website` },
+    }, {
+      // FAQ rich-result eligibility: mirrors the Q&A-style content visible on the page.
+      '@type': 'FAQPage',
+      mainEntity: [
+        { '@type': 'Question', name: c.aboutTitle, acceptedAnswer: { '@type': 'Answer', text: c.about } },
+        { '@type': 'Question', name: `When should I consult a kidney doctor about ${c.title.toLowerCase()}?`, acceptedAnswer: { '@type': 'Answer', text: c.when } },
+        { '@type': 'Question', name: `How does RIIMS approach ${c.title.toLowerCase()}?`, acceptedAnswer: { '@type': 'Answer', text: c.approach.join('. ') + '.' } },
+      ],
     }],
   });
 }
@@ -220,9 +253,8 @@ for (const p of POSTS) {
   const path = `/blog/${p.slug}.html`;
   pages.push({
     out: `blog/${p.slug}.html`, base: '../', path, nav: 'blog.html', mobile: '',
-    title: `${p.title} | RIIMS Kidney Care Blog`,
+    title: `${p.title} | RIIMS Blog`,
     desc: `${p.excerpt} A plain-language RIIMS kidney-care guide (Baraut, UP).`,
-    keywords: `${p.cat.toLowerCase()}, kidney care, ${p.title.toLowerCase()}, RIIMS Baraut`,
     body: blogPostPage('../', p),
     ld: [
       {

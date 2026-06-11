@@ -328,11 +328,13 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (25 indexable URLs + a 404)
+## 14. Page inventory (27 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
 | `/` | Home | search-first, FAQ + clinic JSON-LD |
+| `/conditions/` | Kidney Diseases hub | conditions grid + FAQ + breadcrumb schema (nav "Kidney Diseases") |
+| `/services.html` | Treatments & Services hub | 11 service tiles + how-it-works (nav "Treatments") |
 | `/about.html` | About | story, values, doctors |
 | `/doctors.html` | Doctors | 6 doctors |
 | `/blog.html` | Blog index | filter, featured, 9 cards, newsletter |
@@ -344,13 +346,12 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 ## 15. SEO implementation
 
 - Per page: unique `<title>`, meta description, canonical (`https://riimshospitals.com`...),
-  OG + Twitter, `theme-color`, favicon + apple-touch-icon + web manifest, keywords where useful.
+  OG + Twitter (share image = `assets/hospital.png` 640x400 with width/height meta — not the heavy logo; no meta-keywords tag).
   `<html lang="en-IN">`.
 - **JSON-LD** (`<script type="application/ld+json">`): `["MedicalClinic","LocalBusiness"]` +
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
-  opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` on each
-  condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post.
+  opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post.
 - `sitemap.xml` (25 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
 - One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Baraut — High Creatinine, CKD,
   Dialysis & Diet Guidance"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
@@ -546,7 +547,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
 | **Tracking / Tags** | Set the **Google Tag ID** (`G-…` GA4 / `AW-…` Ads) → gtag.js loads on every page (generator writes `site/js/gtag.js`, external file so CSP `script-src 'self'` covers the config; the loader comes from `googletagmanager.com`, allowed in CSP). Paste **verification meta tags** (Search Console, Bing, FB) — one per line; only `<meta>`/`<link>` lines are accepted (scripts are stripped), injected into every page's `<head>`. |
-| **Settings** | Change the **Call number** and **WhatsApp number** (10 digits each) — updates every button/link/schema sitewide. |
+| **Settings** | Call + WhatsApp numbers (10 digits each, sitewide), and the **homepage stats strip** — show/hide toggle + Google rating / reviews / patients / specialists values. Stats are **hidden by default** and must only carry REAL Google Business numbers (fake stats on a YMYL medical site suppress rankings). Empty fields are skipped; real values render in the HTML (crawler-visible) with JS count-up as enhancement. |
 
 ### How it works
 - Content edits are written to **`data/content.local.json`** (gitignored) which overrides

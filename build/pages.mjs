@@ -5,7 +5,7 @@ import { icon, button, badge, card, eyebrow, infoList, disclaimer } from './comp
 import { pageHero, floatingContact } from './chrome.mjs';
 import * as S from './sections.mjs';
 import {
-  SITE, CONDITIONS, DOCTORS_FULL, POSTS, POPULAR_TOPICS,
+  SITE, CONDITIONS, DOCTORS_FULL, POSTS, POPULAR_TOPICS, SERVICES, REVIEW_DATE,
 } from './data.mjs';
 
 /* ---------- Home ---------- */
@@ -30,12 +30,19 @@ export function homePage(base) {
 export function conditionPage(base, slug) {
   const c = CONDITIONS[slug] || CONDITIONS['high-creatinine'];
   const half = Math.ceil(c.symptoms.length / 2);
+  // Cross-link the blog articles written for this condition (topical authority).
+  const blogLinks = POSTS.filter((p) => p.related === slug).map((p) =>
+    `<li><a href="${base}blog/${p.slug}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('book-open', { size: 15 })} ${p.title}</a></li>`
+  ).join('');
   const related = c.related.map(([l, target]) => {
     const href = target.startsWith('blog') ? `${base}blog.html` : `${base}conditions/${target}.html`;
     return `<li><a href="${href}" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('arrow-right', { size: 15 })} ${l}</a></li>`;
-  }).join('');
+  }).join('') + blogLinks;
+
+  const reviewedLine = `<p style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS nephrology team · Last updated: ${REVIEW_DATE}</p>`;
 
   const main = `<div style="display:flex;flex-direction:column;gap:var(--space-8)">`
+    + reviewedLine
     + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">${c.aboutTitle}</h2><p style="color:var(--text-body)">${c.about}</p></div>`
     + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">Symptoms to watch for</h2>`
     + `<div class="g2" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem">`
@@ -221,9 +228,10 @@ export function blogPostPage(base, p) {
     { accent: true, pad: 'lg', style: { boxShadow: 'var(--shadow-md)', margin: 'var(--space-10) 0' } });
 
   const article = `<article style="max-width:760px;margin:0 auto">`
-    + `<span style="display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--text-faint);font-size:var(--fs-sm);font-family:var(--font-sans);margin-bottom:var(--space-5)">`
+    + `<span style="display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--text-faint);font-size:var(--fs-sm);font-family:var(--font-sans);margin-bottom:.5rem">`
     + `<span style="color:var(--text-muted);font-weight:600">${p.author}</span>`
     + `<span style="display:inline-flex;align-items:center;gap:.35rem">${icon('clock', { size: 14 })} ${p.date} · ${p.time}</span></span>`
+    + `<p style="margin:0 0 var(--space-5);font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS nephrology team · Last reviewed: ${p.date}</p>`
     + `<p class="riims-lead" style="margin:0 0 1rem">${p.excerpt}</p>`
     + `<p style="color:var(--text-body)">This guide is written for patients and families in plain language. It explains the essentials, what to watch for, and how RIIMS supports you with ethical, report-based, doctor-led care — always alongside, never instead of, your treating doctor.</p>`
     + depth
@@ -274,6 +282,32 @@ const LEGAL = {
     ],
   },
 };
+
+/* ---------- Kidney Diseases hub (/conditions/) ---------- */
+export function conditionsHubPage(base) {
+  return pageHero(base, { crumb: 'Kidney Diseases', icon: 'activity', title: 'Kidney Diseases We Treat', intro: 'Clear, doctor-aligned guidance on high creatinine, CKD, kidney failure, dialysis, protein in urine, swelling, diabetes/BP kidney risk and stones — explained simply, for patients and families.' })
+    + S.problemsSection(base)
+    + S.faqSection()
+    + S.ctaBand();
+}
+
+/* ---------- Treatments & Services hub (/services.html) ---------- */
+export function servicesPage(base) {
+  const tiles = SERVICES.map((sv) =>
+    `<div class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
+    + `<span style="display:inline-flex;width:46px;height:46px;border-radius:var(--radius-md);background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center">${icon(sv.icon, { size: 22 })}</span>`
+    + `<h2 style="font-size:var(--fs-lg);margin:.1rem 0 0;font-family:var(--font-display)">${sv.t}</h2>`
+    + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${sv.d}</p></div>`
+  ).join('');
+  return pageHero(base, { crumb: 'Treatments & Services', icon: 'stethoscope', title: 'Kidney Treatments & Services at RIIMS', intro: 'Integrated, doctor-led kidney care — consultations (clinic, video, phone), report review, dialysis guidance, personalized kidney diet, Ayurveda-supported lifestyle care, and long-term follow-up. Ethical, report-based, no false promises.' })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container">`
+    + `<div class="services-grid" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-4)">${tiles}</div>`
+    + `<p style="margin:var(--space-8) auto 0;max-width:70ch;text-align:center;color:var(--text-body)">Every service starts from your actual reports. Share your creatinine/eGFR reports for a doctor-guided opinion, get a clear plan in plain language, and follow up with diet and lifestyle support that fits Indian routines — at the clinic in Baraut or from home via video consultation.</p>`
+    + `<div style="text-align:center;margin-top:var(--space-6)">${button('Book Consultation', { variant: 'primary', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })}</div>`
+    + `</div></section>`
+    + S.howItWorks()
+    + S.ctaBand();
+}
 
 /* ---------- 404 (served with absolute /base so it works at any depth) ---------- */
 export function notFoundPage(base) {

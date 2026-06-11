@@ -5,7 +5,7 @@ import { icon, button, badge, card, eyebrow, sectionHead, starRow } from './comp
 import { appointmentForm } from './chrome.mjs';
 import {
   SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
-  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR,
+  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS,
 } from './data.mjs';
 
 const TONE = {
@@ -51,7 +51,7 @@ function reelCard(base, r) {
     + `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 20 })}</span>`
     + `<div style="color:#fff;position:relative;text-shadow:0 1px 8px rgba(0,0,0,.45)">`
     + `<p style="margin:0 0 .25rem;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1.25">${r.title}</p>`
-    + `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);color:rgba(255,255,255,.8)">${r.views}</span>`
+    + (r.views ? `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);color:rgba(255,255,255,.8)">${r.views}</span>` : '')
     + `</div></div></a>`;
 }
 export function healthReels(base = '') {
@@ -84,24 +84,31 @@ export function problemsSection(base) {
     + `</div></div></section>`;
 }
 
-/* ---------- Stats strip (Google rating + count-up) ---------- */
+/* ---------- Stats strip (admin-controlled; hidden until real numbers set) ----------
+   Renders the REAL value as text (crawlers/no-JS see it); JS count-up is a
+   progressive enhancement. Never ship fabricated stats on a medical site. */
 export function statsStrip() {
-  const stats = [
-    { icon: 'star', countup: { to: 4.8, decimals: 1 }, label: 'Google rating' },
-    { icon: 'users', countup: { to: 12000, indian: true, suffix: '+' }, label: 'Patients guided' },
-    { icon: 'stethoscope', countup: { to: 6 }, label: 'Kidney specialists' },
-    { icon: 'message-circle', countup: { to: 310, suffix: '+' }, label: 'Google reviews' },
-  ];
-  const cu = (c) => `<span data-countup="${c.to}"${c.decimals ? ` data-decimals="${c.decimals}"` : ''}${c.indian ? ' data-indian="1"' : ''}${c.suffix ? ` data-suffix="${c.suffix}"` : ''}>0</span>`;
+  if (!STATS.enabled) return '';
+  const num = (v) => parseFloat(String(v).replace(/[^0-9.]/g, '')) || 0;
+  const fmt = (v, indian) => (indian ? Math.round(num(v)).toLocaleString('en-IN') : String(v).trim());
+  const items = [];
+  if (STATS.rating) items.push({ icon: 'star', value: String(STATS.rating).trim(), to: num(STATS.rating), decimals: 1, label: 'Google rating' });
+  if (STATS.patients) items.push({ icon: 'users', value: `${fmt(STATS.patients, true)}+`, to: num(STATS.patients), suffix: '+', indian: true, label: 'Patients guided' });
+  if (STATS.specialists) items.push({ icon: 'stethoscope', value: String(STATS.specialists).trim(), to: num(STATS.specialists), label: 'Kidney specialists' });
+  if (STATS.reviews) items.push({ icon: 'message-circle', value: `${fmt(STATS.reviews, true)}+`, to: num(STATS.reviews), suffix: '+', label: 'Google reviews' });
+  if (!items.length) return '';
+  const header = (STATS.rating && STATS.reviews)
+    ? `<div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:var(--space-6);font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">`
+      + starRow(Math.round(num(STATS.rating)), 18) + `<span>${String(STATS.rating).trim()} on Google</span>`
+      + `<span style="color:var(--text-muted);font-weight:600">· based on ${fmt(STATS.reviews, true)}+ reviews</span></div>`
+    : '';
   return `<section style="background:var(--surface-cream);border-block:1px solid var(--cream-200)">`
     + `<div class="riims-container" style="padding-block:var(--space-10)">`
-    + `<div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:var(--space-6);font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">`
-    + starRow(5, 18) + `<span>4.8 on Google</span>`
-    + `<span style="color:var(--text-muted);font-weight:600">· based on 310+ reviews</span></div>`
-    + `<div class="grid-4" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-5);text-align:center">`
-    + stats.map((sx) =>
+    + header
+    + `<div class="grid-4" style="display:grid;grid-template-columns:repeat(${Math.min(items.length, 4)}, 1fr);gap:var(--space-5);text-align:center">`
+    + items.map((sx) =>
       `<div><span style="display:inline-flex;width:44px;height:44px;border-radius:50%;background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center;margin-bottom:.5rem">${icon(sx.icon, { size: 20 })}</span>`
-      + `<div style="font-family:var(--font-display);font-weight:800;font-size:var(--fs-3xl);color:var(--text-brand);line-height:1.1">${cu(sx.countup)}</div>`
+      + `<div style="font-family:var(--font-display);font-weight:800;font-size:var(--fs-3xl);color:var(--text-brand);line-height:1.1"><span data-countup="${sx.to}"${sx.decimals ? ` data-decimals="${sx.decimals}"` : ''}${sx.indian ? ' data-indian="1"' : ''}${sx.suffix ? ` data-suffix="${sx.suffix}"` : ''}>${sx.value}</span></div>`
       + `<div style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:600;color:var(--text-muted);margin-top:.2rem">${sx.label}</div></div>`
     ).join('')
     + `</div>`

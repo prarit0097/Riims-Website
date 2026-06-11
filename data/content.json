@@ -7,6 +7,13 @@
     "gtagId": "",
     "metaTags": ""
   },
+  "stats": {
+    "enabled": false,
+    "rating": "",
+    "reviews": "",
+    "patients": "",
+    "specialists": ""
+  },
   "doctors": [
     { "id": "d1", "name": "Dr. A. Sharma", "title": "Senior Nephrologist", "quals": "MD, DM (Nephrology)", "specialties": ["CKD", "Dialysis", "Transplant care"], "languages": "Hindi, English", "photo": "assets/doctors/doc-AS.png" },
     { "id": "d2", "name": "Dr. R. Verma", "title": "Consultant Physician", "quals": "MD (Internal Medicine)", "specialties": ["Diabetes & kidney", "Hypertension"], "languages": "Hindi, English", "photo": "assets/doctors/doc-RV.png" },
@@ -16,12 +23,12 @@
     { "id": "d6", "name": "Dr. T. Roy", "title": "Consultant Nephrologist", "quals": "MD, DM (Nephrology)", "specialties": ["CKD", "Stones"], "languages": "Hindi, English", "photo": "assets/doctors/doc-TR.png" }
   ],
   "reels": [
-    { "id": "r1", "tag": "Kidney Health", "tone": "green", "title": "5 signs your creatinine is rising", "views": "12.4K views", "img": "assets/reels/reel-1.png", "url": "" },
-    { "id": "r2", "tag": "Diet", "tone": "blue", "title": "CKD diet: what to eat & avoid", "views": "8.7K views", "img": "assets/reels/reel-2.png", "url": "" },
-    { "id": "r3", "tag": "Dialysis", "tone": "cream", "title": "Dialysis explained calmly", "views": "15.2K views", "img": "assets/reels/reel-3.png", "url": "" },
-    { "id": "r4", "tag": "Integrated Care", "tone": "green", "title": "How Ayurveda supports kidneys", "views": "9.1K views", "img": "assets/reels/reel-4.png", "url": "" },
-    { "id": "r5", "tag": "Lifestyle", "tone": "blue", "title": "Daily habits for kidney health", "views": "21.3K views", "img": "assets/reels/reel-5.png", "url": "" },
-    { "id": "r6", "tag": "Patient Story", "tone": "cream", "title": "From scared to in-control", "views": "18.6K views", "img": "assets/reels/reel-6.png", "url": "" }
+    { "id": "r1", "tag": "Kidney Health", "tone": "green", "title": "5 signs your creatinine is rising", "views": "", "img": "assets/reels/reel-1.png", "url": "" },
+    { "id": "r2", "tag": "Diet", "tone": "blue", "title": "CKD diet: what to eat & avoid", "views": "", "img": "assets/reels/reel-2.png", "url": "" },
+    { "id": "r3", "tag": "Dialysis", "tone": "cream", "title": "Dialysis explained calmly", "views": "", "img": "assets/reels/reel-3.png", "url": "" },
+    { "id": "r4", "tag": "Integrated Care", "tone": "green", "title": "How Ayurveda supports kidneys", "views": "", "img": "assets/reels/reel-4.png", "url": "" },
+    { "id": "r5", "tag": "Lifestyle", "tone": "blue", "title": "Daily habits for kidney health", "views": "", "img": "assets/reels/reel-5.png", "url": "" },
+    { "id": "r6", "tag": "Patient Story", "tone": "cream", "title": "From scared to in-control", "views": "", "img": "assets/reels/reel-6.png", "url": "" }
   ],
   "testimonials": [
     { "id": "t1", "rating": 5, "name": "Ramesh K.", "loc": "Baraut", "quote": "They explained my reports clearly and gave me a kidney diet I could actually follow at home." },

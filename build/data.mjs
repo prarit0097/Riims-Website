@@ -29,6 +29,16 @@ export const TRACKING = {
   ...(CONTENT.tracking || {}),
 };
 
+/* Homepage stats strip (admin "Settings" tab). Hidden until `enabled` with
+   REAL numbers — fabricated stats on a medical (YMYL) site hurt trust/rankings. */
+export const STATS = {
+  enabled: false, rating: '', reviews: '', patients: '', specialists: '',
+  ...(CONTENT.stats || {}),
+};
+
+/* Shown in the "Medically reviewed / Last updated" line on condition + blog pages. */
+export const REVIEW_DATE = 'June 2026';
+
 export const SITE = {
   name: 'RIIMS',
   fullName: 'Rashtriya Institute of Integrated Medical Sciences',
@@ -55,8 +65,8 @@ export const SITE = {
 /* Header navigation (Kidney Diseases / Treatments point at the conditions hub). */
 export const NAV = [
   { label: 'About', href: 'about.html' },
-  { label: 'Kidney Diseases', href: 'conditions/high-creatinine.html' },
-  { label: 'Treatments', href: 'conditions/dialysis.html' },
+  { label: 'Kidney Diseases', href: 'conditions/index.html' },
+  { label: 'Treatments', href: 'services.html' },
   { label: 'Doctors', href: 'doctors.html' },
   { label: 'Blog', href: 'blog.html' },
   { label: 'Contact', href: 'contact.html' },
