@@ -194,7 +194,9 @@ Pure functions that return HTML strings. Key helpers:
 
 **Admin-editable content** (phone numbers, doctors, reels, testimonials, FAQs, blog posts)
 lives in **`data/content.json`**; on the VPS the admin panel writes overrides to
-`data/content.local.json` (gitignored, section-level replace). `build/data.mjs` reads/merges
+`data/content.local.json` (gitignored; merged **per item by id/slug** — a non-empty admin field wins, an
+empty/missing one keeps the repo default, so repo-authored blog bodies/FAQs/refs are never wiped by an admin
+edit that leaves them blank). `build/data.mjs` reads/merges
 both and derives the phone formats. **Fixed content** (conditions, services, WHY/STEPS,
 search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site, or via
 `data/content.json` in the repo.
@@ -272,10 +274,13 @@ Each function returns a full page body:
   popular-topic chips + newsletter + CTA.
 - **`blogPostPage(base, p)`** — one per post: hero, article meta, lead, then the **full article body**
   from `POSTS[].body` (rendered by `renderBody`: blank-line paragraphs; `## `/`### ` headings; `- ` → `<ul>`;
-  `1.` → `<ol>`; `> ` → blockquote; markdown `| a | b |` tables → `<table>`; inline `**bold**`/`*italic*`/`` `code` ``).
-  If a post has no body it falls back to the related condition's vetted copy. Ends with a
-  disclaimer, a CTA card, and "Related reading" (3 other posts). All 9 bodies are now full original
-  *Kidney Kavach* articles.
+  `1.` → `<ol>`; `> ` → blockquote; markdown `| a | b |` tables → `<table>`; inline `**bold**`/`*italic*`/`` `code` ``/
+  `[text](url)` links). If a post has no body it falls back to the related condition's vetted copy. After the
+  body it renders **per-post FAQs** (`POSTS[].faqs`), the disclaimer, a **Sources & further reading** block
+  (`POSTS[].refs`), a CTA card, and **topic-specific "Related reading"** (`POSTS[].relatedPosts`, falling back
+  to recent posts). All 9 bodies are deep, audit-driven *Kidney Kavach* articles (report tables, level/ACR/HD-vs-PD
+  tables, myth-vs-fact tables, diet charts, FAQs, references). Each blog page also carries `Article` (with
+  `reviewedBy`) + `FAQPage` JSON-LD.
 - **`protocolPage(base)`** — the **DNA Kayakalp Protocol™** page: hero + "What is it" (D-N-A pillar cards)
   + the three pillars (D: Kidney Mapping 7 domains, root cause, safe detox; N: LDP Protocol™, RiiMS Renal
   Plate ½+¼+¼, 10 nephrotoxins, 7-therapy Panchakarma Support Framework; A: activation & adaptive care) +
@@ -376,10 +381,12 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
   remain (only you can do): verify the domain + submit `sitemap.xml` in Google Search Console,
   create/verify the Google Business Profile (Baraut), and update `SITE.geo`/`mapsQuery` to the
   exact clinic coordinates. See DEPLOY.md §6.
-- **Blog articles are now full original long-form content** derived from the *Kidney Kavach* book
-  (founder Dr. Abhishek Gupta). Each `POSTS[].body` in `data/content.json` holds a complete, compliance-safe
-  article (high creatinine, reduce creatinine, CKD diet, dialysis myths, proteinuria, diabetes, swelling,
-  stones/UTI, integrated Ayurveda) — no longer thin/templated. See §24.
+- **Blog articles are deep, audit-driven long-form content** derived from the *Kidney Kavach* book
+  (founder Dr. Abhishek Gupta). Each `POSTS[]` in `data/content.json` holds a complete, compliance-safe
+  `body` (with report/ACR/HD-vs-PD/myth-vs-fact tables, a CKD diet chart, etc.) plus `faqs`, `refs` and
+  topic-specific `relatedPosts` (high creatinine, reduce creatinine, CKD diet, dialysis myths, proteinuria,
+  diabetes, swelling, stones/UTI, integrated Ayurveda) — no longer thin/templated. **Deployment note:** these
+  bodies now survive the admin `content.local.json` because of the per-item merge in `build/data.mjs` (see §8).
 
 ## 16. Wiring / data flow (how a click works)
 
@@ -569,7 +576,8 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 
 ### How it works
 - Content edits are written to **`data/content.local.json`** (gitignored) which overrides
-  `data/content.json` section-by-section, then the server **auto-runs the generator** — the
+  `data/content.json` per item (non-empty admin fields win; empty/missing fields keep the repo default —
+  see §8), then the server **auto-runs the generator** — the
   static site updates within seconds. Git pulls never clobber admin edits.
 - Image uploads go to `site/assets/uploads/` (gitignored) via base64 JSON (10MB nginx cap).
 - The public form (`site/js/site.js`) POSTs to **`/api/lead`** on submit (single step:

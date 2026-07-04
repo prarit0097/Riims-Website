@@ -309,8 +309,13 @@ for (const p of POSTS) {
         author: { '@type': 'Organization', name: p.author }, image: `${SITE.origin}/assets/riims-logo.png`,
         publisher: { '@id': `${SITE.origin}/#clinic` }, mainEntityOfPage: `${SITE.origin}${path}`,
         datePublished: isoDate(p.date), dateModified: isoDate(p.date),
+        reviewedBy: { '@type': 'Organization', name: 'RIIMS Nephrology Team' },
         inLanguage: 'en-IN', articleSection: p.cat,
       },
+      ...(Array.isArray(p.faqs) && p.faqs.length ? [{
+        '@type': 'FAQPage',
+        mainEntity: p.faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+      }] : []),
     ],
   });
 }

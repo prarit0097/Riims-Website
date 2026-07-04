@@ -226,6 +226,7 @@ export function contactPage(base) {
    Inline: **bold**, *italic*, `code`. */
 function renderBody(body) {
   const inline = (s) => String(s)
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" style="color:var(--text-link);font-weight:600">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
     .replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -298,19 +299,41 @@ export function blogPostPage(base, p) {
     + `</div>`,
     { accent: true, pad: 'lg', style: { boxShadow: 'var(--shadow-md)', margin: 'var(--space-10) 0' } });
 
+  // FAQ + Sources sections from the post data (added for depth, trust & rich results).
+  const postFaqs = Array.isArray(p.faqs) ? p.faqs : [];
+  const faqHtml = postFaqs.length
+    ? `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">Frequently asked questions</h2>`
+      + postFaqs.map(([q, a]) => `<div style="margin-bottom:var(--space-5)"><h3 style="font-size:var(--fs-lg);margin:0 0 .3rem">${q}</h3><p style="margin:0;color:var(--text-body)">${a}</p></div>`).join('')
+    : '';
+  const postRefs = Array.isArray(p.refs) ? p.refs : [];
+  const refsHtml = postRefs.length
+    ? `<h2 style="font-size:var(--fs-xl);margin:var(--space-8) 0 .4rem">Sources & further reading</h2>`
+      + `<ul style="margin:.2rem 0 0;padding-left:1.2rem;color:var(--text-muted);font-size:var(--fs-sm);display:grid;gap:.3rem">`
+      + postRefs.map((r) => `<li>${r}</li>`).join('') + `</ul>`
+      + `<p style="margin:.6rem 0 0;color:var(--text-faint);font-size:var(--fs-xs)">Reference and guideline names are listed for transparency; RIIMS is not affiliated with or endorsed by these organisations.</p>`
+    : '';
+  // Topic-specific related reading (falls back to recent posts if fewer than 3).
+  const relatedList = [];
+  for (const s of (Array.isArray(p.relatedPosts) ? p.relatedPosts : [])) {
+    const m = POSTS.find((x) => x.slug === s && x.slug !== p.slug);
+    if (m && !relatedList.includes(m)) relatedList.push(m);
+  }
+  for (const x of POSTS) { if (relatedList.length >= 3) break; if (x.slug !== p.slug && !relatedList.includes(x)) relatedList.push(x); }
+
   const article = `<article style="max-width:760px;margin:0 auto">`
     + `<span style="display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--text-faint);font-size:var(--fs-sm);font-family:var(--font-sans);margin-bottom:.5rem">`
     + `<span style="color:var(--text-muted);font-weight:600">${p.author}</span>`
     + `<span style="display:inline-flex;align-items:center;gap:.35rem">${icon('clock', { size: 14 })} ${p.date} · ${p.time}</span></span>`
-    + `<p style="margin:0 0 var(--space-5);font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS nephrology team · Last reviewed: ${p.date}</p>`
+    + `<p style="margin:0 0 var(--space-5);font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS nephrology team · Last reviewed: ${REVIEW_DATE}</p>`
     + `<p class="riims-lead" style="margin:0 0 1rem">${p.excerpt}</p>`
-    + `<p style="color:var(--text-body)">This guide is written for patients and families in plain language. It explains the essentials, what to watch for, and how RIIMS supports you with ethical, report-based, doctor-led care — always alongside, never instead of, your treating doctor.</p>`
     + depth
+    + faqHtml
     + disclaimer()
+    + refsHtml
     + cta
     + `<h2 style="font-size:var(--fs-2xl);margin:0 0 var(--space-5)">Related reading</h2>`
     + `<div class="blog-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
-    + related.map((x) => S.blogCard(base, x)).join('')
+    + relatedList.slice(0, 3).map((x) => S.blogCard(base, x)).join('')
     + `</div></article>`;
 
   return pageHero(base, { crumb: `Blog · ${p.cat}`, icon: 'book-open', title: p.title, intro: p.excerpt })

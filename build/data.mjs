@@ -16,7 +16,34 @@ const LOCAL_PATH = join(__dirname, '..', 'data', 'content.local.json');
 
 const baseContent = JSON.parse(readFileSync(CONTENT_PATH, 'utf8'));
 const localContent = existsSync(LOCAL_PATH) ? JSON.parse(readFileSync(LOCAL_PATH, 'utf8')) : {};
-const CONTENT = { ...baseContent, ...localContent };   // section-level override
+
+/* Merge admin overrides (data/content.local.json) over the repo defaults (content.json).
+   Plain sections are replaced wholesale; but the object-array sections below are merged
+   PER ITEM (by id/slug): a non-empty admin field wins, while an empty or missing admin
+   field keeps the repo default. This lets the admin panel edit blogs/doctors/FAQs while
+   repo-authored fields (full blog bodies, FAQs, references, related links) are NOT wiped
+   when the admin copy leaves them blank. Repo-only items are appended. */
+const KEYED_SECTIONS = ['posts', 'doctors', 'faqs', 'reels', 'testimonials'];
+function mergeKeyed(baseArr, localArr) {
+  const idOf = (x) => (x && (x.id || x.slug)) || JSON.stringify(x);
+  const baseById = new Map((baseArr || []).map((x) => [idOf(x), x]));
+  const seen = new Set();
+  const out = (localArr || []).map((litem) => {
+    seen.add(idOf(litem));
+    const merged = { ...(baseById.get(idOf(litem)) || {}) };
+    for (const [k, v] of Object.entries(litem)) {
+      const empty = v === '' || v == null || (Array.isArray(v) && v.length === 0);
+      if (!empty) merged[k] = v;
+    }
+    return merged;
+  });
+  for (const bitem of baseArr || []) if (!seen.has(idOf(bitem))) out.push(bitem);
+  return out;
+}
+const CONTENT = { ...baseContent, ...localContent };
+for (const key of KEYED_SECTIONS) {
+  if (Array.isArray(localContent[key])) CONTENT[key] = mergeKeyed(baseContent[key], localContent[key]);
+}
 
 /* Phone numbers come from the admin-editable content (10-digit inputs). */
 const CALL = (CONTENT.site && CONTENT.site.callNumber) || '8512040000';
