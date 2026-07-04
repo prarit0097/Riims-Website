@@ -194,9 +194,10 @@ Pure functions that return HTML strings. Key helpers:
 
 **Admin-editable content** (phone numbers, doctors, reels, testimonials, FAQs, blog posts)
 lives in **`data/content.json`**; on the VPS the admin panel writes overrides to
-`data/content.local.json` (gitignored; merged **per item by id/slug** — a non-empty admin field wins, an
-empty/missing one keeps the repo default, so repo-authored blog bodies/FAQs/refs are never wiped by an admin
-edit that leaves them blank). `build/data.mjs` reads/merges
+`data/content.local.json` (gitignored; the admin file **replaces each section wholesale**, so admin edits,
+additions, deletions and re-orders all apply — admin is fully authoritative. **One narrow exception:** for
+`posts`, an empty `body`/`faqs`/`refs`/`relatedPosts` is filled from the matching repo post, so repo-authored
+blog content is never wiped when the admin copy leaves those fields blank). `build/data.mjs` reads/merges
 both and derives the phone formats. **Fixed content** (conditions, services, WHY/STEPS,
 search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site, or via
 `data/content.json` in the repo.
@@ -386,7 +387,8 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
   `body` (with report/ACR/HD-vs-PD/myth-vs-fact tables, a CKD diet chart, etc.) plus `faqs`, `refs` and
   topic-specific `relatedPosts` (high creatinine, reduce creatinine, CKD diet, dialysis myths, proteinuria,
   diabetes, swelling, stones/UTI, integrated Ayurveda) — no longer thin/templated. **Deployment note:** these
-  bodies now survive the admin `content.local.json` because of the per-item merge in `build/data.mjs` (see §8).
+  bodies now survive the admin `content.local.json` because `build/data.mjs` fills an empty post
+  `body`/`faqs`/`refs` from the repo, while leaving the admin fully authoritative for everything else (see §8).
 
 ## 16. Wiring / data flow (how a click works)
 
@@ -576,8 +578,9 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 
 ### How it works
 - Content edits are written to **`data/content.local.json`** (gitignored) which overrides
-  `data/content.json` per item (non-empty admin fields win; empty/missing fields keep the repo default —
-  see §8), then the server **auto-runs the generator** — the
+  `data/content.json` section-by-section (admin is authoritative — edits/deletions/order all apply); only an
+  empty blog `body`/`faqs`/`refs` is filled from the repo post (see §8), then the server **auto-runs the
+  generator** — the
   static site updates within seconds. Git pulls never clobber admin edits.
 - Image uploads go to `site/assets/uploads/` (gitignored) via base64 JSON (10MB nginx cap).
 - The public form (`site/js/site.js`) POSTs to **`/api/lead`** on submit (single step:

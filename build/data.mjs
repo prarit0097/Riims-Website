@@ -17,32 +17,27 @@ const LOCAL_PATH = join(__dirname, '..', 'data', 'content.local.json');
 const baseContent = JSON.parse(readFileSync(CONTENT_PATH, 'utf8'));
 const localContent = existsSync(LOCAL_PATH) ? JSON.parse(readFileSync(LOCAL_PATH, 'utf8')) : {};
 
-/* Merge admin overrides (data/content.local.json) over the repo defaults (content.json).
-   Plain sections are replaced wholesale; but the object-array sections below are merged
-   PER ITEM (by id/slug): a non-empty admin field wins, while an empty or missing admin
-   field keeps the repo default. This lets the admin panel edit blogs/doctors/FAQs while
-   repo-authored fields (full blog bodies, FAQs, references, related links) are NOT wiped
-   when the admin copy leaves them blank. Repo-only items are appended. */
-const KEYED_SECTIONS = ['posts', 'doctors', 'faqs', 'reels', 'testimonials'];
-function mergeKeyed(baseArr, localArr) {
-  const idOf = (x) => (x && (x.id || x.slug)) || JSON.stringify(x);
-  const baseById = new Map((baseArr || []).map((x) => [idOf(x), x]));
-  const seen = new Set();
-  const out = (localArr || []).map((litem) => {
-    seen.add(idOf(litem));
-    const merged = { ...(baseById.get(idOf(litem)) || {}) };
-    for (const [k, v] of Object.entries(litem)) {
-      const empty = v === '' || v == null || (Array.isArray(v) && v.length === 0);
-      if (!empty) merged[k] = v;
-    }
-    return merged;
-  });
-  for (const bitem of baseArr || []) if (!seen.has(idOf(bitem))) out.push(bitem);
-  return out;
-}
+/* Admin overrides (data/content.local.json) REPLACE the repo section wholesale — so the
+   admin panel stays fully authoritative: every edit, addition, deletion and re-order the
+   admin makes applies exactly as saved.
+   ONE narrow exception: blog article bodies/FAQs/references/related links are authored in
+   the repo (content.json), and the admin file usually stores them empty. So for posts ONLY,
+   we fill those four fields from the matching repo post WHENEVER the admin copy leaves them
+   blank. This keeps the repo blog content live without overriding anything the admin set
+   (titles, categories, images, which posts exist, order — all still come from the admin). */
 const CONTENT = { ...baseContent, ...localContent };
-for (const key of KEYED_SECTIONS) {
-  if (Array.isArray(localContent[key])) CONTENT[key] = mergeKeyed(baseContent[key], localContent[key]);
+if (Array.isArray(localContent.posts) && Array.isArray(baseContent.posts)) {
+  const isEmpty = (v) => v === '' || v == null || (Array.isArray(v) && v.length === 0);
+  const baseBySlug = new Map(baseContent.posts.map((p) => [p.id || p.slug, p]));
+  CONTENT.posts = CONTENT.posts.map((p) => {
+    const b = baseBySlug.get(p.id || p.slug);
+    if (!b) return p;
+    const out = { ...p };
+    for (const k of ['body', 'faqs', 'refs', 'relatedPosts']) {
+      if (isEmpty(out[k]) && !isEmpty(b[k])) out[k] = b[k];
+    }
+    return out;
+  });
 }
 
 /* Phone numbers come from the admin-editable content (10-digit inputs). */
