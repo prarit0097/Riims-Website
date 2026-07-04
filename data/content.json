@@ -15,20 +15,135 @@
     "specialists": ""
   },
   "doctors": [
-    { "id": "d1", "name": "Dr. A. Sharma", "title": "Senior Nephrologist", "quals": "MD, DM (Nephrology)", "specialties": ["CKD", "Dialysis", "Transplant care"], "languages": "Hindi, English", "photo": "assets/doctors/doc-AS.png" },
-    { "id": "d2", "name": "Dr. R. Verma", "title": "Consultant Physician", "quals": "MD (Internal Medicine)", "specialties": ["Diabetes & kidney", "Hypertension"], "languages": "Hindi, English", "photo": "assets/doctors/doc-RV.png" },
-    { "id": "d3", "name": "Dr. S. Iyer", "title": "Ayurveda Lifestyle Lead", "quals": "BAMS, Integrative Care", "specialties": ["Kidney diet", "Lifestyle"], "languages": "Hindi, English", "photo": "assets/doctors/doc-SI.png" },
-    { "id": "d4", "name": "Dr. M. Khan", "title": "Nephrology Associate", "quals": "MD (Medicine)", "specialties": ["Hypertension", "Follow-up care"], "languages": "Hindi, English", "photo": "assets/doctors/doc-MK.png" },
-    { "id": "d5", "name": "Dr. P. Nair", "title": "Dietitian (Renal)", "quals": "PG Dip. Renal Nutrition", "specialties": ["Kidney diet", "Diabetes diet"], "languages": "Hindi, English", "photo": "assets/doctors/doc-PN.png" },
-    { "id": "d6", "name": "Dr. T. Roy", "title": "Consultant Nephrologist", "quals": "MD, DM (Nephrology)", "specialties": ["CKD", "Stones"], "languages": "Hindi, English", "photo": "assets/doctors/doc-TR.png" }
+    {
+      "id": "d1",
+      "name": "Dr. A. Sharma",
+      "title": "Senior Nephrologist",
+      "quals": "MD, DM (Nephrology)",
+      "specialties": [
+        "CKD",
+        "Dialysis",
+        "Transplant care"
+      ],
+      "languages": "Hindi, English",
+      "photo": "assets/doctors/doc-AS.png"
+    },
+    {
+      "id": "d2",
+      "name": "Dr. R. Verma",
+      "title": "Consultant Physician",
+      "quals": "MD (Internal Medicine)",
+      "specialties": [
+        "Diabetes & kidney",
+        "Hypertension"
+      ],
+      "languages": "Hindi, English",
+      "photo": "assets/doctors/doc-RV.png"
+    },
+    {
+      "id": "d3",
+      "name": "Dr. S. Iyer",
+      "title": "Ayurveda Lifestyle Lead",
+      "quals": "BAMS, Integrative Care",
+      "specialties": [
+        "Kidney diet",
+        "Lifestyle"
+      ],
+      "languages": "Hindi, English",
+      "photo": "assets/doctors/doc-SI.png"
+    },
+    {
+      "id": "d4",
+      "name": "Dr. M. Khan",
+      "title": "Nephrology Associate",
+      "quals": "MD (Medicine)",
+      "specialties": [
+        "Hypertension",
+        "Follow-up care"
+      ],
+      "languages": "Hindi, English",
+      "photo": "assets/doctors/doc-MK.png"
+    },
+    {
+      "id": "d5",
+      "name": "Dr. P. Nair",
+      "title": "Dietitian (Renal)",
+      "quals": "PG Dip. Renal Nutrition",
+      "specialties": [
+        "Kidney diet",
+        "Diabetes diet"
+      ],
+      "languages": "Hindi, English",
+      "photo": "assets/doctors/doc-PN.png"
+    },
+    {
+      "id": "d6",
+      "name": "Dr. T. Roy",
+      "title": "Consultant Nephrologist",
+      "quals": "MD, DM (Nephrology)",
+      "specialties": [
+        "CKD",
+        "Stones"
+      ],
+      "languages": "Hindi, English",
+      "photo": "assets/doctors/doc-TR.png"
+    }
   ],
   "reels": [
-    { "id": "r1", "tag": "Kidney Health", "tone": "green", "title": "5 signs your creatinine is rising", "views": "", "img": "assets/reels/reel-1.png", "url": "" },
-    { "id": "r2", "tag": "Diet", "tone": "blue", "title": "CKD diet: what to eat & avoid", "views": "", "img": "assets/reels/reel-2.png", "url": "" },
-    { "id": "r3", "tag": "Dialysis", "tone": "cream", "title": "Dialysis explained calmly", "views": "", "img": "assets/reels/reel-3.png", "url": "" },
-    { "id": "r4", "tag": "Integrated Care", "tone": "green", "title": "How Ayurveda supports kidneys", "views": "", "img": "assets/reels/reel-4.png", "url": "" },
-    { "id": "r5", "tag": "Lifestyle", "tone": "blue", "title": "Daily habits for kidney health", "views": "", "img": "assets/reels/reel-5.png", "url": "" },
-    { "id": "r6", "tag": "Patient Story", "tone": "cream", "title": "From scared to in-control", "views": "", "img": "assets/reels/reel-6.png", "url": "" }
+    {
+      "id": "r1",
+      "tag": "Kidney Health",
+      "tone": "green",
+      "title": "5 signs your creatinine is rising",
+      "views": "",
+      "img": "assets/reels/reel-1.png",
+      "url": ""
+    },
+    {
+      "id": "r2",
+      "tag": "Diet",
+      "tone": "blue",
+      "title": "CKD diet: what to eat & avoid",
+      "views": "",
+      "img": "assets/reels/reel-2.png",
+      "url": ""
+    },
+    {
+      "id": "r3",
+      "tag": "Dialysis",
+      "tone": "cream",
+      "title": "Dialysis explained calmly",
+      "views": "",
+      "img": "assets/reels/reel-3.png",
+      "url": ""
+    },
+    {
+      "id": "r4",
+      "tag": "Integrated Care",
+      "tone": "green",
+      "title": "How Ayurveda supports kidneys",
+      "views": "",
+      "img": "assets/reels/reel-4.png",
+      "url": ""
+    },
+    {
+      "id": "r5",
+      "tag": "Lifestyle",
+      "tone": "blue",
+      "title": "Daily habits for kidney health",
+      "views": "",
+      "img": "assets/reels/reel-5.png",
+      "url": ""
+    },
+    {
+      "id": "r6",
+      "tag": "Patient Story",
+      "tone": "cream",
+      "title": "From scared to in-control",
+      "views": "",
+      "img": "assets/reels/reel-6.png",
+      "url": ""
+    }
   ],
   "storyVideo": {
     "enabled": true,
@@ -37,26 +152,256 @@
     "url": ""
   },
   "testimonials": [
-    { "id": "t1", "rating": 5, "name": "Ramesh K.", "loc": "Baraut", "quote": "They explained my reports clearly and gave me a kidney diet I could actually follow at home." },
-    { "id": "t2", "rating": 5, "name": "Sunita D.", "loc": "Baghpat", "quote": "Honest guidance without scary promises. My creatinine is being monitored properly now." },
-    { "id": "t3", "rating": 5, "name": "Imran S.", "loc": "Meerut", "quote": "The video consultation saved us a long trip. The team was patient and answered every question." }
+    {
+      "id": "t1",
+      "rating": 5,
+      "name": "Ramesh K.",
+      "loc": "Baraut",
+      "quote": "They explained my reports clearly and gave me a kidney diet I could actually follow at home."
+    },
+    {
+      "id": "t2",
+      "rating": 5,
+      "name": "Sunita D.",
+      "loc": "Baghpat",
+      "quote": "Honest guidance without scary promises. My creatinine is being monitored properly now."
+    },
+    {
+      "id": "t3",
+      "rating": 5,
+      "name": "Imran S.",
+      "loc": "Meerut",
+      "quote": "The video consultation saved us a long trip. The team was patient and answered every question."
+    }
   ],
   "faqs": [
-    { "id": "f1", "q": "Can high creatinine always be reduced?", "a": "It depends on the underlying cause. A doctor reviews your reports, history and medications to plan care. We do not promise guaranteed outcomes." },
-    { "id": "f2", "q": "Do you guarantee that dialysis can be stopped?", "a": "No. We never make such claims. Dialysis decisions are strictly doctor- and report-led, based on your kidney function." },
-    { "id": "f3", "q": "Is the first consultation online or in clinic?", "a": "You choose — video, phone, or an in-clinic visit. Reports can be shared securely before your appointment." },
-    { "id": "f4", "q": "Is the Ayurveda support safe with my medicines?", "a": "Lifestyle and dietary support is given alongside, and in coordination with, your medical treatment — never as a replacement for it." },
-    { "id": "f5", "q": "How quickly will someone contact me?", "a": "Our care team usually responds the same day during working hours. This is not an emergency service." }
+    {
+      "id": "f1",
+      "q": "Can high creatinine always be reduced?",
+      "a": "It depends on the underlying cause. A doctor reviews your reports, history and medications to plan care. We do not promise guaranteed outcomes."
+    },
+    {
+      "id": "f2",
+      "q": "Do you guarantee that dialysis can be stopped?",
+      "a": "No. We never make such claims. Dialysis decisions are strictly doctor- and report-led, based on your kidney function."
+    },
+    {
+      "id": "f3",
+      "q": "Is the first consultation online or in clinic?",
+      "a": "You choose — video, phone, or an in-clinic visit. Reports can be shared securely before your appointment."
+    },
+    {
+      "id": "f4",
+      "q": "Is the Ayurveda support safe with my medicines?",
+      "a": "Lifestyle and dietary support is given alongside, and in coordination with, your medical treatment — never as a replacement for it."
+    },
+    {
+      "id": "f5",
+      "q": "How quickly will someone contact me?",
+      "a": "Our care team usually responds the same day during working hours. This is not an emergency service."
+    },
+    {
+      "id": "f6",
+      "q": "Does a high creatinine mean my kidney is finished?",
+      "a": "No. Creatinine is only one number and cannot describe your whole kidney condition on its own. Your doctor reads it together with eGFR, urine protein, blood pressure and your symptoms to understand what is really happening."
+    },
+    {
+      "id": "f7",
+      "q": "My creatinine is normal — does that mean my kidneys are perfectly healthy?",
+      "a": "Not always. In early CKD, creatinine can still look normal even when other markers are changing. That is why doctors also check eGFR, urine protein and other reports rather than relying on a single value."
+    },
+    {
+      "id": "f8",
+      "q": "If my eGFR is low, do I need dialysis immediately?",
+      "a": "No. A dialysis decision is never made on eGFR alone. Your doctor evaluates your symptoms, full reports and overall condition together before advising anything."
+    },
+    {
+      "id": "f9",
+      "q": "Does CKD always lead to dialysis?",
+      "a": "No — that is one of the most common fears. Many people live well for years with proper monitoring, lifestyle care and medical guidance. The path depends on the cause, the stage and how consistently the condition is managed."
+    },
+    {
+      "id": "f10",
+      "q": "I feel completely fine — does that mean my kidneys are healthy?",
+      "a": "Feeling well is reassuring, but kidney problems can be present without obvious symptoms early on. Regular check-ups and follow-up reports are the reliable way to know your true kidney status."
+    },
+    {
+      "id": "f11",
+      "q": "I pass urine normally — so my kidneys must be okay, right?",
+      "a": "Not necessarily. Many patients continue to pass normal amounts of urine even when kidney function has declined. Urine output alone is not a measure of kidney health — your reports tell the real story."
+    },
+    {
+      "id": "f12",
+      "q": "Do I have to stop all fruits and dal completely?",
+      "a": "Usually not. Whether — and how much — to limit fruits, potassium or protein depends on your reports and stage, and is decided with your doctor or a renal dietitian. Cutting out whole food groups without guidance is not the answer."
+    },
+    {
+      "id": "f13",
+      "q": "My potassium is high — should I fear it and stop all fruits and vegetables?",
+      "a": "Potassium is decided by a blood test, not by fear. Not every kidney patient has high potassium, and it is not found only in bananas — coconut water, potato, tomato, spinach and dry fruits also contain it. If your doctor advises limiting it, a renal dietitian can plan the right amounts for you."
+    },
+    {
+      "id": "f14",
+      "q": "Is more water always better for my kidneys?",
+      "a": "No. The right amount of water depends on your condition and your doctor’s advice. For some kidney patients, drinking too much can be harmful, so hydration should be personalised rather than assumed."
+    },
+    {
+      "id": "f15",
+      "q": "Are herbal or Ayurvedic products always safe for kidneys?",
+      "a": "Not automatically. Not every herbal or Ayurvedic product suits every patient, and some may not be appropriate for kidney disease. Any such support should be taken alongside, and in coordination with, your medical treatment — never as a replacement, and only with a qualified doctor’s advice."
+    },
+    {
+      "id": "f16",
+      "q": "Can painkillers harm my kidneys?",
+      "a": "They can. Some painkillers, when used frequently or without medical advice, may affect the kidneys over time. Always check with your doctor before taking them regularly."
+    },
+    {
+      "id": "f17",
+      "q": "Can I stop my medicine on my own once I feel better?",
+      "a": "No. Stopping or changing any medicine without medical advice is not safe, even if you feel well. Speak to your doctor before making any change to your prescription."
+    },
+    {
+      "id": "f18",
+      "q": "Is CKD only an older person’s disease?",
+      "a": "No. Kidney disease can affect children, young adults and people of any age. This is why early awareness and timely check-ups matter for everyone, not just the elderly."
+    },
+    {
+      "id": "f19",
+      "q": "Once a report comes back normal, can I stop further tests?",
+      "a": "No. Kidney care depends on regular follow-up, because your condition can change over time. Ongoing monitoring helps your doctor catch changes early and adjust your care."
+    },
+    {
+      "id": "f20",
+      "q": "What key numbers should every kidney patient know?",
+      "a": "It helps to know your creatinine, eGFR, whether there is protein in your urine, your blood pressure, sugar status, potassium and haemoglobin — and to keep your reports and medicine list handy. Understanding your own numbers helps you and your doctor make better decisions together."
+    }
   ],
   "posts": [
-    { "id": "p1", "slug": "high-creatinine-symptoms-causes", "related": "high-creatinine", "cat": "Symptoms", "title": "High Creatinine: Symptoms, Causes & When to Worry", "excerpt": "Tiredness, swelling and foamy urine — understand what a raised creatinine level really means and the safe next steps.", "time": "6 min read", "tone": "blue", "date": "Jun 2026", "author": "RIIMS Nephrology Team", "img": "assets/reels/reel-1.png", "body": "" },
-    { "id": "p2", "slug": "ckd-diet-chart-indian-veg", "related": "ckd", "cat": "Diet", "title": "CKD Diet Chart (Indian, Veg): Foods to Eat and Avoid", "excerpt": "A practical, doctor-aligned Indian kidney diet for chronic kidney disease — dal, vegetables, salt, potassium and protein explained.", "time": "8 min read", "tone": "green", "date": "Jun 2026", "author": "Dr. P. Nair (Renal Dietitian)", "img": "assets/reels/reel-2.png", "body": "" },
-    { "id": "p3", "slug": "ayurveda-kidney-care-integrated", "related": "ckd", "cat": "Integrated Care", "title": "Can Ayurveda Help Kidney Patients? An Honest, Integrated View", "excerpt": "How Ayurveda-supported lifestyle care works alongside — not instead of — nephrology, and what claims to be cautious about.", "time": "7 min read", "tone": "cream", "date": "May 2026", "author": "Dr. S. Iyer (Integrative Care)", "img": "assets/reels/reel-4.png", "body": "" },
-    { "id": "p4", "slug": "reduce-creatinine-safely", "related": "high-creatinine", "cat": "Creatinine", "title": "How to Reduce Creatinine Safely: Doctor-Guided Steps", "excerpt": "Evidence-aware ways to manage high creatinine — diet, hydration, BP and sugar control — without unsafe shortcuts or false promises.", "time": "7 min read", "tone": "blue", "date": "May 2026", "author": "RIIMS Nephrology Team", "img": "assets/reels/reel-5.png", "body": "" },
-    { "id": "p5", "slug": "dialysis-myths-vs-facts", "related": "dialysis", "cat": "Dialysis", "title": "Dialysis Explained: Myths vs Facts for Indian Patients", "excerpt": "Separating fear-driven myths from what dialysis actually involves, when it is needed, and how to prepare with your doctor.", "time": "6 min read", "tone": "green", "date": "May 2026", "author": "RIIMS Nephrology Team", "img": "assets/reels/reel-3.png", "body": "" },
-    { "id": "p6", "slug": "protein-in-urine-meaning", "related": "proteinuria", "cat": "Symptoms", "title": "Protein in Urine (Proteinuria): What It Means", "excerpt": "Why protein leaks into urine, how it is tested, and what foamy urine can signal about your kidney health.", "time": "5 min read", "tone": "cream", "date": "Apr 2026", "author": "RIIMS Nephrology Team", "img": "assets/reels/reel-6.png", "body": "" },
-    { "id": "p7", "slug": "diabetes-kidney-disease", "related": "diabetes-bp", "cat": "Risk", "title": "Diabetes & Kidney Disease: Protecting Your Kidneys", "excerpt": "Diabetic kidney disease is common in India. Learn the early signs and how tight sugar and BP control protects your kidneys.", "time": "6 min read", "tone": "blue", "date": "Apr 2026", "author": "Dr. R. Verma", "img": "assets/video-testimonial.png", "body": "" },
-    { "id": "p8", "slug": "swelling-feet-face-kidneys", "related": "swelling", "cat": "Symptoms", "title": "Swelling in Feet & Face: Could It Be Your Kidneys?", "excerpt": "When edema points to the kidneys, what tests help, and when swelling means you should consult a kidney doctor.", "time": "4 min read", "tone": "green", "date": "Apr 2026", "author": "RIIMS Nephrology Team", "img": "", "body": "" },
-    { "id": "p9", "slug": "kidney-stones-uti-prevention", "related": "stone-uti", "cat": "Prevention", "title": "Kidney Stones & UTI: Prevention Tips for India", "excerpt": "Hydration, diet and lifestyle habits that lower your risk of kidney stones and urinary infections in a hot climate.", "time": "5 min read", "tone": "cream", "date": "Mar 2026", "author": "RIIMS Nephrology Team", "img": "", "body": "" }
+    {
+      "id": "p1",
+      "slug": "high-creatinine-symptoms-causes",
+      "related": "high-creatinine",
+      "cat": "Symptoms",
+      "title": "High Creatinine: Symptoms, Causes & When to Worry",
+      "excerpt": "Tiredness, swelling and foamy urine — understand what a raised creatinine level really means and the safe next steps.",
+      "time": "6 min read",
+      "tone": "blue",
+      "date": "Jun 2026",
+      "author": "RIIMS Nephrology Team",
+      "img": "assets/reels/reel-1.png",
+      "body": "High creatinine often signals that the kidneys are under strain. It is a sign to investigate calmly — not a diagnosis on its own. Many people see a slightly raised number on a report and immediately fear the worst: \"Is my kidney damaged? Will I need dialysis?\" Before jumping to conclusions, it helps to understand what creatinine actually is, why it rises, and how doctors read it as part of a bigger picture.\n\n## What Creatinine Actually Is\n\nCreatinine is a natural waste product made by your body. Every time your muscles do work and use energy, a small amount of creatinine is produced. Healthy kidneys filter this creatinine out of the blood and remove it through urine.\n\nThe single most important thing to understand is this: creatinine is not a disease. It is a marker — a signal. It helps doctors understand how well the kidneys are filtering, but the number alone does not tell the full story of your kidney health.\n\nWhen kidney filtering capacity begins to drop, creatinine starts to build up in the blood. That is why a raised value can be an early hint that the kidneys need a closer look.\n\n## Normal Creatinine Ranges\n\nNormal ranges can vary slightly between laboratories, but broadly:\n\n- Men: 0.7 to 1.3 mg/dL\n- Women: 0.6 to 1.1 mg/dL\n\nWomen often have slightly lower values than men because of differences in muscle mass. Your age, body build, and other factors can also shift the number, so a result should always be read against your own history rather than a single fixed cut-off.\n\n## Why Creatinine Rises\n\nA higher-than-normal creatinine can have several causes, and not all of them mean long-term kidney disease. Common reasons include:\n\n- Chronic Kidney Disease (CKD) — a gradual, long-standing reduction in kidney function\n- Acute Kidney Injury (AKI) — a sudden drop in kidney function, often reversible if treated early\n- Dehydration — not enough water in the body can temporarily raise the number\n- Severe infection — which can stress the kidneys\n- Certain medicines — including some painkillers and other drugs taken without guidance\n- Urinary obstruction — a blockage such as stones affecting urine flow\n- Muscular build — people with high muscle mass may naturally have higher creatinine without any kidney problem\n\nBecause the reasons are so varied, two people can have the exact same creatinine value while their actual kidney function is quite different. This is exactly why the number should never be judged in isolation.\n\n## Why Creatinine Must Be Read With Other Reports\n\nModern kidney guidelines around the world do not rely on creatinine alone. To understand the real state of the kidneys, doctors look at creatinine together with:\n\n- eGFR (Estimated Glomerular Filtration Rate) — this estimates how much blood your kidneys filter per minute and reflects your real filtering capacity. An eGFR of 90 or above is generally normal, 60 to 89 may be a mild reduction, and below 60 can signal a meaningful drop that needs attention.\n- Urine protein or albumin — leakage of protein into urine is an important sign of kidney stress\n- Blood pressure, blood sugar, potassium, and hemoglobin — which together reveal how the kidneys and body are coping\n\nThink of creatinine as a warning light on a dashboard and eGFR as the actual measure of engine performance. You need to read both, along with the rest of the report, to see the true picture.\n\n## Symptoms to Be Aware Of\n\nIn its early stages, raised creatinine often causes no obvious symptoms at all — which is why routine testing matters. As kidney strain increases, some people may notice:\n\n- Swelling in the feet, ankles, or around the eyes\n- Unusual tiredness or weakness\n- Changes in the amount or appearance of urine\n- Poor appetite or difficulty sleeping\n- Breathlessness on exertion\n\nThese signs are not proof of serious disease on their own, but they are worth reporting to a doctor.\n\n## When to Worry: Red Flags\n\nNot every raised report is an emergency, and the goal here is not to frighten you but to help you act at the right time. Seek prompt medical attention if you notice any of the following:\n\n- A sudden, sharp rise in creatinine rather than a slow change\n- A large drop in urine output, or urine almost stopping\n- Serious difficulty breathing, or heaviness in the chest\n- Continuous vomiting with nothing staying down\n- Sudden confusion, extreme drowsiness, or fainting\n- Blood in the urine or rapidly increasing swelling\n\nSymptoms like these can point to a serious shift in kidney or electrolyte balance and should not be taken lightly.\n\n## Consult Early, Stay Calm\n\nA high creatinine reading is a reason to investigate, not to panic. Often the smartest response is simple: get the full report reviewed by a qualified doctor, repeat the test if advised, and look at the trend over time rather than one isolated number. Catching a problem early gives you the best chance to protect your kidneys and slow any decline.\n\nIf your creatinine is raised, talk to a kidney specialist rather than searching for quick answers online. Understanding your report is the first step toward looking after your kidneys well.\n\nThis article is for general awareness only and is not a substitute for personal medical advice. Please consult a qualified doctor about your own reports and treatment."
+    },
+    {
+      "id": "p2",
+      "slug": "ckd-diet-chart-indian-veg",
+      "related": "ckd",
+      "cat": "Diet",
+      "title": "CKD Diet Chart (Indian, Veg): Foods to Eat and Avoid",
+      "excerpt": "A practical, doctor-aligned Indian kidney diet for chronic kidney disease — dal, vegetables, salt, potassium and protein explained.",
+      "time": "8 min read",
+      "tone": "green",
+      "date": "Jun 2026",
+      "author": "Dr. P. Nair (Renal Dietitian)",
+      "img": "assets/reels/reel-2.png",
+      "body": "When a kidney report changes, the first worry is almost always about the plate: \"What should I eat now?\" Suddenly everyone has advice — stop all dal, never touch fruit, drink more water, drink less water. It gets confusing fast, and confusion leads to fear-based eating that can do more harm than good. The truth is calmer and clearer: food is not a substitute for treatment, but it is a powerful support to it. A well-chosen Indian vegetarian plate can help nourish the body, lower the risk of malnutrition, support fluid and electrolyte balance, and assist in controlling diabetes and blood pressure. This is a general guide, not a prescription — your final diet is always set with your doctor and a renal dietitian, based on your reports.\n\n## The #1 Principle: There Is No Single Diet for Everyone\n\nThe most important idea to understand is that one diet does not fit all kidney patients. What is right for you depends on your CKD stage, whether you are on dialysis or have had a transplant, whether you have diabetes or high blood pressure, and your latest potassium, phosphorus, protein status, body weight, and appetite. One person may need more protein while another needs less; one may need to limit potassium while another does not; one may need to watch fluids while another can drink normally.\n\nThat is why \"download any diet chart from the internet and follow it\" is a mistake. Decades of world research — from the old Rice Diet, to the MDRD study, DASH, the Mediterranean pattern, PLADO, and today's KDOQI guidelines — all point to the same lesson: kidney nutrition must be personalised, and diet should support treatment, not replace it. The best diet is the one that fits your illness, your reports, and your needs — not someone else's advice.\n\n## The RiiMS Renal Plate Model\n\nRather than a rigid chart, RIIMS uses a simple visual guide called the RiiMS Renal Plate — balanced food, controlled portions, right combinations, so the kidney gets rest and the body gets nourishment. Picture one thali divided into three parts:\n\n- ½ plate vegetables — mostly low-potassium, lightly cooked with less spice. Think lauki, tori, turai, carrot, parwal, pumpkin, cabbage, cauliflower, capsicum, beans, cucumber, tomato, and leafy greens as suitable.\n- ¼ plate grains — rice, roti (wheat), and oats or barley where appropriate, in controlled quantity. Fresh, light, and easy to digest — not excessive.\n- ¼ plate protein — moong dal, masoor dal, a small amount of paneer, tofu, or an egg if it suits you. Keep it high-quality, light, and in an amount matched to your condition.\n\nFlavour comes from small amounts of lemon, amla, ginger, garlic, coriander, mint, jeera, saunf, and a little healthy oil — not from extra salt.\n\nThe Plate rests on five principles: Fresh (home-cooked wherever possible), Seasonal (natural foods in season), Local (traditional foods available in your region), Personalised (every patient's plate can look different), and Mindful eating (eat slowly, chew well, on time, with a calm mind and a light dinner). Remember, this plate changes from person to person — for diabetes the carbohydrate choices shift, for raised potassium some fruits and vegetables are adjusted, for dialysis protein needs differ, and for excess weight portion sizes are watched.\n\n## Protein: Needed, Not Banned\n\nThe biggest myth is that kidney patients must stop dal, milk, and paneer completely. Protein is an essential nutrient — it builds muscle, repairs tissue, makes hormones and enzymes, and supports immunity. In some situations the amount may need attention on medical advice, but stopping protein is not the answer, and eating too little can lead to weakness and malnutrition. Notably, many people on dialysis actually need more protein than earlier stages.\n\nIn Indian vegetarian food, good protein does not come only from paneer or powders. Sources include dal, moong, chana, rajma, lobia, milk, curd, paneer, soya, and sprouts, with egg for those who take it. Which source and how much is right for you depends on your stage and reports — decide it with your dietitian.\n\n## Sodium and Salt: Choose Wisely, Not Blandly\n\nHealthy kidneys clear extra sodium; when kidney function drops, sodium can build up and lead to swelling, higher blood pressure, fluid retention, and breathlessness. The catch is that most sodium today is hidden, not from the salt shaker. It hides in pickle, papad, chips, namkeen, sauces, instant noodles, biscuits, and packaged and processed foods. And every kind of salt — table, sendha, or kala namak — contains sodium, so quantity is what matters.\n\n- Limit high-salt packaged and preserved foods.\n- Prefer fresh, home-cooked meals.\n- Build flavour with lemon, coriander, mint, and balanced spices.\n\nLow salt does not mean tasteless food — it means food chosen with understanding.\n\n## Potassium: Decide by Blood Test, Not by Fear\n\nHearing \"potassium,\" many people stop eating all fruit — but not every kidney patient needs to limit it. Potassium matters most when the kidney cannot clear it and the blood level rises, which is more likely in advanced CKD, on dialysis, when reports show high potassium, or with certain medicines. If your potassium report is normal and your doctor has not advised restriction, there is usually no need to cut all potassium-rich foods.\n\nAlso, potassium is not only in bananas. It is also in coconut water, potato, tomato, spinach, orange, and dry fruits. So \"just stop bananas\" is not a real solution — the right choice and quantity, guided by regular blood tests, is what counts. Fear the untested decision, not the potassium itself.\n\n## Phosphorus: Watch It in Advanced CKD\n\nPhosphorus gets less attention than creatinine or protein, but in advanced kidney disease its balance matters just as much. When kidney function falls, phosphorus can rise, and over time this can weaken bones, disturb calcium balance, raise PTH, and increase the risk of calcium deposits in blood vessels. Special care is often advised in stage 4–5 CKD, on dialysis, or when phosphorus or PTH is raised. A key point: beware phosphate additives hidden in processed cheese, cold drinks, processed meats, bakery products, and packaged snacks — the phosphorus from these additives is absorbed far more readily than from natural foods. Regular blood tests and a personalised plan are the way forward.\n\n## Water and Fluids: No Fixed Litres\n\n\"How much water should I drink?\" has no single answer. The popular \"everyone must drink 5–6 litres\" is a myth — and so is \"drink as little as possible.\" The right amount depends on your CKD stage, urine output, swelling, whether you are on dialysis, your heart function, the weather, activity, and illnesses like fever, vomiting, or loose motions. Some patients — on dialysis, passing very little urine, with marked swelling or repeated breathlessness — may be advised to limit fluids; others can drink normally. And fluid is not only water: count tea, coffee, milk, buttermilk, soup, juice, ice, coconut water, thin dals, and watery fruits too.\n\n## A Sample Balanced Day (Illustrative Only)\n\nThis is only an example of how the RiiMS Renal Plate can look — not a prescription. Personalise it with your renal dietitian based on your reports.\n\n- Early morning: warm water or light tea; soaked almonds if allowed.\n- Breakfast: vegetable poha or oats with lightly cooked veg, or a besan/moong chilla, with a small bowl of curd if suitable.\n- Lunch: ¼ plate rice/roti + ¼ plate moong or masoor dal + ½ plate lightly cooked seasonal low-potassium vegetables; a small salad flavoured with lemon.\n- Evening: buttermilk or a light seasonal fruit as suitable, or roasted chana in small amount.\n- Dinner (light, early): soft roti or khichdi with a light sabzi; a little paneer or tofu if it fits your plan.\n\n## Get a Plan That Is Truly Yours\n\nA kidney-friendly Indian vegetarian diet is not about fear or endless bans — it is about balance, variety, freshness, and the right amounts for your body. Because your stage, reports, and other conditions are unique, the safest next step is a personalised plan made with your doctor and a renal dietitian, reviewed as your reports change. Diet supports your treatment and can meaningfully improve your quality of life — it works alongside your medical care, not in place of it."
+    },
+    {
+      "id": "p3",
+      "slug": "ayurveda-kidney-care-integrated",
+      "related": "ckd",
+      "cat": "Integrated Care",
+      "title": "Can Ayurveda Help Kidney Patients? An Honest, Integrated View",
+      "excerpt": "How Ayurveda-supported lifestyle care works alongside — not instead of — nephrology, and what claims to be cautious about.",
+      "time": "7 min read",
+      "tone": "cream",
+      "date": "May 2026",
+      "author": "Dr. S. Iyer (Integrative Care)",
+      "img": "assets/reels/reel-4.png",
+      "body": "Kidney patients in India often ask a very honest question: \"Can Ayurveda help me?\" It deserves an honest answer. Ayurveda offers a thoughtful, whole-person way of looking at health that many people find meaningful. But when it comes to kidney disease, its role is best understood as supportive and doctor-guided — something that may work alongside modern nephrology, never as a replacement for it. This article explains what that integrated view really means.\n\n## Ayurveda looks at the whole person, not just a number\n\nModern medicine often focuses closely on a single organ or a single report. Ayurveda takes a wider view, treating the body as one connected, holistic unit. According to its classical texts, health rests on the balance of dosha (the body's regulating bio-energies), dhatu (the nourishing and structural tissues), and mala (the waste products the body must clear).\n\nThis is why an Ayurvedic assessment does not stop at \"How high is the creatinine?\" It also tries to understand why the balance was disturbed in the first place — which doshas and channels (srotas) are affected, how digestion and metabolism are doing, and what the patient's own constitution and strength are like.\n\nTwo patients can both have a creatinine of 5 mg/dL, yet be completely different people. One is 35, has no diabetes, eats well, and has no swelling. The other is 75, has had diabetes for 20 years, is very weak, and has swelling all over. The report may look identical; the patients are not. Ayurveda's contribution here is a reminder that the report tells the disease, but not the whole story of the patient.\n\n## The Agni and gut-kidney connection\n\nA central idea in Ayurveda is Agni — the body's digestive and metabolic capacity. A well-known classical principle holds that many diseases begin with weak Agni. When digestion and metabolism do not work fully, an incompletely processed biological imbalance the texts call Ama can build up and, over time, disturb the body's channels and balance.\n\nInterestingly, modern science is increasingly interested in the very same territory: nutrition, inflammation, metabolic health, and the gut-kidney axis in chronic kidney disease. Ayurveda and modern medicine use different languages, but both are pointing toward the importance of digestion, metabolism, and long-term balance in whole-person care.\n\n## Supportive, alongside — never instead of nephrology\n\nThis is the most important point to be crystal clear about. In the context of kidney health, Ayurvedic remedies should be discussed only as a possible supportive role — for example, helping support the urinary channels, assisting with inflammation-related and oxidative processes, supporting digestion, or contributing to quality of life. Support is not the same as cure. Ayurveda does not replace dialysis, medicines, or your nephrologist's plan, and no herb should ever be positioned as doing so.\n\nThe safest and most effective path is an integrated one: continue your prescribed treatment and monitoring, and bring any interest in Ayurveda to your treating doctors so everything works together.\n\n## The researched herbs — traditionally used, under study\n\nSeveral herbs appear both in classical texts and in modern research. It is important to frame them as traditionally used and currently under study — not as proven cures:\n\n- Punarnava (Boerhavia diffusa) — long described for urinary and swelling-related conditions, and studied for possible antioxidant, anti-inflammatory, diuretic and nephroprotective effects.\n- Gokshura (Tribulus terrestris) — traditionally linked to the urinary tract and stones, and studied for possible diuretic, anti-urolithiatic and nephroprotective effects.\n- Varuna (Crataeva nurvala) — classically associated with urinary stones and flow, and studied for possible anti-urolithiatic and anti-inflammatory effects.\n- Guduchi (Tinospora cordifolia) — a well-known Rasayana herb studied for possible immunomodulatory, antioxidant and nephroprotective potential.\n- Amalaki / Amla (Phyllanthus emblica) — a Rasayana rich in natural antioxidants, studied for possible effects on oxidative stress and metabolic health.\n\nNotice what these descriptions do not say. They do not promise reversal or cure. Many findings come from laboratory and preliminary studies, and honesty requires acknowledging that large, high-quality, multicentric clinical trials are still needed before firm conclusions can be drawn.\n\n## \"Natural\" does not mean \"safe\"\n\nPlease read this section carefully. A herb being natural does not automatically make it safe — especially for someone with kidney disease. A firm set of cautions applies:\n\n- Never start any herb on your own. Self-medication is not safe in CKD.\n- If you have kidney disease, diabetes or high blood pressure, or take medicines for them, get clearance from your treating physician first, because herbs can interact with drugs and can affect the kidneys.\n- No two patients are the same, so there are no one-size-fits-all doses — we deliberately give no dosages here; the right choice depends on your individual condition and must be decided by a qualified doctor.\n- Extra caution applies in pregnancy and breastfeeding, and only quality-assured, standardised products should ever be considered.\n- Do not rely on a single herb, and do not stop or change any prescribed medicine without medical advice.\n\n## An honest bottom line\n\nAyurveda's real gift to kidney care may be its perspective: treat the whole person, respect digestion and balance, and remember there is an individual behind every lab report. Used as a supportive, physician-guided companion to nephrology — and only that — it can add value to how patients are understood and cared for. The evidence for specific herbs is promising in parts but still incomplete, and honesty about that is part of good care.\n\nThis article is for general awareness only and is not medical advice. Do not start, stop, or change any treatment or herb without your own doctor's guidance based on your reports."
+    },
+    {
+      "id": "p4",
+      "slug": "reduce-creatinine-safely",
+      "related": "high-creatinine",
+      "cat": "Creatinine",
+      "title": "How to Reduce Creatinine Safely: Doctor-Guided Steps",
+      "excerpt": "Evidence-aware ways to manage high creatinine — diet, hydration, BP and sugar control — without unsafe shortcuts or false promises.",
+      "time": "7 min read",
+      "tone": "blue",
+      "date": "May 2026",
+      "author": "RIIMS Nephrology Team",
+      "img": "assets/reels/reel-5.png",
+      "body": "Once someone sees a raised creatinine, the very next question is usually, \"How do I bring it down quickly?\" It is an understandable wish — but it is the wrong starting point. Creatinine is not lowered by shortcuts or a single miracle remedy. It is a marker of kidney function, so the honest and effective approach is to look after the kidneys themselves and treat whatever is straining them. When the underlying situation improves and is managed well, the number is better understood and controlled over time.\n\n## First, Understand What You Are Really Managing\n\nCreatinine reflects how well your kidneys are filtering. Chasing the number for its own sake can be misleading, and worse, some \"quick fixes\" can actually harm the kidneys. The safe path is doctor-guided and patient: find the cause, reduce the load on the body, and monitor steadily. Think of it as protecting the kidney, not just editing a lab value.\n\n## Step 1: Find and Treat the Root Cause\n\nThe most important question is not \"Creatinine is high\" but \"Why is it high?\" Kidney strain often has more than one cause working together. Common ones include:\n\n- Diabetes and high blood pressure\n- Overuse of painkillers or long-term self-medication\n- Repeated infections\n- Kidney stones or obstruction\n- Obesity and fatty liver\n- Dehydration or unnecessary supplements\n\nIdentifying the real cause gives your treatment a clear direction and helps prevent further damage. This is why a proper evaluation — creatinine, eGFR, urine protein, blood pressure, sugar, an ultrasound where needed, and your medicine and lifestyle history — matters far more than any single reading.\n\n## Step 2: Control Blood Pressure and Blood Sugar\n\nHigh blood pressure and diabetes are two of the biggest drivers of kidney strain. Keeping both well controlled, exactly as your doctor advises, is one of the most powerful things you can do to protect kidney function. This usually means taking prescribed medicines regularly, checking your numbers, and not stopping or changing doses on your own.\n\n## Step 3: Review Your Medicines — Carefully and With a Doctor\n\nSome medicines add extra load to the kidneys. Adjusting a report on your own by changing medication can be dangerous. Instead:\n\n- Avoid painkillers and NSAIDs unless your doctor has approved them\n- Do not start protein powders, unregulated supplements, or \"kidney tonics\" without medical advice\n- Stop long-term self-medication and internet-based prescriptions\n- Bring your full medicine list to your doctor so it can be reviewed properly\n\nAny change to your treatment should be a decision made with your doctor, never alone.\n\n## Step 4: A Personalized Diet and Correct Hydration\n\nThere is no single diet that fits every kidney patient. The right plan depends on your reports — your protein leakage, potassium, sodium, and overall stage. That is why diet should be personalized by your doctor or a renal dietitian rather than copied from a generic online list.\n\nHydration works the same way. Drinking the right amount of water is important, but \"more is always better\" is a myth. Some patients are advised to increase fluids while others need to limit them. Follow the amount your doctor recommends for your specific condition.\n\nThe broader goal is to reduce the everyday load on the body — from excess salt, heavily processed food, poor sleep, and stress — so the kidneys are not working harder than they need to.\n\n## Step 5: Monitor Regularly and Track the Trend\n\nOne report is rarely as meaningful as the direction of change over time. Keeping a simple record helps you and your doctor see whether things are stable, improving, or needing attention. Consider noting, at each check-up:\n\n- Creatinine and eGFR\n- Urine protein\n- Blood pressure and, if you have diabetes, blood sugar\n- Weight and any swelling\n\nRegular monitoring and follow-up are as important as the treatment itself, because they catch small changes before they become big problems.\n\n## A Word on \"Quick Creatinine Cures\"\n\nBe cautious of any product or remedy promising to lower creatinine fast, flush the kidneys overnight, or make dialysis unnecessary. Detox does not mean aggressive cleansing, and \"the more kadha or medicine, the better\" is simply not true. Overloading the body can do more harm than good. If herbal or Ayurvedic support is ever used, it should be doctor-guided and taken alongside proper medical care — never as a replacement for it.\n\n## The Honest, Hopeful Bottom Line\n\nManaging creatinine safely is not about a shortcut; it is about consistent, informed care. A simple daily routine helps: taking prescribed medicines, eating as advised, staying appropriately hydrated, moving within your capacity, sleeping on time, managing stress, and keeping your follow-ups. Done steadily, these habits give your kidneys the best support and give you real control over your health.\n\nThis article is for general awareness only and is not a substitute for personal medical advice. Always consult a qualified doctor before making changes to your medicines, diet, or treatment."
+    },
+    {
+      "id": "p5",
+      "slug": "dialysis-myths-vs-facts",
+      "related": "dialysis",
+      "cat": "Dialysis",
+      "title": "Dialysis Explained: Myths vs Facts for Indian Patients",
+      "excerpt": "Separating fear-driven myths from what dialysis actually involves, when it is needed, and how to prepare with your doctor.",
+      "time": "6 min read",
+      "tone": "green",
+      "date": "May 2026",
+      "author": "RIIMS Nephrology Team",
+      "img": "assets/reels/reel-3.png",
+      "body": "Dialysis raises many questions and fears. For many Indian families, the word alone is frightening. But fear usually comes from misinformation, and the truth is far more reassuring than the rumours. This article explains what dialysis actually is, how its two main types work, when it is truly needed, and — in a clear Myth versus Fact list — sorts out the confusion that stops people from making calm, informed decisions.\n\n## What dialysis actually is\n\nWhen the kidneys can no longer clean the blood well enough, dialysis is a technique that helps remove extra waste products and extra fluid from the body. In simple terms, impure blood is filtered and returned cleaner.\n\nIt helps to be clear about what dialysis is and is not. It is not a \"replacement\" for the kidney and it is not a cure for the underlying disease. What it does is take over some of the kidney's important jobs — clearing waste and fluid — partially, so the body stays in better balance. Dialysis may be needed in certain situations, such as very low kidney function, dangerously high potassium, fluid overload, or serious uremic symptoms.\n\n## HD vs PD: the two main types\n\nThere are two main forms of dialysis, and the right one depends on the patient.\n\n- Hemodialysis (HD): The most common method. A machine draws blood out, cleans it through a special filter called a dialyzer, and returns it to the body. It is usually done about 2-3 times a week, with each session lasting roughly 3-5 hours, at a dialysis centre or hospital under a trained team's supervision.\n- Peritoneal Dialysis (PD): This uses the body's own peritoneum (the lining membrane inside the abdomen) as a natural filter. A special fluid is put into the abdomen and later drained out. Its main advantage is that it can be done at home, offering more independence and, for some patients, more convenience. Common forms are CAPD (continuous ambulatory) and APD (automated, often overnight).\n\nNeither is \"better\" for everyone. The choice depends on the patient's condition, age, lifestyle, financial and social circumstances, and medical advice.\n\n## It is decided on the full clinical picture — not one number\n\nOne of the biggest sources of fear is the idea that a single lab value forces dialysis. It does not. Dialysis is never decided on eGFR alone. The real decision rests on many factors together — symptoms, several test results, and the patient's complete clinical picture, assessed by the treating doctor. Two people with similar reports can have genuinely different needs.\n\n## Myth versus Fact\n\n- Myth: A high creatinine means dialysis is certain. Fact: Creatinine alone cannot decide this. eGFR, urine protein, blood pressure, symptoms and other tests all matter, and they are weighed together.\n- Myth: A low eGFR means dialysis must start immediately. Fact: Dialysis is not decided by eGFR alone. The doctor evaluates symptoms, tests, and the whole situation before any decision.\n- Myth: Starting dialysis means life is over. Fact: Many people live active, balanced lives for years while on dialysis. It is a support to keep living, not an ending.\n- Myth: Every CKD patient will eventually need dialysis. Fact: Not every kidney patient needs dialysis. Many are managed well for a long time with medicines, diet, lifestyle and regular follow-up. Treatment plans are individual.\n- Myth: Kidney transplant is the only real solution. Fact: Each patient's plan is different, and the decision about transplant or dialysis depends on many medical factors — it is not one-size-fits-all.\n- Myth: Kidney disease, or dialysis, means life just stops. Fact: Kidney disease is not the end of life. With correct information, regular treatment and a positive, disciplined lifestyle, people can and do live well.\n\n## What to expect, honestly\n\nBeing honest also means acknowledging that dialysis has effects. Not every patient gets every problem, but some may experience short-term effects during or after a session — low blood pressure, tiredness, muscle cramps, headache, or nausea — and long-term dialysis brings challenges that the care team watches for and manages, such as anemia, bone-mineral changes, higher cardiovascular risk, infection risk (especially with catheters), nutrition needs, and emotional strain. These are reasons to stay closely connected with your team, not reasons to panic. Good monitoring, correct information and support make a real difference.\n\n## The takeaway\n\nDialysis is a tool that helps the body when the kidneys cannot cope — nothing more frightening than that, and often far more life-supporting than people fear. Whether it is needed, when, and in which form are questions with individual answers, decided on your full clinical picture by your own doctor. We help you understand what it involves, when it is truly needed, and how to prepare — guided strictly by your reports and your medical team.\n\nThis article is for general awareness only and is not medical advice. Always make dialysis and treatment decisions together with your nephrologist, based on your own reports and condition."
+    },
+    {
+      "id": "p6",
+      "slug": "protein-in-urine-meaning",
+      "related": "proteinuria",
+      "cat": "Symptoms",
+      "title": "Protein in Urine (Proteinuria): What It Means",
+      "excerpt": "Why protein leaks into urine, how it is tested, and what foamy urine can signal about your kidney health.",
+      "time": "5 min read",
+      "tone": "cream",
+      "date": "Apr 2026",
+      "author": "RIIMS Nephrology Team",
+      "img": "assets/reels/reel-6.png",
+      "body": "Healthy kidneys are careful filters. They clean waste out of your blood while keeping the things your body needs — including protein — safely inside. So when protein starts showing up in your urine, it is a signal worth paying attention to. In fact, protein in the urine can be one of the earliest warnings that the kidneys are under strain, often appearing before any other test looks abnormal.\n\n## Why protein shouldn't be in your urine\n\nInside each kidney are millions of tiny filters. In normal health these filters are so fine that they hold back the important proteins in your blood and let only true waste pass into the urine. That is exactly how they are designed to work.\n\nWhen these filters begin to get damaged, that tight seal starts to loosen. Slowly, small amounts of protein begin to leak through into the urine. So protein in the urine is not the disease itself — it is a clue that the filters may not be sealing the way they should.\n\n## What albuminuria means\n\nAlbumin is one of the most important proteins carried in your blood. When albumin begins to appear in the urine, doctors call this albuminuria.\n\nThis matters for one big reason: albuminuria can be one of the earliest signs of kidney damage. It can show up while your creatinine — the more familiar kidney test — is still completely normal. That is why modern kidney guidelines give urine protein so much importance, and why checking creatinine alone may not be enough to see the full picture.\n\n## The foamy urine clue\n\nMany people with protein in the urine feel perfectly fine and notice nothing at all. Symptoms are not a reliable guide. But in some people there can be hints, such as:\n\n- Foamy or frothy urine\n- Swelling, especially puffiness around the face\n- Fluid building up in the feet and ankles\n\nIf you notice these, mention them to your doctor. But remember — the absence of symptoms does not mean the absence of a problem, which is exactly why testing matters.\n\n## Who is more at risk\n\nProtein leakage is seen more often in people who have:\n\n- Diabetes\n- High blood pressure\n- Obesity\n- Existing chronic kidney disease (CKD)\n- Certain autoimmune conditions\n- A family history of kidney disease\n\nIf you fall into one of these groups, this is a test worth asking your doctor about, even when you feel well.\n\n## How it is tested\n\nChecking for protein in the urine is simple and non-invasive. It is usually done with a urine test that measures protein — commonly the urine albumin-to-creatinine ratio (ACR) — using a small urine sample. Your doctor may repeat it to confirm the result, because a single reading can sometimes be affected by other factors.\n\n## Reading eGFR and albuminuria together\n\nModern kidney care does not rely on one number. Doctors look at two things side by side: eGFR (an estimate of how well your kidneys are filtering) and albuminuria (how much protein is leaking). Together they give a much clearer sense of kidney health:\n\n- eGFR normal (90 or above) with normal albumin (A1): kidneys are working normally.\n- eGFR mildly reduced (60–89) with raised albumin (A2): early strain on the kidneys, worth watching closely.\n- eGFR low (below 60) with high albumin (A3): higher risk of significant kidney damage.\n\nThe broad idea is simple: the more protein is being lost, the more the kidneys may be at risk. Seeing eGFR and albuminuria together tells your doctor more than either one alone.\n\n## Why it must not be ignored\n\nProtein in the urine can be an early alarm for kidney disease — and the value of an early alarm is that it gives you and your doctor time to act. Finding it does not mean something is beyond help; it means you have useful information sooner rather than later. What matters is not ignoring the result. If a test shows protein in your urine, follow it up with your doctor so the cause can be understood and the right next steps planned.\n\nThis article is for general awareness only and is not a substitute for medical advice; please discuss your test results and any treatment with your own doctor."
+    },
+    {
+      "id": "p7",
+      "slug": "diabetes-kidney-disease",
+      "related": "diabetes-bp",
+      "cat": "Risk",
+      "title": "Diabetes & Kidney Disease: Protecting Your Kidneys",
+      "excerpt": "Diabetic kidney disease is common in India. Learn the early signs and how tight sugar and BP control protects your kidneys.",
+      "time": "6 min read",
+      "tone": "blue",
+      "date": "Apr 2026",
+      "author": "Dr. R. Verma",
+      "img": "assets/video-testimonial.png",
+      "body": "Diabetes and high blood pressure are the two biggest causes of kidney disease in India. Protecting your kidneys starts years before any symptom. Most people know diabetes can affect the eyes, the nerves and the heart — but far fewer know that, over time, it can quietly damage the kidneys too. The good news is that this damage is not automatic, and there is a lot you and your doctor can do to lower the risk.\n\n## Why diabetes is the number one cause\n\nAround the world, diabetes is now considered the single largest cause of kidney disease. The damage usually happens slowly and silently over years, which is exactly why it so often goes unnoticed until it is advanced. Understanding how it unfolds is the first step to staying ahead of it.\n\n## How high sugar damages the nephrons\n\nInside your kidneys are millions of tiny filtering units called nephrons. When blood sugar stays high for a long time, it puts extra strain on them. The process tends to follow a recognisable path:\n\n- Persistently high blood sugar\n- Extra pressure builds on the nephrons\n- The filters are slowly damaged\n- Protein begins to leak into the urine\n- eGFR (filtering ability) starts to fall\n- Creatinine begins to rise\n- Chronic kidney disease (CKD) develops\n\nSeeing it laid out this way makes an important point clear: by the time creatinine rises, the process has usually been underway for a while. That is why earlier clues — like protein in the urine — are so valuable.\n\n## High blood pressure works both ways\n\nDiabetes rarely travels alone, and high blood pressure often comes with it. The relationship between blood pressure and the kidneys runs in both directions: high blood pressure can damage the kidneys, and damaged kidneys can in turn push blood pressure higher.\n\nThis happens because the kidneys are full of tiny blood vessels. When blood pressure stays high over a long period, these delicate vessels are under constant strain, the filters can weaken, protein can leak, and kidney function can gradually decline. One common mistake makes this worse: some people take their BP medicine only until they \"feel fine.\" But high blood pressure usually causes its damage silently, without symptoms — so feeling well is not proof that it is controlled.\n\n## Not every person with diabetes gets kidney disease\n\nHere is the hopeful part, and it is important: having diabetes does not mean you will definitely get kidney disease. The risk is higher, yes — but it is not a certainty. What makes a real difference is steady, consistent care:\n\n- Good blood sugar control\n- Good blood pressure management\n- Regular screening\n\nTogether, these can sharply reduce the risk. None of this replaces your diabetes or blood pressure treatment — it works alongside it. Good diabetes control matters not only for your sugar levels, but for protecting your kidneys as well.\n\n## The screening that catches it early\n\nBecause early kidney strain usually has no symptoms, screening is how it gets found in time. If you have diabetes, ask your doctor about checking your kidneys at least once a year, typically with:\n\n- Urine ACR (to look for protein leakage)\n- Creatinine (a blood test)\n- eGFR (an estimate of filtering ability)\n\nThese simple tests can reveal a problem long before you would ever feel it.\n\n## Early signs to know\n\nSymptoms often appear late, but some warning signs are worth watching for and reporting to your doctor:\n\n- Having diabetes for many years\n- Rising protein in the urine\n- Rising blood pressure\n- Swelling in the feet\n- Changes in your kidney function tests\n\nIf any of these show up, they are a reason to talk to your doctor — not to panic, but to plan.\n\nProtecting your kidneys is a partnership with your medical team, built on steady sugar control, blood pressure management and regular checks. This article is for general awareness only and does not replace your diabetes or blood pressure treatment or the advice of your own doctor."
+    },
+    {
+      "id": "p8",
+      "slug": "swelling-feet-face-kidneys",
+      "related": "swelling",
+      "cat": "Symptoms",
+      "title": "Swelling in Feet & Face: Could It Be Your Kidneys?",
+      "excerpt": "When edema points to the kidneys, what tests help, and when swelling means you should consult a kidney doctor.",
+      "time": "4 min read",
+      "tone": "green",
+      "date": "Apr 2026",
+      "author": "RIIMS Nephrology Team",
+      "img": "",
+      "body": "Swelling in the feet, ankles or face can have many causes — the kidneys are an important one to check properly. When your shoes feel tight by evening, or your eyes look puffy in the morning, it is your body's way of saying that fluid is collecting in the tissues. Often it is harmless and temporary. Sometimes, though, it is an early signal worth understanding, because healthy kidneys play a central role in keeping the body's salt and water in balance.\n\n## Why kidneys can cause swelling\n\nYour kidneys work quietly, filtering blood and removing extra salt and water as urine. When they are not working at their best, that balance can slip in two main ways:\n\n- The kidneys cannot clear enough salt and water, so the extra fluid backs up and settles in the tissues.\n- Protein (albumin) leaks out into the urine instead of staying in the blood. Since protein normally helps hold fluid inside the vessels, losing it lets fluid seep into the tissues.\n\nThe pattern often gives a clue. Fluid tends to follow gravity, so the feet and ankles may swell more by evening after a day of standing or sitting. The face and the area around the eyes may look more puffy in the morning after lying down all night. This kind of swelling is a sign of fluid retention in the body, and it should not be brushed aside as \"just tiredness.\"\n\n## It is not always the kidneys\n\nSwelling is a shared symptom, not a diagnosis. The heart, the liver and the veins in the legs can all cause the feet or face to swell too. A weak heart, low albumin from a liver problem, or sluggish leg veins can look very similar from the outside. This is exactly why guessing is not enough and proper testing matters.\n\nA doctor can sort out the real cause with a few simple checks:\n\n- A blood test for creatinine and an eGFR, which together show how well the kidneys are filtering.\n- A urine test for protein, which shows whether albumin is leaking.\n\nThese tests are inexpensive, widely available across India, and they turn guesswork into a clear picture.\n\n## Simple supportive measures\n\nIf your doctor confirms that the swelling is fluid-related, a few gentle everyday habits can support the treatment your doctor prescribes:\n\n- Keep salt controlled, since extra salt makes the body hold on to more water.\n- Take fluids according to your doctor's advice, not by a fixed rule — the right amount is different for each person.\n- Raise your feet on a stool or pillow for some time each day to help fluid drain.\n- Take a light walk and avoid sitting still for very long stretches.\n- Use compression stockings only if your doctor advises them; do not start them on your own.\n\nThese are supportive steps, not a substitute for proper diagnosis and treatment.\n\n## Red flags — see a doctor promptly\n\nSome swelling needs quick attention rather than waiting and watching. Contact a doctor without delay if you notice:\n\n- Swelling that is increasing rapidly.\n- Breathlessness or difficulty breathing.\n- A clear drop in how much urine you are passing.\n\nThese can mean that too much fluid is building up in the body, and timely medical care matters.\n\nEarly recognition is the first key to protecting your kidneys. Swelling is common and often not serious, but it is one signal worth checking properly.\n\nThis article is for general awareness only and does not replace a doctor's advice; please get any persistent or worsening swelling evaluated in person."
+    },
+    {
+      "id": "p9",
+      "slug": "kidney-stones-uti-prevention",
+      "related": "stone-uti",
+      "cat": "Prevention",
+      "title": "Kidney Stones & UTI: Prevention Tips for India",
+      "excerpt": "Hydration, diet and lifestyle habits that lower your risk of kidney stones and urinary infections in a hot climate.",
+      "time": "5 min read",
+      "tone": "cream",
+      "date": "Mar 2026",
+      "author": "RIIMS Nephrology Team",
+      "img": "",
+      "body": "Kidney stones and urinary infections are two of the most common urinary problems in India — and both are largely preventable with everyday care. A stone (pathri) is very common, and the important thing to understand is that not every stone harms the kidney. The same is true of infections: most are a short-term nuisance, but some, if ignored, can reach the kidney. Knowing when these become a real problem is what keeps your kidneys safe.\n\n## How stones form\n\nStones form when certain minerals in the urine become too concentrated and start to crystallise. India's hot climate makes this easier: heat and sweating mean the body loses water, urine becomes concentrated, and the minerals that would normally stay dissolved begin to settle and clump together into a stone.\n\n## When a stone becomes a problem\n\nA small stone is not automatically dangerous, and a small stone is not automatically safe either — the truth depends on its location, size and effect. A stone starts to matter when it:\n\n- Forms again and again.\n- Blocks the normal flow of urine.\n- Causes an infection.\n- Is left unchecked for a long time.\n\nWhen any of these happen, a stone can begin to harm the kidney. If a stone blocks the flow, urine backs up and the kidney can swell — a condition called hydronephrosis (obstruction). Obstruction can come from a stone, from prostate enlargement, or from certain conditions present since birth. This is why a stone should be assessed properly rather than simply assumed to be harmless.\n\n## When infections reach the kidney\n\nA urinary tract infection (UTI) usually begins low down, in the urinary passage. In many people it stays there and clears with proper treatment. But if a UTI keeps coming back, or is not controlled in time, it can travel upward and reach the kidney, causing a kidney infection (pyelonephritis) with inflammation and, in serious cases, damage. This is why repeated infections should never be ignored.\n\n## Prevention — the practical basics\n\nMost of what protects you here is simple, daily and well suited to Indian conditions:\n\n- Drink adequate water through the day, and more in heat or after physical work, to keep urine from becoming concentrated.\n- Do not hold urine for long; pass it when you need to.\n- Keep up personal hygiene to lower the chance of infection.\n- Wear loose, cotton clothing.\n- If a doctor prescribes antibiotics, complete the full course exactly as advised — stopping early can let the infection return stronger. Never take antibiotics on your own.\n\n## A word on Gokshura and Varuna\n\nIn Ayurveda, Gokshura (Tribulus terrestris) and Varuna (Crataeva nurvala) have traditionally been used for urinary support, and both have been studied in modern research for their possible role in urinary tract health and kidney stones. This is encouraging, but it must be kept in perspective: such herbs are supportive only, not a cure or a guaranteed way to remove a stone. They should be used only under the guidance of a qualified practitioner, alongside — not instead of — proper medical care. Do not self-medicate, and do not decide doses on your own; the right approach differs from person to person.\n\n## Red flags — do not wait\n\nSeek medical care promptly if you notice:\n\n- Severe pain in the flank or lower back.\n- Fever together with burning or other urinary symptoms.\n- Blood in the urine.\n\nTimely recognition, correct assessment and proper treatment are what keep the kidneys protected.\n\nThis article is for general awareness only and does not replace a doctor's advice; please consult a qualified doctor for diagnosis, treatment and any use of supportive herbs."
+    }
   ]
 }

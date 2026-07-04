@@ -129,7 +129,7 @@ RiimS/
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
     ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
-    ├── sitemap.xml           # all 25 indexable URLs with lastmod/priority (404 excluded)
+    ├── sitemap.xml           # all 28 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -150,15 +150,15 @@ RiimS/
    prefix: `''` for root pages, `'../'` for pages in `conditions/` and `blog/`), `path` (URL),
    `nav`/`mobile` (active-state hints), `title`, `desc`, optional `keywords`, `body` (HTML), and
    optional `ld` (extra JSON-LD).
-   - 5 core pages (home, about, doctors, blog, contact)
+   - 8 core pages (home, kidney-diseases hub, treatments/services, **DNA Kayakalp Protocol**, about, doctors, blog, contact)
    - 8 condition pages (looped over `CONDITIONS`)
    - 9 blog-article pages (looped over `POSTS`)
    - 3 legal pages (privacy, terms, disclaimer)
-   → **25 pages total**.
+   → **28 indexable pages** (+ a branded 404 = **29 files written**).
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`.
 
-Run it: `npm run build`. It logs `Generated 25 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 29 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -269,10 +269,16 @@ Each function returns a full page body:
 - **`doctorsPage`** — hero + 6 doctor cards + CTA.
 - **`blogPage`** — hero + category filter + featured post + 9 cards (filtered client-side) +
   popular-topic chips + newsletter + CTA.
-- **`blogPostPage(base, p)`** — one per post: hero, article meta, lead, body built from the
-  **related condition's** vetted copy (about/symptoms/approach/when), disclaimer, a CTA card,
-  and "Related reading" (3 other posts). (Bodies are templated; replace with full original
-  articles over time.)
+- **`blogPostPage(base, p)`** — one per post: hero, article meta, lead, then the **full article body**
+  from `POSTS[].body` (rendered by `renderBody`: blank-line paragraphs, `## ` → h2, and a block of `- `
+  lines → `<ul>`). If a post has no body it falls back to the related condition's vetted copy. Ends with a
+  disclaimer, a CTA card, and "Related reading" (3 other posts). All 9 bodies are now full original
+  *Kidney Kavach* articles.
+- **`protocolPage(base)`** — the **DNA Kayakalp Protocol™** page: hero + "What is it" (D-N-A pillar cards)
+  + the three pillars (D: Kidney Mapping 7 domains, root cause, safe detox; N: LDP Protocol™, RiiMS Renal
+  Plate ½+¼+¼, 10 nephrotoxins, 7-therapy Panchakarma Support Framework; A: activation & adaptive care) +
+  how-it-works + `PROTOCOL_FAQS` + disclaimer + CTA. Exported `PROTOCOL_FAQS` also drives the page's
+  FAQPage JSON-LD in `generate.mjs`.
 - **`contactPage`** — hero + contact section + FAQ.
 - **`legalPage(base, key)`** — privacy / terms / disclaimer, from the `LEGAL` content map.
 
@@ -328,13 +334,14 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (27 indexable URLs + a 404)
+## 14. Page inventory (28 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
 | `/` | Home | search-first, FAQ + clinic JSON-LD |
 | `/conditions/` | Kidney Diseases hub | conditions grid + FAQ + breadcrumb schema (nav "Kidney Diseases") |
-| `/services.html` | Treatments & Services hub | 11 service tiles + how-it-works (nav "Treatments") |
+| `/services.html` | Treatments & Services hub | 11 service tiles + how-it-works + DNA Kayakalp banner (nav "Treatments") |
+| `/dna-kayakalp-protocol.html` | DNA Kayakalp Protocol™ | Full D-N-A framework (Kidney Kavach book); breadcrumb + MedicalWebPage + FAQPage schema (nav "Treatments") |
 | `/about.html` | About | story, values, doctors |
 | `/doctors.html` | Doctors | 6 doctors |
 | `/blog.html` | Blog index | filter, featured, 9 cards, newsletter |
@@ -352,7 +359,7 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
   opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post.
-- `sitemap.xml` (25 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
+- `sitemap.xml` (28 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
 - One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Baraut — High Creatinine, CKD,
   Dialysis & Diet Guidance"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
   + `aria-label` on image tiles. Lucide is **self-hosted** (pinned) — no CDN dependency.
@@ -361,8 +368,10 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
   remain (only you can do): verify the domain + submit `sitemap.xml` in Google Search Console,
   create/verify the Google Business Profile (Baraut), and update `SITE.geo`/`mapsQuery` to the
   exact clinic coordinates. See DEPLOY.md §6.
-- **Known content debt (top ranking task):** the 9 blog articles are templated from their related
-  condition's copy — replace with full original long-form articles to avoid thin/duplicate content.
+- **Blog articles are now full original long-form content** derived from the *Kidney Kavach* book
+  (founder Dr. Abhishek Gupta). Each `POSTS[].body` in `data/content.json` holds a complete, compliance-safe
+  article (high creatinine, reduce creatinine, CKD diet, dialysis myths, proteinuria, diabetes, swelling,
+  stones/UTI, integrated Ayurveda) — no longer thin/templated. See §24.
 
 ## 16. Wiring / data flow (how a click works)
 
@@ -514,8 +523,8 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - **Google rating / review counts / patient numbers** in the stats strip are **demo figures** —
   replace with live Google Business numbers before launch (`build/sections.mjs` → `statsStrip`).
 - **Reels & testimonial video** are thumbnails linking to Instagram — embed real videos later.
-- **Blog article bodies are templated** (excerpt + related-condition copy) — replace with full
-  original long-form articles for peak SEO.
+- **Blog article bodies are now full original articles** written from the *Kidney Kavach* book content
+  (stored in `data/content.json` → `posts[].body`). See §24.
 - **Contact map** is now a live Google Maps embed using a generic "RIIMS Baraut" query —
   refine `SITE.geo`/`mapsQuery` to the exact verified Business-Profile place after launch.
 - **Home hero** comes from the owner-supplied `hometop.png` (2MB original, gitignored at repo root), shipped compressed as `site/assets/hometop.jpg` (1600x900, ~190KB via sharp-cli). The banner shows REAL doctors (Dr. Vikas Gupta — Director & Chief Nephrologist, Dr. Abhishek, Dr. Rachna Gupta) — update Admin → Doctors with these real names/photos.
@@ -572,3 +581,47 @@ nginx -t && systemctl reload nginx
 ```
 Update flow note: `deploy/update.sh` now rebuilds after `git reset` so admin content survives
 code updates (it uses host node, or the node:24-alpine image if node isn't installed).
+
+## 24. Kidney Kavach book integration (content source of truth)
+
+The site's medical content is grounded in **_Kidney Kavach_ (किडनी कवच™)** by RIIMS founder
+**Ayurvedacharya Dr. Abhishek Gupta (B.A.M.S.)** — a 159-page book based on the **DNA Kayakalp
+Protocol™**. The book was deep-scanned page-by-page and its vetted content mapped into the site.
+All copy stays compliance-safe (no cure/guarantee/"reverse"/"stop dialysis" claims; Ayurveda &
+Panchakarma framed as **supportive, supervised, alongside — never instead of — medical care**),
+mirroring the book's own honest tone.
+
+What was integrated (all via the generator + `data/content.json`, then `npm test` = 0):
+
+- **New page — `/dna-kayakalp-protocol.html`** (`protocolPage` in `build/pages.mjs`; manifest +
+  JSON-LD in `build/generate.mjs`). Covers the full **D-N-A** framework:
+  - **D — Diagnosis & Detox Support:** Kidney Mapping (7 domains), Root Cause Identification,
+    Metabolic Load Reduction, safe/supervised Detox, Agni/Ama/Gut-Kidney Axis.
+  - **N — Nutrition & Nephrotoxin Reduction:** **LDP Protocol™** (Life of Disciplined People),
+    **RiiMS Renal Plate Model** (½ veg + ¼ grains + ¼ protein; 5 principles), 6 tastes, the
+    10 nephrotoxins, and the **Panchakarma Support Framework** (7 named therapies: HTS, MMT,
+    CCS, KTL, PRS, LCS + others — supervised only).
+  - **A — Ayurveda-led Activation & Adaptive Care:** sleep, Brahmacharya/yoga, Movement as
+    Medicine, Laughter as Medicine, breath/oxygen, Gravity Treatment, Adaptive Lifestyle Planning.
+  - Linked from `servicesPage` (a banner), the footer "Care" column, and the About page; nav
+    highlights "Treatments". Exported `PROTOCOL_FAQS` drives both the visible FAQ and the FAQPage
+    JSON-LD.
+- **9 blog articles rewritten as full original long-form content** — `posts[].body` in
+  `data/content.json` (high creatinine; reduce creatinine safely; CKD Indian-veg diet chart;
+  dialysis myths vs facts; protein in urine; diabetes & kidney; swelling; stones/UTI; integrated
+  Ayurveda). Rendered by `renderBody`, which now also turns a block of `- ` lines into a `<ul>`.
+- **8 condition pages enriched** (`CONDITIONS` in `build/data.mjs`) — book-accurate `about`,
+  `symptoms`, `approach`, `when` (creatinine-as-marker, eGFR/CKD staging, Kidney Alert System red
+  flags, Kidney Mapping / Root Cause / RiiMS Renal Plate woven into the approach).
+- **FAQs expanded** — 15 new book-grounded Q&As (`f6`–`f20`) in `data/content.json` `faqs`
+  (surface on home + contact via `FAQS`).
+- **`SERVICES`, `WHY`, `STEPS`** (`build/data.mjs`) re-aligned to the protocol (Kidney Mapping,
+  DNA Kayakalp Protocol Care, RiiMS Renal Plate, supervised Panchakarma, Lifestyle & Activation).
+- **About page** (`aboutPage`) — richer integrated-care story, a **founder note** (Dr. Abhishek
+  Gupta; DNA Kayakalp / LDP / Kidney Kavach frameworks), refreshed values, and an awareness stat
+  ("~1 in 6–7 people in India may have CKD" — cited as a general estimate, not a RIIMS metric).
+
+Source-of-truth note: the book PDF (`kidney kavach book-1.pdf`) is kept locally / not required by
+the build. To extend content, edit the generator/`data/content.json` as above and keep this file in
+sync (Rule 1). Doctor rosters/photos remain owner-managed (see §21) — the book's real founder bio is
+reflected only on the About page, not fabricated into the doctor cards.

@@ -10,6 +10,10 @@ Thumbs.db
 # Design source handoff (large binary, not code)
 RIIMS Design System-handoff.zip
 
+# Source book (large PDF; content is integrated into the site, book kept local only)
+kidney kavach book-1.pdf
+*.pdf
+
 # Source images for the home hero (2MB originals; compressed copy ships in site/assets/)
 /hometop.png
 /1hometop.png

@@ -82,7 +82,7 @@ export function header(base, current) {
 export function footer(base) {
   const cols = [
     { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html'], ['Swelling (Edema)', 'conditions/swelling.html'], ['Kidney Stone / UTI', 'conditions/stone-uti.html']] },
-    { h: 'Care', links: [['Kidney Diet', 'blog.html'], ['Lifestyle Support', 'conditions/diabetes-bp.html'], ['Report Review', 'contact.html'], ['Second Opinion', 'contact.html']] },
+    { h: 'Care', links: [['DNA Kayakalp Protocol', 'dna-kayakalp-protocol.html'], ['Treatments & Services', 'services.html'], ['Kidney Diet', 'blog.html'], ['Report Review', 'contact.html']] },
     { h: 'Institute', links: [['About RIIMS', 'about.html'], ['Our Doctors', 'doctors.html'], ['Blog', 'blog.html'], ['Contact', 'contact.html']] },
   ];
   const colHtml = cols.map((c) =>
