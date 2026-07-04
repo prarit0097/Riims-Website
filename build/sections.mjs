@@ -162,14 +162,14 @@ export function howItWorks() {
 /* ---------- Doctor card + sections ---------- */
 function photoTile(base, d, height) {
   if (d.photo) {
-    return `<div class="img-cover" role="img" aria-label="${d.name}, ${d.title}" style="height:${height}px;background-image:url('${base}${d.photo}');background-position:center 22%"></div>`;
+    return `<div class="img-cover" role="img" aria-label="${d.name}, ${d.title}" style="height:${height}px;background-image:url('${base}${d.photo}');background-size:cover;background-position:center top"></div>`;
   }
   return `<div style="height:${height}px;background:var(--surface-blue-soft);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--teal-300)">${d.init || ''}</span></div>`;
 }
 export function doctorCard(base, d) {
   const specs = d.specialties ? d.specialties.map((sp) => `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:600;color:var(--text-brand);background:var(--surface-blue-soft);padding:.25rem .6rem;border-radius:var(--radius-pill)">${sp}</span>`).join('') : '';
   return `<div class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);overflow:hidden">`
-    + photoTile(base, d, 190)
+    + photoTile(base, d, 250)
     + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
     + `<div><h3 style="font-size:var(--fs-xl);margin:0">${d.name}</h3><p style="margin:.15rem 0 0;color:var(--text-accent);font-weight:600;font-size:var(--fs-sm)">${d.title}</p></div>`
     + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${d.quals}</p>`
@@ -192,7 +192,7 @@ function expertCard(base, d) {
     .map(([ic, tx]) => `<span style="display:inline-flex;align-items:center;gap:.45rem;color:var(--text-muted);font-size:var(--fs-sm);font-family:var(--font-sans)">${icon(ic, { size: 15, style: 'color:var(--icon-accent);flex:0 0 auto' })} ${tx}</span>`)
     .join('');
   return `<div class="expert riims-card--hover" style="flex:0 0 auto;width:248px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;scroll-snap-align:start">`
-    + photoTile(base, d, 170)
+    + photoTile(base, d, 210)
     + `<div style="padding:var(--space-4) var(--space-5);display:flex;flex-direction:column;gap:.45rem">`
     + `<strong style="font-size:var(--fs-lg);font-family:var(--font-display)">${d.name}</strong>${rows}`
     + button('View profile', { variant: 'primary', size: 'sm', fullWidth: true, style: { marginTop: '.5rem' }, extraAttrs: { 'data-book': true } })
