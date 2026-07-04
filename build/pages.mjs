@@ -229,7 +229,10 @@ function renderBody(body) {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
     .replace(/`([^`]+)`/g, '<code>$1</code>');
-  return String(body).split(/\n\s*\n/).map((block) => {
+  // Normalise: force every "## "/"### " heading onto its own block (blank lines around it),
+  // so a heading directly followed by list/paragraph lines is not swallowed into the heading.
+  const norm = String(body).replace(/\r\n/g, '\n').replace(/^(#{2,3} .+)$/gm, '\n$1\n');
+  return norm.split(/\n\s*\n/).map((block) => {
     const t = block.trim();
     if (!t) return '';
     if (t.startsWith('### ')) return `<h3 style="font-size:var(--fs-lg);margin:var(--space-6) 0 .4rem">${inline(t.slice(4))}</h3>`;
@@ -245,17 +248,17 @@ function renderBody(body) {
       const rows = lines.slice(2).map(cells);
       const th = 'text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--border-default);font-family:var(--font-sans);font-size:var(--fs-sm)';
       const td = 'padding:.5rem .7rem;border-bottom:1px solid var(--border-subtle);color:var(--text-body);font-size:var(--fs-sm);vertical-align:top';
-      return `<div style="overflow-x:auto;margin:.4rem 0 1.1rem"><table style="width:100%;border-collapse:collapse;min-width:34rem">`
+      return `<div style="overflow-x:auto;margin:.4rem 0 1.1rem"><table style="width:100%;border-collapse:collapse">`
         + `<thead><tr>${head.map((h) => `<th style="${th}">${inline(h)}</th>`).join('')}</tr></thead>`
         + `<tbody>${rows.map((r) => `<tr>${r.map((c) => `<td style="${td}">${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody>`
         + `</table></div>`;
     }
     if (lines.length && lines.every((l) => l.startsWith('- '))) {
-      return `<ul style="margin:.4rem 0 1rem 1.1rem;color:var(--text-body);display:grid;gap:.35rem">`
+      return `<ul style="margin:.4rem 0 1rem;padding-left:1.3rem;color:var(--text-body);display:grid;gap:.35rem">`
         + lines.map((l) => `<li>${inline(l.slice(2))}</li>`).join('') + `</ul>`;
     }
     if (lines.length && lines.every((l) => /^\d+\.\s/.test(l))) {
-      return `<ol style="margin:.4rem 0 1rem 1.2rem;color:var(--text-body);display:grid;gap:.35rem">`
+      return `<ol style="margin:.4rem 0 1rem;padding-left:1.4rem;color:var(--text-body);display:grid;gap:.35rem">`
         + lines.map((l) => `<li>${inline(l.replace(/^\d+\.\s/, ''))}</li>`).join('') + `</ol>`;
     }
     return `<p style="color:var(--text-body)">${inline(t.replace(/\n/g, '<br>'))}</p>`;
@@ -446,7 +449,7 @@ export function protocolPage(base) {
       + p('For most people living with kidney disease, one question sits at the centre of everything: “What should I actually do now?” Reports are read and medicines are taken, but daily life often stays confusing. The DNA Kayakalp Protocol™ was built to answer that question in an organised way — a structured Kidney Health Management Framework shaped over years of clinical work with thousands of patients.')
       + p('It is important to be honest about what this protocol is — and is not. It does <strong>not</strong> promise to cure kidney disease, reverse damage, or replace medical treatment or dialysis. Instead, it gives you correct information, the right nutrition, and the right lifestyle — under qualified medical and Ayurvedic supervision, tailored to each individual.')
       + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin-top:var(--space-4)">`
-      + [['D', 'Diagnosis & Detox Support', 'the right information'], ['N', 'Nutrition & Nephrotoxin Reduction', 'the right nutrition'], ['A', 'Ayurveda-led Activation & Adaptive Care', 'the right lifestyle']].map(([t, ti, ta]) => card(`<span style="font-family:var(--font-display);font-weight:800;font-size:1.7rem;color:var(--brand-primary)">${t}</span><h3 style="font-size:var(--fs-lg);margin:.2rem 0">${ti}</h3><p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${ta}</p>`, { tone: 'cream', pad: 'md' })).join('')
+      + [['D', 'Diagnosis & Detox Support', 'the right information'], ['N', 'Nutrition & Nephrotoxin Reduction', 'the right nutrition'], ['A', 'Ayurveda-led Activation & Adaptive Care', 'the right lifestyle']].map(([t, ti, ta]) => card(`<span style="font-family:var(--font-display);font-weight:800;font-size:1.7rem;color:var(--brand-primary)">${t}</span><h3 style="font-size:var(--fs-lg);margin:.2rem 0">${ti}</h3><p style="margin:0;color:var(--text-body);font-weight:600;font-size:var(--fs-sm)">${ta}</p>`, { tone: 'cream', pad: 'md' })).join('')
       + `</div>`)
     + section(
       pillar('D', 'Diagnosis & Detox Support', 'the right information',

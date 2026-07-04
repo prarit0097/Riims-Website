@@ -28,7 +28,7 @@ export function searchBanner(base = '') {
     + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
     + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
     + icon('search', { size: 20, style: 'color:var(--icon-default);flex:0 0 auto' })
-    + `<input data-search-input placeholder="Search disease, symptom or treatment…" aria-label="Search" style="flex:1;border:none;outline:none;background:transparent;font-family:var(--font-sans);font-size:var(--fs-md);color:var(--text-strong);min-width:0">`
+    + `<input data-search-input placeholder="Search disease or symptom…" aria-label="Search" style="flex:1;border:none;outline:none;background:transparent;font-family:var(--font-sans);font-size:var(--fs-md);color:var(--text-strong);min-width:0">`
     + button('Search', { variant: 'primary', type: 'submit', iconLeft: icon('search', { size: 18 }) })
     + `</form>`
     + `<div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1.1rem">`
@@ -162,7 +162,7 @@ export function howItWorks() {
 /* ---------- Doctor card + sections ---------- */
 function photoTile(base, d, height) {
   if (d.photo) {
-    return `<div class="img-cover" role="img" aria-label="${d.name}, ${d.title}" style="height:${height}px;background-image:url('${base}${d.photo}')"></div>`;
+    return `<div class="img-cover" role="img" aria-label="${d.name}, ${d.title}" style="height:${height}px;background-image:url('${base}${d.photo}');background-position:center 22%"></div>`;
   }
   return `<div style="height:${height}px;background:var(--surface-blue-soft);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--teal-300)">${d.init || ''}</span></div>`;
 }

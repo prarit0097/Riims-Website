@@ -121,4 +121,5 @@ html, body { overflow-x: clip; }
   .hero-actions > * { width: 100% !important; }
   .hero-card { padding: var(--space-5) !important; }
   .riims-section-title, h1 { letter-spacing: -0.02em; }
+  .services-grid { grid-template-columns: 1fr !important; }
 }
