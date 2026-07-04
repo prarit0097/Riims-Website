@@ -636,9 +636,9 @@ What was integrated (all via the generator + `data/content.json`, then `npm test
   (surface on home + contact via `FAQS`).
 - **`SERVICES`, `WHY`, `STEPS`** (`build/data.mjs`) re-aligned to the protocol (Kidney Mapping,
   DNA Kayakalp Protocol Care, RiiMS Renal Plate, supervised Panchakarma, Lifestyle & Activation).
-- **About page** (`aboutPage`) — richer integrated-care story, a **founder note** (Dr. Abhishek
-  Gupta; DNA Kayakalp / LDP / Kidney Kavach frameworks), refreshed values, and an awareness stat
+- **About page** (`aboutPage`) — richer integrated-care story, refreshed values, and an awareness stat
   ("~1 in 6–7 people in India may have CKD" — cited as a general estimate, not a RIIMS metric).
+  (A "founder note" card was added then removed on owner request.)
 
 Source-of-truth note: the book PDF (`kidney kavach book-1.pdf`) is kept locally / not required by
 the build. To extend content, edit the generator/`data/content.json` as above and keep this file in

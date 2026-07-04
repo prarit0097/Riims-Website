@@ -135,10 +135,6 @@ export function aboutPage(base) {
     + `</div>`
     + `<div class="riims-container" style="margin-top:var(--space-16)">`
     + card(
-      `<h3 style="font-size:var(--fs-xl);margin:0 0 .5rem;display:flex;align-items:center;gap:.5rem">${icon('user-round', { size: 20, style: 'color:var(--icon-brand)' })} Our founder</h3>`
-      + `<p style="margin:0;color:var(--text-body)">RIIMS was founded by <strong>Ayurvedacharya Dr. Abhishek Gupta (B.A.M.S.)</strong>, an Ayurveda physician, teacher and author with over 15 years in lifestyle medicine and the holistic management of long-term conditions. He is the developer of the <strong>DNA Kayakalp Protocol™</strong>, the <strong>LDP (Lifestyle–Diet–Panchakarma) Protocol™</strong> and the <strong>Kidney Kavach Framework™</strong>, and the author of the book <em>Kidney Kavach</em> — each built to combine nutrition, lifestyle and Ayurveda with modern scientific understanding, honestly and safely.</p>`,
-      { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)', marginBottom: 'var(--space-8)' } })
-    + card(
       `<p style="margin:0;color:var(--text-body)"><strong>Roughly 1 in 6–7 people in India</strong> may be affected by Chronic Kidney Disease (CKD) at some stage — a general awareness estimate from published studies, not a RIIMS performance measure. CKD is often called a “silent disease” because it can progress with few early symptoms, which is why timely testing and regular check-ups matter.</p>`,
       { pad: 'lg', style: { boxShadow: 'var(--shadow-sm)', marginBottom: 'var(--space-8)' } })
     + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${valueCards}</div>`
