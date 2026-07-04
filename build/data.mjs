@@ -72,6 +72,7 @@ export const SITE = {
   whatsapp: `https://wa.me/91${WA}`,
   facebook: 'https://www.facebook.com/profile.php?id=61590269039418',
   instagram: 'https://www.instagram.com/riimshospital/',
+  youtube: 'https://youtube.com/@riimshospitals',
   city: 'Baraut, Uttar Pradesh 250611',
   addressLine: 'Near Baraut Medicity Hospital',
   addressSub: '36VW+JHV, Kotana Rd, Baraut, Uttar Pradesh 250611',

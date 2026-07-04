@@ -179,7 +179,7 @@ Pure functions that return HTML strings. Key helpers:
   This let us port the prototype's inline styles **verbatim** → pixel-faithful output.
 - **`esc(str)`** — escapes `& < > "` for safe HTML/attribute output.
 - **`icon(name, {size, style})`** — renders a Lucide icon as `<i data-lucide aria-hidden>`
-  (turned into SVG by `site.js`). Facebook/Instagram are inline SVG (not in Lucide).
+  (turned into SVG by `site.js`). Facebook/Instagram/YouTube are inline SVG (not in the pinned Lucide).
 - **`star()/starRow()`** — inline gold star SVGs (used for ratings; reliable fill).
 - **`logo(base, {light})`** — the brand mark (CSS background image `riims-logo-sm.png`),
   links to home; `light` = white chip for the dark footer.
@@ -205,7 +205,7 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
 - **`SITE`** — name, fullName, `origin` (**`https://riimshospitals.com`** — the production
   domain; non-www is canonical, the server 301-redirects www → apex), `phone`
   `+91 85120 40000`, `phoneTel` `+918512040000`, `waNumber` (`918512040000`, for wa.me deep
-  links), `whatsapp`, `facebook`, `instagram`, `city` (`Baraut, Uttar Pradesh 250611`),
+  links), `whatsapp`, `facebook`, `instagram`, `youtube`, `city` (`Baraut, Uttar Pradesh 250611`),
   `addressLine`, `addressSub`, `hours` (`Mon–Sat, 9am–7pm`), `geo` ({lat,lng} — Baraut clinic,
   **verify against the Google Business Profile**), `mapsQuery`/`mapsLink` (contact-page map +
   schema `hasMap`), `serviceCities` (Baraut/Baghpat/Meerut/Shamli → schema `areaServed`), `year`.
@@ -231,7 +231,7 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
 Global UI wrapped around every page by the generator:
 
 - **`header(base, current)`** — sticky top. A dark utility bar (phone, address, hours,
-  WhatsApp, Facebook, Instagram) + the main nav (logo, 7 links, Call icon, WhatsApp Now +
+  WhatsApp, Facebook, Instagram, YouTube) + the main nav (logo, 7 links, Call icon, WhatsApp Now +
   Book Consultation buttons — "Upload Reports" was removed sitewide by owner request). On
   tablet/mobile the text nav collapses (CSS) and a mobile group
   shows Call + WhatsApp icons. Active nav state: the matching link is highlighted; on any

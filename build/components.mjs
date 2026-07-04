@@ -55,6 +55,9 @@ export function icon(n, { size = 18, style = '' } = {}) {
   if (n === 'instagram') {
     return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${style}" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/></svg>`;
   }
+  if (n === 'youtube') {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" style="${style}" aria-hidden="true"><path d="M23.5 6.5a3 3 0 0 0-2.11-2.12C19.5 3.86 12 3.86 12 3.86s-7.5 0-9.39.52A3 3 0 0 0 .5 6.5 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.5 3 3 0 0 0 2.11 2.12c1.89.52 9.39.52 9.39.52s7.5 0 9.39-.52A3 3 0 0 0 23.5 17.5 31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.5zM9.6 15.5v-7l6.2 3.5-6.2 3.5z"/></svg>`;
+  }
   return `<i data-lucide="${n}" aria-hidden="true" style="width:${size}px;height:${size}px;${style}"></i>`;
 }
 

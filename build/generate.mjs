@@ -69,7 +69,7 @@ function clinicGraph() {
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
       opens: '09:00', closes: '19:00',
     }],
-    sameAs: [SITE.facebook, SITE.instagram],
+    sameAs: [SITE.facebook, SITE.instagram, SITE.youtube],
   };
 }
 
