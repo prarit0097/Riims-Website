@@ -40,7 +40,7 @@ Why this stack (the owner's #1 goal is national SEO ranking + easy, cheap hostin
 - **No build dependencies** → only Node's standard library; `npm install` installs nothing.
 
 The HTML is produced by a small **Node generator** (in `build/`) and written to `site/`.
-`site/` is the deployable website. The generator exists so the 25 pages stay DRY (shared
+`site/` is the deployable website. The generator exists so the 36 pages stay DRY (shared
 header/footer/chrome never drift) while the deployed output is 100% static.
 
 ## 4. High-level architecture
@@ -71,7 +71,7 @@ RiimS/
 │
 ├── build/                    # ── THE GENERATOR (source of truth) ──
 │   ├── generate.mjs          # entry: builds <head> (SEO+JSON-LD) + chrome around each page,
-│   │                         #   defines the 25-page manifest, writes site/, sitemap, robots
+│   │                         #   defines the page manifest, writes site/, sitemap, robots
 │   ├── data.mjs              # ALL content: SITE info, NAV, conditions, doctors, posts, FAQs,
 │   │                         #   services, reels, testimonials, search DB
 │   ├── components.mjs        # low-level UI primitives → HTML strings (button, card, badge,
@@ -129,7 +129,7 @@ RiimS/
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
     ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
-    ├── sitemap.xml           # all 28 indexable URLs with lastmod/priority (404 excluded)
+    ├── sitemap.xml           # all 36 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -150,15 +150,16 @@ RiimS/
    prefix: `''` for root pages, `'../'` for pages in `conditions/` and `blog/`), `path` (URL),
    `nav`/`mobile` (active-state hints), `title`, `desc`, optional `keywords`, `body` (HTML), and
    optional `ld` (extra JSON-LD).
-   - 8 core pages (home, kidney-diseases hub, treatments/services, **DNA Kayakalp Protocol**, about, doctors, blog, contact)
+   - 9 core pages (home, kidney-diseases hub, treatments/services, **DNA Kayakalp Protocol**, **Patient Guides hub**, about, doctors, blog, contact)
    - 8 condition pages (looped over `CONDITIONS`)
    - 9 blog-article pages (looped over `POSTS`)
+   - **7 patient-guide pages** (looped over `GUIDE_ORDER` in `build/guides.mjs`)
    - 3 legal pages (privacy, terms, disclaimer)
-   → **28 indexable pages** (+ a branded 404 = **29 files written**).
+   → **36 indexable pages** (+ a branded 404 = **37 files written**).
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`.
 
-Run it: `npm run build`. It logs `Generated 29 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 37 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -205,7 +206,7 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
   `addressLine`, `addressSub`, `hours` (`Mon–Sat, 9am–7pm`), `geo` ({lat,lng} — Baraut clinic,
   **verify against the Google Business Profile**), `mapsQuery`/`mapsLink` (contact-page map +
   schema `hasMap`), `serviceCities` (Baraut/Baghpat/Meerut/Shamli → schema `areaServed`), `year`.
-- **`NAV`** — the 6 header links (About, Kidney Diseases, Treatments, Doctors, Blog, Contact).
+- **`NAV`** — the 7 header links (About, Kidney Diseases, Treatments, Guides, Doctors, Blog, Contact).
 - **`CONDITIONS`** — the 8 condition pages, each with: `icon`, `title`, `crumb`, `intro`,
   `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`. Slugs:
   `high-creatinine, ckd, kidney-failure, dialysis, proteinuria, swelling, diabetes-bp, stone-uti`.
@@ -227,7 +228,7 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
 Global UI wrapped around every page by the generator:
 
 - **`header(base, current)`** — sticky top. A dark utility bar (phone, address, hours,
-  WhatsApp, Facebook, Instagram) + the main nav (logo, 6 links, Call icon, WhatsApp Now +
+  WhatsApp, Facebook, Instagram) + the main nav (logo, 7 links, Call icon, WhatsApp Now +
   Book Consultation buttons — "Upload Reports" was removed sitewide by owner request). On
   tablet/mobile the text nav collapses (CSS) and a mobile group
   shows Call + WhatsApp icons. Active nav state: the matching link is highlighted; on any
@@ -270,8 +271,9 @@ Each function returns a full page body:
 - **`blogPage`** — hero + category filter + featured post + 9 cards (filtered client-side) +
   popular-topic chips + newsletter + CTA.
 - **`blogPostPage(base, p)`** — one per post: hero, article meta, lead, then the **full article body**
-  from `POSTS[].body` (rendered by `renderBody`: blank-line paragraphs, `## ` → h2, and a block of `- `
-  lines → `<ul>`). If a post has no body it falls back to the related condition's vetted copy. Ends with a
+  from `POSTS[].body` (rendered by `renderBody`: blank-line paragraphs; `## `/`### ` headings; `- ` → `<ul>`;
+  `1.` → `<ol>`; `> ` → blockquote; markdown `| a | b |` tables → `<table>`; inline `**bold**`/`*italic*`/`` `code` ``).
+  If a post has no body it falls back to the related condition's vetted copy. Ends with a
   disclaimer, a CTA card, and "Related reading" (3 other posts). All 9 bodies are now full original
   *Kidney Kavach* articles.
 - **`protocolPage(base)`** — the **DNA Kayakalp Protocol™** page: hero + "What is it" (D-N-A pillar cards)
@@ -279,6 +281,10 @@ Each function returns a full page body:
   Plate ½+¼+¼, 10 nephrotoxins, 7-therapy Panchakarma Support Framework; A: activation & adaptive care) +
   how-it-works + `PROTOCOL_FAQS` + disclaimer + CTA. Exported `PROTOCOL_FAQS` also drives the page's
   FAQPage JSON-LD in `generate.mjs`.
+- **`guidesHubPage(base)` / `guidePage(base, key)`** — the Patient Guides library (see §25). One page per
+  entry in `GUIDES` (`build/guides.mjs`), body loaded from `build/guides/<key>.md` and rendered by
+  `renderBody`, plus per-guide FAQs, related conditions and cross-links. The hub (`/guides.html`) lists all
+  7 guides + the DNA Kayakalp Protocol.
 - **`contactPage`** — hero + contact section + FAQ.
 - **`legalPage(base, key)`** — privacy / terms / disclaimer, from the `LEGAL` content map.
 
@@ -334,7 +340,7 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (28 indexable URLs + a 404)
+## 14. Page inventory (36 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
@@ -342,6 +348,8 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 | `/conditions/` | Kidney Diseases hub | conditions grid + FAQ + breadcrumb schema (nav "Kidney Diseases") |
 | `/services.html` | Treatments & Services hub | 11 service tiles + how-it-works + DNA Kayakalp banner (nav "Treatments") |
 | `/dna-kayakalp-protocol.html` | DNA Kayakalp Protocol™ | Full D-N-A framework (Kidney Kavach book); breadcrumb + MedicalWebPage + FAQPage schema (nav "Treatments") |
+| `/guides.html` | Patient Guides hub | Cards linking the 7 guides + the protocol (nav "Guides") |
+| `/{7 guide slugs}.html` | Patient Guides | how-kidneys-work, understand-kidney-reports, kidney-diet-renal-plate, ayurvedic-kidney-herbs, kidney-myths-facts, everyday-symptom-care, 30-day-kidney-plan — each breadcrumb + MedicalWebPage + FAQPage schema (Kidney Kavach) |
 | `/about.html` | About | story, values, doctors |
 | `/doctors.html` | Doctors | 6 doctors |
 | `/blog.html` | Blog index | filter, featured, 9 cards, newsletter |
@@ -359,7 +367,7 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
   opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post.
-- `sitemap.xml` (28 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
+- `sitemap.xml` (36 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
 - One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Baraut — High Creatinine, CKD,
   Dialysis & Diet Guidance"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
   + `aria-label` on image tiles. Lucide is **self-hosted** (pinned) — no CDN dependency.
@@ -625,3 +633,29 @@ Source-of-truth note: the book PDF (`kidney kavach book-1.pdf`) is kept locally 
 the build. To extend content, edit the generator/`data/content.json` as above and keep this file in
 sync (Rule 1). Doctor rosters/photos remain owner-managed (see §21) — the book's real founder bio is
 reflected only on the About page, not fabricated into the doctor cards.
+
+## 25. Patient Guides library (`build/guides.mjs` + `build/guides/*.md`)
+
+A library of in-depth, plain-language patient guides derived from _Kidney Kavach_. This is the site's
+main educational depth and a major SEO asset — each guide is a full, original, compliance-safe article.
+
+- **Data:** `build/guides.mjs` exports `GUIDES` (metadata: `icon`, `title`, `crumb`, `desc`, `intro`,
+  `blurb`, `related` condition slugs, `faqs` `[q,a][]`, and `body` loaded from `build/guides/<key>.md`),
+  `GUIDE_ORDER` (display order), and `CONDITION_GUIDES` (which guides surface on each condition page).
+- **Bodies:** markdown-lite files in `build/guides/*.md`, rendered by `renderBody` (now supports
+  `### ` h3, `> ` blockquotes, `1.` ordered lists, `| a | b |` tables, and inline `**bold**`/`*italic*`).
+- **Rendering:** `guidePage(base, key)` (hero + body + FAQ + CTA + related conditions + more-guides +
+  disclaimer) and `guidesHubPage(base)` (`/guides.html`, cards for all 7 guides + the protocol).
+- **The 7 guides:** `how-kidneys-work`, `understand-kidney-reports` (creatinine/eGFR/CKD-stage tables,
+  the Kidney Alert System, a normal-lab-value chart), `kidney-diet-renal-plate` (the definitive diet
+  reference: RiiMS Renal Plate, 6 tastes, protein/sodium/potassium/phosphorus/fluids, world diet models),
+  `ayurvedic-kidney-herbs` (honest herb monographs — Punarnava/Gokshura/Varuna/Guduchi/Amalaki + others,
+  supportive-only, no doses, evidence caveats), `kidney-myths-facts` (25 myths→facts + 25 mistakes),
+  `everyday-symptom-care` (9 symptoms with gentle measures + red flags), `30-day-kidney-plan` (habits +
+  checklist).
+- **Discoverability:** `Guides` in `NAV`; a "Patient Guides" section on the home page; a footer "Care"
+  column; a "Helpful guides" card on every condition page (via `CONDITION_GUIDES`); each guide carries
+  `BreadcrumbList` + `MedicalWebPage` + `FAQPage` JSON-LD.
+- **To add a guide:** create `build/guides/<slug>.md`, add an entry to `GUIDES` + `GUIDE_ORDER` (and
+  optionally `CONDITION_GUIDES`); the generator auto-creates the page, sitemap entry and JSON-LD. Then
+  `npm test` and update this file.

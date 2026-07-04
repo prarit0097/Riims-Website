@@ -7,6 +7,27 @@ import * as S from './sections.mjs';
 import {
   SITE, CONDITIONS, DOCTORS_FULL, POSTS, POPULAR_TOPICS, SERVICES, REVIEW_DATE,
 } from './data.mjs';
+import { GUIDES, GUIDE_ORDER, CONDITION_GUIDES } from './guides.mjs';
+
+/* A guide card (used on the home Patient Guides section and the guides hub). */
+function guideCard(base, k) {
+  const g = GUIDES[k];
+  return `<a href="${base}${k}.html" class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem;text-decoration:none;color:inherit">`
+    + `<span style="display:inline-flex;width:46px;height:46px;border-radius:var(--radius-md);background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center">${icon(g.icon, { size: 22 })}</span>`
+    + `<h3 style="font-size:var(--fs-lg);margin:.1rem 0 0;font-family:var(--font-display)">${g.title}</h3>`
+    + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${g.blurb}</p>`
+    + `<span style="margin-top:.2rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-link);font-weight:700;font-family:var(--font-sans);font-size:var(--fs-sm)">Read guide ${icon('arrow-right', { size: 15 })}</span></a>`;
+}
+
+function guidesHomeSection(base) {
+  return `<section style="padding-block:var(--section-pad-y);background:var(--white)"><div class="riims-container">`
+    + eyebrow('Patient Guides')
+    + `<h2 style="font-size:var(--fs-2xl);margin:.3rem 0 .4rem">Understand your kidneys, one clear step at a time</h2>`
+    + `<p style="max-width:62ch;color:var(--text-muted);margin:0 0 var(--space-6)">Plain-language guides from our clinical team, grounded in Dr. Abhishek Gupta's book <em>Kidney Kavach</em> — learn what your reports mean, what to eat, and what to do next.</p>`
+    + `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-4)">${GUIDE_ORDER.map((k) => guideCard(base, k)).join('')}</div>`
+    + `<div style="margin-top:var(--space-6)">${button('See all patient guides', { variant: 'outline', href: `${base}guides.html`, iconRight: icon('arrow-right', { size: 16 }) })}</div>`
+    + `</div></section>`;
+}
 
 /* ---------- Home ---------- */
 export function homePage(base) {
@@ -19,6 +40,7 @@ export function homePage(base) {
     + S.howItWorks()
     + S.meetExperts(base)
     + S.educationSection(base)
+    + guidesHomeSection(base)
     + S.testimonials(base)
     + S.faqSection()
     + S.ctaBand()
@@ -71,6 +93,12 @@ export function conditionPage(base, slug) {
       `<h4 style="font-family:var(--font-sans);margin:0 0 .7rem;font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-brand)">Related topics</h4>`
       + `<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem">${related}</ul>`,
       { tone: 'blue', pad: 'lg' })
+    + ((CONDITION_GUIDES[slug] || []).filter((k) => GUIDES[k]).length ? card(
+      `<h4 style="font-family:var(--font-sans);margin:0 0 .7rem;font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-brand)">Helpful guides</h4>`
+      + `<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem">`
+      + (CONDITION_GUIDES[slug] || []).filter((k) => GUIDES[k]).map((k) => `<li><a href="${base}${k}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon(GUIDES[k].icon, { size: 15 })} ${GUIDES[k].title}</a></li>`).join('')
+      + `</ul>`,
+      { tone: 'cream', pad: 'lg' }) : '')
     + `</aside>`;
 
   return pageHero(base, { crumb: c.crumb, icon: c.icon, title: c.title, intro: c.intro })
@@ -192,19 +220,45 @@ export function contactPage(base) {
 
 /* ---------- Blog article (one page per post) ---------- */
 
-/* Markdown-lite for admin-written bodies: blank-line paragraphs, "## " => h2,
-   a block of "- " lines => <ul>. */
+/* Markdown-lite for admin-written / guide bodies:
+   blank-line paragraphs; "## " => h2; "### " => h3; "- " block => <ul>; "1." block => <ol>;
+   "> " block => blockquote; a GitHub-style "| a | b |" table (with a --- row) => <table>.
+   Inline: **bold**, *italic*, `code`. */
 function renderBody(body) {
+  const inline = (s) => String(s)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
   return String(body).split(/\n\s*\n/).map((block) => {
     const t = block.trim();
     if (!t) return '';
-    if (t.startsWith('## ')) return `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">${t.slice(3)}</h2>`;
+    if (t.startsWith('### ')) return `<h3 style="font-size:var(--fs-lg);margin:var(--space-6) 0 .4rem">${inline(t.slice(4))}</h3>`;
+    if (t.startsWith('## ')) return `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">${inline(t.slice(3))}</h2>`;
     const lines = t.split('\n').map((l) => l.trim()).filter(Boolean);
+    if (lines.length && lines.every((l) => l.startsWith('>'))) {
+      return `<blockquote style="margin:.6rem 0 1.1rem;padding:.7rem 1rem;border-left:3px solid var(--brand-primary);background:var(--surface-green-soft);border-radius:var(--radius-sm);color:var(--text-body)">`
+        + lines.map((l) => inline(l.replace(/^>\s?/, ''))).join('<br>') + `</blockquote>`;
+    }
+    if (lines.length >= 2 && lines[0].includes('|') && /^\|?[\s:|-]+$/.test(lines[1]) && lines[1].includes('-')) {
+      const cells = (row) => row.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim());
+      const head = cells(lines[0]);
+      const rows = lines.slice(2).map(cells);
+      const th = 'text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--border-default);font-family:var(--font-sans);font-size:var(--fs-sm)';
+      const td = 'padding:.5rem .7rem;border-bottom:1px solid var(--border-subtle);color:var(--text-body);font-size:var(--fs-sm);vertical-align:top';
+      return `<div style="overflow-x:auto;margin:.4rem 0 1.1rem"><table style="width:100%;border-collapse:collapse;min-width:34rem">`
+        + `<thead><tr>${head.map((h) => `<th style="${th}">${inline(h)}</th>`).join('')}</tr></thead>`
+        + `<tbody>${rows.map((r) => `<tr>${r.map((c) => `<td style="${td}">${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody>`
+        + `</table></div>`;
+    }
     if (lines.length && lines.every((l) => l.startsWith('- '))) {
       return `<ul style="margin:.4rem 0 1rem 1.1rem;color:var(--text-body);display:grid;gap:.35rem">`
-        + lines.map((l) => `<li>${l.slice(2)}</li>`).join('') + `</ul>`;
+        + lines.map((l) => `<li>${inline(l.slice(2))}</li>`).join('') + `</ul>`;
     }
-    return `<p style="color:var(--text-body)">${t.replace(/\n/g, '<br>')}</p>`;
+    if (lines.length && lines.every((l) => /^\d+\.\s/.test(l))) {
+      return `<ol style="margin:.4rem 0 1rem 1.2rem;color:var(--text-body);display:grid;gap:.35rem">`
+        + lines.map((l) => `<li>${inline(l.replace(/^\d+\.\s/, ''))}</li>`).join('') + `</ol>`;
+    }
+    return `<p style="color:var(--text-body)">${inline(t.replace(/\n/g, '<br>'))}</p>`;
   }).join('');
 }
 
@@ -431,6 +485,50 @@ export function protocolPage(base) {
       card(
         `<p style="margin:0;color:var(--text-body)"><strong>Important:</strong> The DNA Kayakalp Protocol™ is an integrative, doctor-guided approach that combines modern medical science with Ayurvedic principles. It is intended to support — and always work alongside — your ongoing medical treatment, and is never a substitute for the advice, medicines or dialysis prescribed by your treating doctors. Ayurvedic therapies, Panchakarma and herbal support are supportive measures only, provided per patient and under qualified supervision. This protocol does not cure kidney disease, reverse damage or guarantee any outcome. Always consult your nephrologist and qualified RIIMS practitioners before making any decision about your care.</p>`,
         { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } }))
+    + S.ctaBand();
+}
+
+/* ---------- Patient Guides hub (/guides.html) ---------- */
+export function guidesHubPage(base) {
+  const cards = GUIDE_ORDER.map((k) => guideCard(base, k)).join('')
+    + `<a href="${base}dna-kayakalp-protocol.html" class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem;text-decoration:none;color:inherit">`
+    + `<span style="display:inline-flex;width:46px;height:46px;border-radius:var(--radius-md);background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center">${icon('git-merge', { size: 22 })}</span>`
+    + `<h3 style="font-size:var(--fs-lg);margin:.1rem 0 0;font-family:var(--font-display)">The DNA Kayakalp Protocol™</h3>`
+    + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">How RIIMS integrates modern medicine and Ayurveda into one honest, doctor-led care plan.</p>`
+    + `<span style="margin-top:.2rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-link);font-weight:700;font-family:var(--font-sans);font-size:var(--fs-sm)">Explore the protocol ${icon('arrow-right', { size: 15 })}</span></a>`;
+  return pageHero(base, { crumb: 'Patient Guides', icon: 'book-open', title: 'Patient Guides: Understand and Care for Your Kidneys', intro: 'Plain-language kidney guides from our clinical team, grounded in founder Dr. Abhishek Gupta’s book Kidney Kavach. They help you understand your reports and support your care at home — always alongside, never instead of, your doctor’s advice.' })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container">`
+    + `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-4)">${cards}</div>`
+    + `</div></section>`
+    + S.ctaBand();
+}
+
+/* ---------- Patient Guide page (/<slug>.html) ---------- */
+export function guidePage(base, key) {
+  const g = GUIDES[key];
+  const linkList = (items) => `<ul style="list-style:none;margin:.3rem 0 0;padding:0;display:flex;flex-direction:column;gap:.5rem">${items}</ul>`;
+  const heading = (t) => `<h4 style="font-family:var(--font-sans);margin:var(--space-6) 0 0;font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-brand)">${t}</h4>`;
+  const relCond = (g.related || []).filter((s) => CONDITIONS[s]).map((s) =>
+    `<li><a href="${base}conditions/${s}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('arrow-right', { size: 15 })} ${CONDITIONS[s].title}</a></li>`).join('');
+  const otherGuides = GUIDE_ORDER.filter((k) => k !== key).slice(0, 3).map((k) =>
+    `<li><a href="${base}${k}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon(GUIDES[k].icon, { size: 15 })} ${GUIDES[k].title}</a></li>`).join('');
+  const faqHtml = (g.faqs || []).map(([q, a]) => `<div style="margin-bottom:var(--space-5)"><h3 style="font-size:var(--fs-lg);margin:0 0 .3rem">${q}</h3><p style="margin:0;color:var(--text-body)">${a}</p></div>`).join('');
+  return pageHero(base, { crumb: g.crumb, icon: g.icon, title: g.title, intro: g.intro })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--white)"><div class="riims-container" style="max-width:900px">`
+    + renderBody(g.body)
+    + (faqHtml ? `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">Frequently asked questions</h2>` + faqHtml : '')
+    + card(
+      `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Talk to a kidney care expert</h3>`
+      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your reports for doctor-guided, evidence-aware guidance — no false promises.</p>`
+      + `<div style="display:flex;flex-wrap:wrap;gap:.6rem">`
+      + button('Book Consultation', { variant: 'primary', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
+      + button('WhatsApp Now', { variant: 'whatsapp', iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
+      + `</div>`,
+      { accent: true, pad: 'lg', style: { boxShadow: 'var(--shadow-md)', marginTop: 'var(--space-8)' } })
+    + (relCond ? heading('Related conditions') + linkList(relCond) : '')
+    + heading('More patient guides') + linkList(otherGuides)
+    + `<p style="margin-top:var(--space-8);font-size:var(--fs-sm);color:var(--text-muted)">This guide is for general awareness and education, and is not a substitute for personal medical advice. Please consult your doctor about your own condition and reports.</p>`
+    + `</div></section>`
     + S.ctaBand();
 }
 

@@ -274,6 +274,46 @@
       "id": "f20",
       "q": "What key numbers should every kidney patient know?",
       "a": "It helps to know your creatinine, eGFR, whether there is protein in your urine, your blood pressure, sugar status, potassium and haemoglobin — and to keep your reports and medicine list handy. Understanding your own numbers helps you and your doctor make better decisions together."
+    },
+    {
+      "id": "f21",
+      "q": "How do I read my eGFR?",
+      "a": "eGFR is an estimate of how well your kidneys are filtering, and a higher number generally means better function. It is read together with your urine protein, creatinine and history — never on its own. Our guide “Understand Your Kidney Reports” explains it in plain language, but your doctor should interpret your specific result."
+    },
+    {
+      "id": "f22",
+      "q": "What is the RiiMS Renal Plate?",
+      "a": "The RiiMS Renal Plate is a simple way to picture a kidney-friendly Indian meal — balancing vegetables, grains and protein in everyday portions. It is a practical planning tool, not a fixed diet, and the right amounts depend on your reports and stage. Learn the basics in our guide “Kidney Diet & the RiiMS Renal Plate” and personalise it with your doctor or renal dietitian."
+    },
+    {
+      "id": "f23",
+      "q": "Are Ayurvedic kidney herbs safe to take on my own?",
+      "a": "Not automatically. Some herbal products are not suitable for kidney patients and can interact with your medicines, so nothing should be started without a qualified doctor’s advice. Any such support is meant to sit alongside your medical treatment, never replace it. Our guide “Ayurvedic Herbs Studied for Kidney Health” gives an honest, balanced overview."
+    },
+    {
+      "id": "f24",
+      "q": "What can I do at home for swelling or poor appetite?",
+      "a": "Gentle steps — mindful salt and fluid habits as advised, small frequent meals, rest and tracking your symptoms — can help you feel more comfortable day to day. These are supportive measures, not treatments, and any sudden or worsening swelling should be checked by your doctor. Our guide “Everyday Symptoms in Kidney Disease” walks through calm, practical care."
+    },
+    {
+      "id": "f25",
+      "q": "My urine report shows protein — what does that mean?",
+      "a": "Protein in the urine can be an early sign that the kidneys’ filters are under strain, which is why it is measured alongside eGFR and creatinine. It needs to be confirmed and quantified with proper testing rather than judged from one result. Our guide “Understand Your Kidney Reports” explains it, and your doctor will decide what it means for you."
+    },
+    {
+      "id": "f26",
+      "q": "Which foods should a kidney patient limit?",
+      "a": "It varies from person to person — salt, potassium and protein are common areas to watch, but the right limits depend entirely on your reports and stage. Cutting out whole food groups on your own is not the answer. The RiiMS Renal Plate in our diet guide shows how to balance meals, and a renal dietitian can tailor it to you."
+    },
+    {
+      "id": "f27",
+      "q": "How does kidney disease begin if I feel fine?",
+      "a": "Kidney disease often develops quietly, with little or no symptoms in the early stages, which is why it can be present even when you feel well. Understanding how the kidneys filter helps explain why regular reports matter more than how you feel. Our guide “How Your Kidneys Work” covers this simply."
+    },
+    {
+      "id": "f28",
+      "q": "Where should I start after a new kidney diagnosis?",
+      "a": "Start by understanding your key numbers, organising your reports and building steady daily habits — one step at a time, alongside your doctor’s plan. Our “30-Day Kidney Health Plan & Checklist” gives a gentle, structured way to begin. It is a supportive framework to use with your care team, not a substitute for medical treatment."
     }
   ],
   "posts": [

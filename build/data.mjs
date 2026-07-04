@@ -67,6 +67,7 @@ export const NAV = [
   { label: 'About', href: 'about.html' },
   { label: 'Kidney Diseases', href: 'conditions/index.html' },
   { label: 'Treatments', href: 'services.html' },
+  { label: 'Guides', href: 'guides.html' },
   { label: 'Doctors', href: 'doctors.html' },
   { label: 'Blog', href: 'blog.html' },
   { label: 'Contact', href: 'contact.html' },

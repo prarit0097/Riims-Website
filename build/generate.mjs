@@ -9,7 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, LEGAL_KEYS } from './pages.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS } from './pages.mjs';
+import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
 import { CONDITIONS, POSTS, SITE, TRACKING } from './data.mjs';
 
@@ -242,6 +243,19 @@ const pages = [
     ],
   },
   {
+    out: 'guides.html', base: '', path: '/guides.html', nav: 'guides.html', mobile: '',
+    title: 'Kidney Care Patient Guides | RIIMS',
+    desc: 'Plain-language kidney guides from RIIMS — understand your reports, kidney diet & the RiiMS Renal Plate, Ayurvedic herbs, everyday symptom care, myths vs facts and a 30-day plan.',
+    body: guidesHubPage(''),
+    ld: [{
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+        { '@type': 'ListItem', position: 2, name: 'Patient Guides', item: `${SITE.origin}/guides.html` },
+      ],
+    }],
+  },
+  {
     out: 'contact.html', base: '', path: '/contact.html', nav: 'contact.html', mobile: '',
     title: 'Contact & Book Appointment | RIIMS Baraut, UP',
     desc: 'Book a kidney consultation at RIIMS, Baraut. Call or WhatsApp +91 85120 40000, share reports securely, and choose video, phone or in-clinic care.',
@@ -297,6 +311,36 @@ for (const p of POSTS) {
         datePublished: isoDate(p.date), dateModified: isoDate(p.date),
         inLanguage: 'en-IN', articleSection: p.cat,
       },
+    ],
+  });
+}
+
+/* Patient guide pages (one per guide) */
+for (const key of GUIDE_ORDER) {
+  const g = GUIDES[key];
+  const path = `/${key}.html`;
+  pages.push({
+    out: `${key}.html`, base: '', path, nav: 'guides.html', mobile: '',
+    title: `${g.title} | RIIMS`,
+    desc: g.desc,
+    body: guidePage('', key),
+    ld: [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+          { '@type': 'ListItem', position: 2, name: 'Patient Guides', item: `${SITE.origin}/guides.html` },
+          { '@type': 'ListItem', position: 3, name: g.title, item: `${SITE.origin}${path}` },
+        ],
+      },
+      {
+        '@type': 'MedicalWebPage', name: g.title, description: g.desc,
+        url: `${SITE.origin}${path}`, inLanguage: 'en-IN', isPartOf: { '@id': `${SITE.origin}/#website` },
+      },
+      ...(g.faqs && g.faqs.length ? [{
+        '@type': 'FAQPage',
+        mainEntity: g.faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+      }] : []),
     ],
   });
 }
