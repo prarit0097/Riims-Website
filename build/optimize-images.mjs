@@ -57,11 +57,11 @@ console.log(`\n  TOTAL: ${before}KB → ${after}KB  (saved ${(before - after)}KB
 
 // Home hero banners: source PNGs live (gitignored) in repo-root /assets/1..4.png;
 // ship optimised banner-N.webp (+ banner-1.jpg for OG/LCP) into site/assets.
-// Cropped to 3:1 (1920x640, HiiMS-style letterbox), keeping the TOP of the poster
+// Cropped to a short wide letterbox (1920x500), keeping the TOP of the poster
 // (logo/headline/doctors/icons) — the bottom contact bar is already in the header/footer.
-// If you supply native 3:1 art, the crop is a no-op. Tweak BANNER_POS to 'centre'/'top'.
+// If you supply native wide art at this ratio, the crop is a no-op. Tweak BANNER_POS to 'centre'/'top'.
 const SRC = path.resolve('assets');
-const BANNER_W = 1920, BANNER_H = 640, BANNER_POS = 'top';
+const BANNER_W = 1920, BANNER_H = 500, BANNER_POS = 'top';
 for (const n of [1, 2, 3, 4]) {
   const src = path.join(SRC, `${n}.png`);
   if (!existsSync(src)) { console.log(`  banner ${n}: source missing (skip)`); continue; }
