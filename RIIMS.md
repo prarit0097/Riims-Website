@@ -85,7 +85,8 @@ RiimS/
 │   ├── pages.mjs             # full page bodies (home, condition, about, doctors, blog,
 │   │                         #   contact, blog-article, legal)
 │   ├── serve.mjs             # zero-dependency local preview server (port 5173)
-│   └── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors, stale domain
+│   ├── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors, stale domain
+│   └── optimize-images.mjs   # one-shot raster optimizer (WebP + shrunk logo/hero); needs dev-only `sharp`
 │
 ├── admin/                    # ── ADMIN PANEL (see §23) ──
 │   ├── server.mjs            # zero-dep Node server: leads API, content CRUD, uploads, rebuild
@@ -124,7 +125,9 @@ RiimS/
     │       ├── spacing.css   # spacing/radius/shadow/layout/motion/z-index tokens
     │       └── base.css      # element resets + shared primitives + button/card hover states
     ├── js/site.js            # all client interactivity (no dependencies)
-    ├── assets/               # logo, doctor portraits, reel thumbnails, hospital, video img
+    ├── assets/               # logo (PNG for social/favicon), + WebP: hero (hometop.webp
+    │   │                     #   + hometop.jpg for og), doctor portraits, reels, hospital,
+    │   │                     #   video — all optimized by build/optimize-images.mjs
     │   └── vendor/lucide.min.js   # self-hosted, pinned Lucide (no CDN)
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
@@ -143,7 +146,12 @@ RiimS/
    CSS files (linked directly, each with a `?v=<content-hash>` cache-buster so deployed
    asset changes bypass the 30-day browser cache), the self-hosted Lucide script, and
    `js/site.js?v=<hash>`. All text values are run
-   through `esc()` so characters like `&` are valid in attributes.
+   through `esc()` so characters like `&` are valid in attributes. The **meta description**
+   is passed through `clampDesc()` → trimmed to ≤155 chars on a word boundary (+`…`) so it
+   never overflows the SERP snippet; the fuller text still lives in the JSON-LD `description`.
+   The home page **preloads `assets/hometop.webp`** (`type="image/webp"`, via the `preload`
+   manifest field) for a fast LCP; the favicon/apple-touch/manifest icon stays PNG
+   (`riims-logo-sm.png`).
 3. Defines `render(p)` → `head(p)` + `<body>` = `header` + `<main>{page body}</main>` +
    `footer` + `mobileBar` + `bookingModal`.
 4. Builds a **page manifest** (`pages[]`). Each entry has: `out` (output path), `base` (relative
@@ -312,8 +320,9 @@ Loaded per page as two stylesheets: `css/styles.css` then `css/site.css`.
 - **`styles.css`** — just `@import`s the five token files (the single CSS entry point).
 - **`site.css`** — page-level concerns: smooth scroll, input/checkbox/select states,
   `[hidden]{display:none!important}` (makes the form steps + newsletter success toggle
-  correctly), `.riims-btn--white:hover`, booking-modal `.is-open`, the `.riims-logo-mark` and
-  `.img-*` background-image classes (doctors, reels, hospital, video), reel hover animation,
+  correctly), `.riims-btn--white:hover`, booking-modal `.is-open`, the `.riims-logo-mark`
+  logo background + `.img-cover` helper (content images — reels, doctor portraits, hospital,
+  video, blog covers — are now real `<img>` tags with `alt`/`loading="lazy"`), reel hover animation,
   the **responsive breakpoints** (≤1024 tablet: collapse grids + switch to mobile nav; ≤760
   phone: single column, show bottom bar, hide FAB; ≤480 small phone: tighter rhythm).
 
@@ -366,9 +375,16 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 
 ## 15. SEO implementation
 
-- Per page: unique `<title>`, meta description, canonical (`https://riimshospitals.com`...),
-  OG + Twitter (share image = `assets/hometop.jpg` 1600x900 brand banner with width/height meta; no meta-keywords tag). Home page preloads the hero image (`preload` field in the page manifest).
+- Per page: unique `<title>`, meta description (**auto-clamped to ≤155 chars** by `clampDesc()`),
+  canonical (`https://riimshospitals.com`...),
+  OG + Twitter (share image = `assets/hometop.jpg` 1600x800 brand banner with width/height meta; no meta-keywords tag). Home page preloads the WebP hero (`preload: assets/hometop.webp` in the page manifest).
   `<html lang="en-IN">`.
+- **Performance / Core Web Vitals:** all rasters are optimized (see `build/optimize-images.mjs`) —
+  content images (reels, doctor portraits, hospital, blog covers, patient-video tile) ship as
+  **WebP** and render as **real `<img>`** with `alt`, `width`/`height` and `loading="lazy"`
+  (indexable by Google Images, low CLS). The LCP hero is a `<picture>` (WebP + JPG fallback,
+  `fetchpriority="high"`). Total `site/assets` dropped from ~3.5 MB to ~0.9 MB (the brand logo
+  alone went 1.43 MB → 112 KB). The favicon/apple-touch/PWA icon stays PNG.
 - **JSON-LD** (`<script type="application/ld+json">`): `["MedicalClinic","LocalBusiness"]` +
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
@@ -544,10 +560,12 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
   (stored in `data/content.json` → `posts[].body`). See §24.
 - **Contact map** is now a live Google Maps embed using a generic "RIIMS Baraut" query —
   refine `SITE.geo`/`mapsQuery` to the exact verified Business-Profile place after launch.
-- **Home hero** comes from the owner-supplied `hometop.png` (2MB original, gitignored at repo root), shipped compressed as `site/assets/hometop.jpg` (1600x900, ~190KB via sharp-cli). The banner shows REAL doctors (Dr. Vikas Gupta — Director & Chief Nephrologist, Dr. Abhishek, Dr. Rachna Gupta) — update Admin → Doctors with these real names/photos.
-- **Images not yet optimized** — `assets/riims-logo.png` (1.46 MB, used only for social cards) and
-  the reel PNGs (~770 KB) should be compressed to WebP/AVIF for faster LCP (no image tool was
-  available locally to convert them here).
+- **Home hero** comes from the owner-supplied `hometop.png` (2MB original, gitignored at repo root), shipped as `site/assets/hometop.jpg` (1600x800, og:image) **and** `hometop.webp` (~140KB, the on-page `<picture>`). The banner shows REAL doctors (Dr. Vikas Gupta — Director & Chief Nephrologist, Dr. Abhishek, Dr. Rachna Gupta) — update Admin → Doctors with these real names/photos.
+- **Images are now optimized** — all rasters compressed via `build/optimize-images.mjs` (WebP for
+  content images; the social/schema logo shrunk 1.43 MB → 112 KB PNG). `sharp` is a **dev-only,
+  build-time** dependency (installed with `npm install sharp` when re-optimizing) and is **not**
+  shipped to the static site. Re-run `node build/optimize-images.mjs` after adding new source
+  images, then update the reference paths. AVIF could shave a little more later.
 - **Fonts** load from Google Fonts (trimmed weights) — self-host woff2 later for full privacy/speed.
 - Phone/WhatsApp (`+91 85120 40000`) and the Baraut address are the **real** supplied values.
 

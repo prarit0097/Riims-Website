@@ -55,22 +55,8 @@ html, body { overflow-x: clip; }
   background-size: contain; background-repeat: no-repeat; background-position: center;
 }
 
-/* Mock imagery — CSS background classes so paths resolve from one stylesheet */
+/* Imagery — content images now render as real <img> (reels, doctors, hospital, blog covers). */
 .img-cover { background-size: cover; background-position: center top; background-repeat: no-repeat; }
-.img-doc-AS { background-image: url('../assets/doctors/doc-AS.png'); }
-.img-doc-RV { background-image: url('../assets/doctors/doc-RV.png'); }
-.img-doc-SI { background-image: url('../assets/doctors/doc-SI.png'); }
-.img-doc-MK { background-image: url('../assets/doctors/doc-MK.png'); }
-.img-doc-PN { background-image: url('../assets/doctors/doc-PN.png'); }
-.img-doc-TR { background-image: url('../assets/doctors/doc-TR.png'); }
-.img-reel-1 { background-image: url('../assets/reels/reel-1.png'); }
-.img-reel-2 { background-image: url('../assets/reels/reel-2.png'); }
-.img-reel-3 { background-image: url('../assets/reels/reel-3.png'); }
-.img-reel-4 { background-image: url('../assets/reels/reel-4.png'); }
-.img-reel-5 { background-image: url('../assets/reels/reel-5.png'); }
-.img-reel-6 { background-image: url('../assets/reels/reel-6.png'); }
-.img-video { background-image: url('../assets/video-testimonial.png'); background-position: center; }
-.img-hospital { background-image: url('../assets/hospital.png'); background-position: center; }
 
 /* Reels hover — autoplay-style zoom + pulsing play */
 .reel .reel-bg { transition: transform .6s var(--ease-out); }

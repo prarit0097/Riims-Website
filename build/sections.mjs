@@ -1,7 +1,7 @@
 /* RIIMS static-site generator — content sections.
    Ported from ui_kits/website sections-b/-c/-e + pages.jsx. */
 
-import { icon, button, badge, card, eyebrow, sectionHead, starRow } from './components.mjs';
+import { icon, button, badge, card, eyebrow, sectionHead, starRow, esc } from './components.mjs';
 import { appointmentForm } from './chrome.mjs';
 import {
   SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
@@ -23,7 +23,7 @@ export function searchBanner(base = '') {
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
     + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`
     + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
-    + `<img src="${base}assets/hometop.jpg" width="1600" height="800" fetchpriority="high" alt="RIIMS Baraut kidney care team — Dr. Vikas Gupta (Director & Chief Nephrologist), Dr. Abhishek and Dr. Rachna Gupta — Advanced Care, Compassionate Healing" style="display:block;width:100%;height:auto;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);border:1px solid var(--border-subtle)">`
+    + `<picture><source srcset="${base}assets/hometop.webp" type="image/webp"><img src="${base}assets/hometop.jpg" width="1600" height="800" fetchpriority="high" alt="RIIMS Baraut kidney care team — Dr. Vikas Gupta (Director & Chief Nephrologist), Dr. Abhishek and Dr. Rachna Gupta — Advanced Care, Compassionate Healing" style="display:block;width:100%;height:auto;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);border:1px solid var(--border-subtle)"></picture>`
     + `<div style="max-width:780px;margin:clamp(1.2rem, 1rem + 1.5vw, 2rem) auto 0;text-align:center">`
     + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
     + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
@@ -42,10 +42,12 @@ export function searchBanner(base = '') {
 function reelCard(base, r) {
   const badgeTone = r.tone === 'blue' ? 'blue' : r.tone === 'green' ? 'green' : 'cream';
   const href = r.url || SITE.instagram;
-  const bg = r.img ? `background-image:url('${base}${r.img}')` : '';
+  const media = r.img
+    ? `<img src="${base}${r.img}" alt="${esc(r.title)}" width="190" height="253" loading="lazy" decoding="async" class="reel-bg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
+    : '';
   return `<a href="${href}" target="_blank" rel="noopener" aria-label="Watch reel: ${r.title}" class="reel riims-card--hover" style="display:block;flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
     + `<div style="aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--teal-600), var(--teal-900))">`
-    + `<span aria-hidden="true" class="reel-bg img-cover" style="position:absolute;inset:0;${bg}"></span>`
+    + media
     + badge(r.tag, { tone: badgeTone, style: { alignSelf: 'flex-start', position: 'relative' } })
     + `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 20 })}</span>`
     + `<div style="color:#fff;position:relative;text-shadow:0 1px 8px rgba(0,0,0,.45)">`
@@ -162,7 +164,7 @@ export function howItWorks() {
 /* ---------- Doctor card + sections ---------- */
 function photoTile(base, d, height) {
   if (d.photo) {
-    return `<div class="img-cover" role="img" aria-label="${d.name}, ${d.title}" style="height:${height}px;background-image:url('${base}${d.photo}');background-size:cover;background-position:center top"></div>`;
+    return `<img class="img-cover" src="${base}${d.photo}" alt="${esc(d.name)}, ${esc(d.title)}" loading="lazy" decoding="async" style="display:block;width:100%;height:${height}px;object-fit:cover;object-position:center top">`;
   }
   return `<div style="height:${height}px;background:var(--surface-blue-soft);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--teal-300)">${d.init || ''}</span></div>`;
 }
@@ -214,7 +216,7 @@ export function meetExperts(base) {
 export function blogCard(base, p) {
   const g = { blue: 'linear-gradient(135deg,var(--surface-blue-soft),var(--surface-green-soft))', green: 'linear-gradient(135deg,var(--surface-green-soft),var(--cream-100))', cream: 'linear-gradient(135deg,var(--surface-cream-deep),var(--surface-blue-soft))' }[p.tone];
   const cover = p.img
-    ? `<div class="img-cover" role="img" aria-label="${p.title}" style="aspect-ratio:16 / 9;background-image:url('${base}${p.img}')"></div>`
+    ? `<img class="img-cover" src="${base}${p.img}" alt="${esc(p.title)}" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:16 / 9;object-fit:cover">`
     : `<div style="aspect-ratio:16 / 9;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 28, style: 'color:var(--teal-300)' })}</div>`;
   return `<a href="${base}blog/${p.slug}.html" class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;text-decoration:none;color:inherit">`
     + cover
@@ -254,7 +256,8 @@ export function testimonials(base = '') {
   const sv = STORY_VIDEO;
   const videoTile = (sv.enabled && sv.img)
     ? `<div style="margin-top:var(--space-8);display:flex;justify-content:center">`
-      + `<a href="${sv.url || SITE.instagram}" target="_blank" rel="noopener noreferrer" aria-label="${sv.title}" class="riims-card--hover img-cover" style="position:relative;display:block;width:100%;max-width:560px;aspect-ratio:16/10;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.14);background-image:url('${base}${sv.img}');background-position:center">`
+      + `<a href="${sv.url || SITE.instagram}" target="_blank" rel="noopener noreferrer" aria-label="${sv.title}" class="riims-card--hover" style="position:relative;display:block;width:100%;max-width:560px;aspect-ratio:16/10;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.14)">`
+      + `<img src="${base}${sv.img}" alt="${esc(sv.title)}" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
       + `<span style="position:absolute;left:16px;bottom:14px;color:#fff;font-family:var(--font-sans);font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.5)">${sv.title}</span></a>`
       + `</div>`
     : '';

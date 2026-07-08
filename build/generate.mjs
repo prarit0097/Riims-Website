@@ -107,11 +107,22 @@ function ldScript(graph) {
   return `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
 }
 
+/* Clamp a meta description to a SERP-safe length on a word boundary (Google
+   truncates ~155–160 chars). JSON-LD descriptions keep the full text. */
+function clampDesc(s, max = 155) {
+  s = String(s).replace(/\s+/g, ' ').trim();
+  if (s.length <= max) return s;
+  let cut = s.slice(0, max);
+  const sp = cut.lastIndexOf(' ');
+  if (sp > 60) cut = cut.slice(0, sp);
+  return `${cut.replace(/[\s,;:.–—-]+$/, '')}…`;
+}
+
 /* ---------- <head> ---------- */
 function head(p) {
   const url = `${SITE.origin}${p.path}`;
   const graph = [clinicGraph(), websiteGraph(), ...(p.ld || [])];
-  // Social share image: the brand hero banner (1600x900 JPEG, ~190KB).
+  // Social share image: the brand hero banner (1600x800 JPEG, ~180KB).
   const ogImg = `${SITE.origin}/assets/hometop.jpg`;
   return `<!doctype html>
 <html lang="en-IN">
@@ -119,12 +130,12 @@ function head(p) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(p.title)}</title>
-  <meta name="description" content="${esc(p.desc)}" />
+  <meta name="description" content="${esc(clampDesc(p.desc))}" />
   <meta name="author" content="RIIMS — Rashtriya Institute of Integrated Medical Sciences" />
   <meta name="robots" content="${p.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}" />
   <meta name="theme-color" content="#0a6168" />
   <link rel="canonical" href="${url}" />
-  ${p.preload ? `<link rel="preload" as="image" href="${p.base}${p.preload}" fetchpriority="high" />\n  ` : ''}<link rel="icon" type="image/png" href="${p.base}assets/riims-logo-sm.png" />
+  ${p.preload ? `<link rel="preload" as="image" href="${p.base}${p.preload}"${p.preload.endsWith('.webp') ? ' type="image/webp"' : ''} fetchpriority="high" />\n  ` : ''}<link rel="icon" type="image/png" href="${p.base}assets/riims-logo-sm.png" />
   <link rel="apple-touch-icon" href="${p.base}assets/riims-logo-sm.png" />
   <link rel="manifest" href="${p.base}site.webmanifest" />
   <meta property="og:type" content="${p.path === '/' ? 'website' : 'article'}" />
@@ -168,7 +179,7 @@ function render(p) {
 /* ---------- Page manifest ---------- */
 const pages = [
   {
-    out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home', preload: 'assets/hometop.jpg',
+    out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home', preload: 'assets/hometop.webp',
     title: 'RIIMS Baraut | Kidney Care: High Creatinine, CKD, Dialysis',
     desc: 'Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
     body: homePage(''), ld: [FAQ_GRAPH],

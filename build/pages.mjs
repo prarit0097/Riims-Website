@@ -1,7 +1,7 @@
 /* RIIMS static-site generator — full page bodies (composed from sections).
    Ported from ui_kits/website pages.jsx. */
 
-import { icon, button, badge, card, eyebrow, infoList, disclaimer } from './components.mjs';
+import { icon, button, badge, card, eyebrow, infoList, disclaimer, esc } from './components.mjs';
 import { pageHero, floatingContact } from './chrome.mjs';
 import * as S from './sections.mjs';
 import {
@@ -131,7 +131,7 @@ export function aboutPage(base) {
     + `<p style="color:var(--text-body)">Our approach is integrated. We bring together the useful strengths of modern medical science and Ayurveda, working alongside your medical treatment rather than in place of it. This is the thinking behind our care backbone, the <strong>DNA Kayakalp Protocol™</strong> — a structured framework combining scientific understanding, nutrition, lifestyle and Ayurveda to support kidney health responsibly.</p>`
     + `<p style="color:var(--text-body)">We also believe medicine alone is not enough — diet, routine, mental well-being, family support and regular follow-up matter too. Above all we stay honest: no false promises and no shortcuts, just the right information, discipline and steady medical guidance. Kidney disease can be serious, but with the right care and a positive outlook, many people live fuller, better-quality lives.</p>`
     + `<div style="margin-top:1.4rem">${button('Book a consultation', { variant: 'primary', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })}</div></div>`
-    + `<div class="img-cover img-hospital" role="img" aria-label="RIIMS institute building, Baraut" style="aspect-ratio:4 / 5;border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border-subtle);box-shadow:var(--shadow-lg)"></div>`
+    + `<img src="${base}assets/hospital.webp" alt="RIIMS institute building, Baraut" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4 / 5;object-fit:cover;border-radius:var(--radius-xl);border:1px solid var(--border-subtle);box-shadow:var(--shadow-lg)">`
     + `</div>`
     + `<div class="riims-container" style="margin-top:var(--space-16)">`
     + card(
@@ -157,7 +157,7 @@ export function doctorsPage(base) {
 function featuredPost(base, p) {
   const g = { blue: 'linear-gradient(135deg,var(--surface-blue-soft),var(--surface-green-soft))', green: 'linear-gradient(135deg,var(--surface-green-soft),var(--cream-100))', cream: 'linear-gradient(135deg,var(--surface-cream-deep),var(--surface-blue-soft))' }[p.tone];
   const cover = p.img
-    ? `<div class="img-cover" role="img" aria-label="${p.title}" style="min-height:260px;background-image:url('${base}${p.img}')"></div>`
+    ? `<img class="img-cover" src="${base}${p.img}" alt="${esc(p.title)}" loading="lazy" decoding="async" style="display:block;width:100%;height:100%;min-height:260px;object-fit:cover">`
     : `<div style="min-height:260px;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 40, style: 'color:var(--teal-300)' })}</div>`;
   return `<a href="${base}blog/${p.slug}.html" data-featured class="about-grid riims-card riims-card--hover" style="display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);overflow:hidden;text-decoration:none;color:inherit;margin-bottom:var(--space-8)">`
     + cover

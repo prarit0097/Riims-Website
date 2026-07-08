@@ -234,7 +234,7 @@ export const TESTIMONIALS = CONTENT.testimonials || [];
 
 /* The "patient video stories" tile under testimonials (admin: Patient Stories tab). */
 export const STORY_VIDEO = {
-  enabled: true, title: 'Watch patient video stories', img: 'assets/video-testimonial.png', url: '',
+  enabled: true, title: 'Watch patient video stories', img: 'assets/video-testimonial.webp', url: '',
   ...(CONTENT.storyVideo || {}),
 };
 
