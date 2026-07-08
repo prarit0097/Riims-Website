@@ -219,7 +219,14 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
   links), `whatsapp`, `facebook`, `instagram`, `youtube`, `city` (`Baraut, Uttar Pradesh 250611`),
   `addressLine`, `addressSub`, `hours` (`Mon–Sat, 9am–7pm`), `geo` ({lat,lng} — Baraut clinic,
   **verify against the Google Business Profile**), `mapsQuery`/`mapsLink` (contact-page map +
-  schema `hasMap`), `serviceCities` (Baraut/Baghpat/Meerut/Shamli → schema `areaServed`), `year`.
+  schema `hasMap`), `serviceCities` (Baraut/Baghpat/Meerut/Shamli → schema `areaServed`), `year`
+  (auto = current year). **Most of `SITE` is now admin-editable** (Admin → Settings): email, social
+  (blank = hide the icon + drops from JSON-LD `sameAs`), city, address lines, hours, maps link, service
+  cities and geo lat/lng — read from `content.json → site.*` with the values above as fallbacks.
+- **`CTA`** (admin `content.json → cta`, Admin → Settings) — the site-wide call-to-action band copy
+  (`eyebrow`, `title`, `intro`, `bookLabel`, `whatsappLabel`); **`PROTOCOL.faqs`** (admin
+  `content.json → protocol.faqs`, Admin → Protocol FAQs) — the DNA Kayakalp Protocol page FAQs
+  (`[{q,a}]`; empty = built-in defaults), driving both the visible block and the FAQPage schema.
 - **`NAV`** — the 7 header links (About, Kidney Diseases, Treatments, Guides, Doctors, Blog, Contact).
 - **`CONDITIONS`** — the 8 condition pages, each with: `icon`, `title`, `crumb`, `intro`,
   `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`. Slugs:
@@ -607,9 +614,10 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
+| **Protocol FAQs** | Add/edit/remove the FAQs on the **DNA Kayakalp Protocol** page (`/dna-kayakalp-protocol.html`). Feeds the visible FAQ block **and** the page's FAQPage rich-result schema. Empty list = built-in default FAQs. Saved to `protocol.faqs` (`[{q,a}]`); compliance-guarded copy. |
 | **Search widget** | Control the home "Search any disease" widget. Add/remove **topics**; per topic set the **label** (Popular-chip + result badge text), **keywords** (comma-separated match terms), a **Popular chip** toggle (which chips show under the search box), the **Related-articles** blogs (tick from your posts), the **Doctor** (Auto = nephrologist, a specific doctor, or RIIMS Care Team) and the **Video/reel** (Auto = first reel, or a specific one). Saved to `search.topics`; drives `site/js/search-data.js` + the Popular chips (see §8). |
 | **Tracking / Tags** | Set the **Google Tag ID** (`G-…` GA4 / `AW-…` Ads) → gtag.js loads on every page (generator writes `site/js/gtag.js`, external file so CSP `script-src 'self'` covers the config; the loader comes from `googletagmanager.com`, allowed in CSP). Paste **verification meta tags** (Search Console, Bing, FB) — one per line; only `<meta>`/`<link>` lines are accepted (scripts are stripped), injected into every page's `<head>`. |
-| **Settings** | Call + WhatsApp numbers (10 digits each, sitewide), and the **homepage stats strip** — show/hide toggle + Google rating / reviews / patients / specialists values. Stats are **hidden by default** and must only carry REAL Google Business numbers (fake stats on a YMYL medical site suppress rankings). Empty fields are skipped; real values render in the HTML (crawler-visible) with JS count-up as enhancement. |
+| **Settings** | **Contact numbers** (Call + WhatsApp, 10 digits, sitewide) + email; **Business info** (city line, opening hours, address lines, Google Maps link, service cities, map lat/lng) → drives footer, contact page and the LocalBusiness JSON-LD (`address`, `openingHours`, `geo`, `areaServed`, `hasMap`); **Social links** (Facebook / Instagram / YouTube — blank hides that icon site-wide, also feeds JSON-LD `sameAs`); the **CTA band** copy (eyebrow/title/intro/button labels) shown on nearly every page; and the **homepage stats strip** — show/hide toggle + Google rating / reviews / patients / specialists values. Stats are **hidden by default** and must only carry REAL Google Business numbers (fake stats on a YMYL medical site suppress rankings). Empty fields are skipped; real values render in the HTML (crawler-visible) with JS count-up as enhancement. |
 
 ### How it works
 - Content edits are written to **`data/content.local.json`** (gitignored) which overrides

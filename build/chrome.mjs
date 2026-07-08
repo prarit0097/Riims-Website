@@ -51,9 +51,9 @@ export function header(base, current) {
     + `<div style="display:flex;align-items:center;gap:.5rem">`
     + `<a href="${SITE.whatsapp}" target="_blank" rel="noopener noreferrer" style="color:var(--whatsapp);display:inline-flex;align-items:center;gap:.35rem;font-weight:700;text-decoration:none">${icon('message-circle', { size: 14 })} WhatsApp</a>`
     + `<span style="opacity:.3">|</span>`
-    + `<a href="${SITE.facebook}" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style="color:inherit;display:inline-flex">${icon('facebook', { size: 15 })}</a>`
-    + `<a href="${SITE.instagram}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style="color:inherit;display:inline-flex">${icon('instagram', { size: 15 })}</a>`
-    + `<a href="${SITE.youtube}" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style="color:inherit;display:inline-flex">${icon('youtube', { size: 16 })}</a>`
+    + (SITE.facebook ? `<a href="${SITE.facebook}" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style="color:inherit;display:inline-flex">${icon('facebook', { size: 15 })}</a>` : '')
+    + (SITE.instagram ? `<a href="${SITE.instagram}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style="color:inherit;display:inline-flex">${icon('instagram', { size: 15 })}</a>` : '')
+    + (SITE.youtube ? `<a href="${SITE.youtube}" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style="color:inherit;display:inline-flex">${icon('youtube', { size: 16 })}</a>` : '')
     + `</div></div></div>`;
 
   const onCondition = current && current.startsWith('conditions/');
@@ -96,9 +96,9 @@ export function footer(base) {
   const social = `<div style="display:flex;gap:.5rem">`
     + iconButton(icon('phone', { size: 18 }), { variant: 'ghost', label: 'Call', href: `tel:${SITE.phoneTel}` })
     + iconButton(icon('message-circle', { size: 18 }), { variant: 'whatsapp', label: 'WhatsApp', href: SITE.whatsapp, extraAttrs: OFFSITE })
-    + iconButton(icon('facebook', { size: 18 }), { variant: 'ghost', label: 'Facebook', href: SITE.facebook, extraAttrs: OFFSITE })
-    + iconButton(icon('instagram', { size: 18 }), { variant: 'ghost', label: 'Instagram', href: SITE.instagram, extraAttrs: OFFSITE })
-    + iconButton(icon('youtube', { size: 18 }), { variant: 'ghost', label: 'YouTube', href: SITE.youtube, extraAttrs: OFFSITE })
+    + (SITE.facebook ? iconButton(icon('facebook', { size: 18 }), { variant: 'ghost', label: 'Facebook', href: SITE.facebook, extraAttrs: OFFSITE }) : '')
+    + (SITE.instagram ? iconButton(icon('instagram', { size: 18 }), { variant: 'ghost', label: 'Instagram', href: SITE.instagram, extraAttrs: OFFSITE }) : '')
+    + (SITE.youtube ? iconButton(icon('youtube', { size: 18 }), { variant: 'ghost', label: 'YouTube', href: SITE.youtube, extraAttrs: OFFSITE }) : '')
     + `</div>`;
 
   return `<footer style="background:var(--surface-inverse);color:rgba(255,255,255,.72)">`

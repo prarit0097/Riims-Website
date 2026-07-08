@@ -61,6 +61,13 @@ export const STATS = {
 /* Shown in the "Medically reviewed / Last updated" line on condition + blog pages. */
 export const REVIEW_DATE = 'June 2026';
 
+/* Business info + social are admin-editable (Admin → Settings). Absent field = keep the
+   default below; for social a field explicitly set to '' HIDES that icon site-wide. */
+const S = (CONTENT.site && typeof CONTENT.site === 'object') ? CONTENT.site : {};
+const str = (v, dflt) => (typeof v === 'string' && v.trim() !== '' ? v.trim() : dflt);
+const social = (k, dflt) => (k in S ? String(S[k] || '').trim() : dflt);   // '' = hide
+const G = (S.geo && typeof S.geo === 'object') ? S.geo : {};
+
 export const SITE = {
   name: 'RIIMS',
   fullName: 'Rashtriya Institute of Integrated Medical Sciences',
@@ -70,19 +77,37 @@ export const SITE = {
   phoneTel: `+91${CALL}`,              // E.164 — used for tel: and schema
   waNumber: `91${WA}`,                 // bare digits for wa.me deep links
   whatsapp: `https://wa.me/91${WA}`,
-  facebook: 'https://www.facebook.com/profile.php?id=61590269039418',
-  instagram: 'https://www.instagram.com/riimshospital/',
-  youtube: 'https://youtube.com/@riimshospitals',
-  city: 'Baraut, Uttar Pradesh 250611',
-  addressLine: 'Near Baraut Medicity Hospital',
-  addressSub: '36VW+JHV, Kotana Rd, Baraut, Uttar Pradesh 250611',
-  hours: 'Mon–Sat, 9am–7pm',
-  // Approximate Baraut clinic coordinates — VERIFY against the Google Business Profile.
-  geo: { lat: 29.1066, lng: 77.2637 },
+  email: str(S.email, ''),
+  facebook: social('facebook', 'https://www.facebook.com/profile.php?id=61590269039418'),
+  instagram: social('instagram', 'https://www.instagram.com/riimshospital/'),
+  youtube: social('youtube', 'https://youtube.com/@riimshospitals'),
+  city: str(S.city, 'Baraut, Uttar Pradesh 250611'),
+  addressLine: str(S.addressLine, 'Near Baraut Medicity Hospital'),
+  addressSub: str(S.addressSub, '36VW+JHV, Kotana Rd, Baraut, Uttar Pradesh 250611'),
+  hours: str(S.hours, 'Mon–Sat, 9am–7pm'),
+  // Clinic coordinates — VERIFY against the Google Business Profile (Admin → Settings).
+  geo: { lat: Number(G.lat) || 29.1066, lng: Number(G.lng) || 77.2637 },
   mapsQuery: 'RIIMS+Rashtriya+Institute+of+Integrated+Medical+Sciences+Baraut',
-  mapsLink: 'https://www.google.com/maps/search/?api=1&query=RIIMS+Baraut',
-  serviceCities: ['Baraut', 'Baghpat', 'Meerut', 'Shamli'],
-  year: 2026,
+  mapsLink: str(S.mapsLink, 'https://www.google.com/maps/search/?api=1&query=RIIMS+Baraut'),
+  serviceCities: (Array.isArray(S.serviceCities) && S.serviceCities.filter(Boolean).length)
+    ? S.serviceCities.map((c) => String(c).trim()).filter(Boolean)
+    : ['Baraut', 'Baghpat', 'Meerut', 'Shamli'],
+  year: new Date().getFullYear(),      // auto — never goes stale
+};
+
+/* Site-wide call-to-action band copy (Admin → Settings). */
+export const CTA = {
+  eyebrow: 'Take the first step',
+  title: 'Talk to a kidney care expert today',
+  intro: 'Share your reports and get doctor-guided, evidence-aware guidance — no false promises, just honest help.',
+  bookLabel: 'Book Consultation',
+  whatsappLabel: 'WhatsApp Now',
+  ...(CONTENT.cta && typeof CONTENT.cta === 'object' ? CONTENT.cta : {}),
+};
+
+/* DNA Kayakalp Protocol page FAQs (Admin → Protocol). Empty = use the page defaults. */
+export const PROTOCOL = {
+  faqs: Array.isArray(CONTENT.protocol && CONTENT.protocol.faqs) ? CONTENT.protocol.faqs : [],
 };
 
 /* Header navigation (Kidney Diseases / Treatments point at the conditions hub). */

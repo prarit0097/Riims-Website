@@ -5,7 +5,7 @@ import { icon, button, badge, card, eyebrow, infoList, disclaimer, esc } from '.
 import { pageHero, floatingContact } from './chrome.mjs';
 import * as S from './sections.mjs';
 import {
-  SITE, CONDITIONS, DOCTORS_FULL, POSTS, POPULAR_TOPICS, SERVICES, REVIEW_DATE,
+  SITE, CONDITIONS, DOCTORS_FULL, POSTS, POPULAR_TOPICS, SERVICES, REVIEW_DATE, PROTOCOL,
 } from './data.mjs';
 import { GUIDES, GUIDE_ORDER, CONDITION_GUIDES } from './guides.mjs';
 
@@ -346,8 +346,8 @@ const LEGAL = {
       ['What we collect', 'When you submit the appointment form, call, or message us on WhatsApp, we may collect your name, phone number, city, health concern and any reports you choose to share. We only collect what is needed to respond to your query and guide your care.'],
       ['How we use it', 'Your information is used solely to contact you, review your reports, and provide doctor-guided guidance. We do not sell your data or share it with advertisers. Reports are handled confidentially by our care team.'],
       ['Data security', 'We take reasonable steps to protect the information you share. Please avoid sending sensitive information over unsecured channels where possible; you can share reports securely with our team on request.'],
-      ['Your choices', 'You may ask us to update or delete your details at any time by calling or messaging us on +91 85120 40000. Submitting the form means you agree to be contacted by RIIMS about your query.'],
-      ['Contact', 'For any privacy question, contact RIIMS, Near Baraut Medicity Hospital, Kotana Rd, Baraut, Uttar Pradesh 250611, or call +91 85120 40000.'],
+      ['Your choices', `You may ask us to update or delete your details at any time by calling or messaging us on ${SITE.phone}. Submitting the form means you agree to be contacted by RIIMS about your query.`],
+      ['Contact', `For any privacy question, contact RIIMS, ${SITE.addressLine}, ${SITE.city}, or call ${SITE.phone}.`],
     ],
   },
   terms: {
@@ -358,7 +358,7 @@ const LEGAL = {
       ['No guarantees', 'RIIMS does not promise guaranteed cure or recovery, and never claims that dialysis can be stopped permanently. Outcomes depend on each patient’s reports, condition and doctor evaluation.'],
       ['Use of the site', 'You agree to use this website lawfully and not to misuse the forms, contact channels or content. Information may be updated or changed at any time without notice.'],
       ['External links', 'This site may link to third-party services (such as WhatsApp, Facebook, Instagram and maps). RIIMS is not responsible for the content or practices of those external services.'],
-      ['Contact', 'Questions about these terms? Call +91 85120 40000 or visit RIIMS, Baraut, Uttar Pradesh 250611.'],
+      ['Contact', `Questions about these terms? Call ${SITE.phone} or visit RIIMS, ${SITE.city}.`],
     ],
   },
   disclaimer: {
@@ -406,13 +406,19 @@ export function servicesPage(base) {
 }
 
 /* ---------- DNA Kayakalp Protocol (/dna-kayakalp-protocol.html) ---------- */
-export const PROTOCOL_FAQS = [
+const DEFAULT_PROTOCOL_FAQS = [
   ['Does the DNA Kayakalp Protocol™ cure kidney disease or reverse damage?', 'No — and we will always be honest about this. It does not claim to cure kidney disease, reverse damage or promise any fixed outcome. Its purpose is safe, personalised, well-managed kidney care that supports your health journey — alongside your medical treatment, never replacing it.'],
   ['Can this protocol replace my medicines or dialysis?', 'No. It is designed to work alongside and in coordination with your medical care. Please continue your prescribed medicines and any dialysis exactly as your treating doctors advise. Never stop or change medical treatment on your own.'],
   ['Is Panchakarma safe for every kidney patient?', 'Not automatically. Not every patient needs it, and not every therapy suits every CKD stage — dialysis patients need special caution. Any supportive therapy is chosen individually and carried out only under a qualified Ayurveda physician’s supervision.'],
   ['Is there one diet chart that fits everyone?', 'No. The RiiMS Renal Plate is a visual guide, not a fixed chart. Your plate depends on your stage, potassium, proteinuria, diabetes, blood pressure, dialysis status, weight and appetite — always personalised and reviewed with your care team.'],
   ['Do detox, kadhas and lots of water clean the kidneys?', 'Be very careful with this idea. In kidney disease, water may be restricted and unsupervised fasting, strong kadhas or excess water can be harmful. Here, detox means safe, controlled support for the body’s own systems, under medical guidance — nothing aggressive or self-directed.'],
 ];
+
+/* Admin (Admin → Protocol) can override the protocol FAQs; stored as {q,a} objects,
+   normalised to [q,a] pairs here. Empty = the vetted defaults above. */
+export const PROTOCOL_FAQS = (PROTOCOL.faqs && PROTOCOL.faqs.length)
+  ? PROTOCOL.faqs.map((f) => (Array.isArray(f) ? f : [f.q || '', f.a || ''])).filter(([q]) => q)
+  : DEFAULT_PROTOCOL_FAQS;
 
 export function protocolPage(base) {
   const section = (inner, alt) => `<section style="padding-block:var(--section-pad-y);background:${alt ? 'var(--surface-page)' : 'var(--white)'}"><div class="riims-container" style="max-width:900px">${inner}</div></section>`;

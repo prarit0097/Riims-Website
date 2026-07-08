@@ -108,7 +108,7 @@ function clinicGraph() {
     hasMap: SITE.mapsLink,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Near Baraut Medicity Hospital, 36VW+JHV, Kotana Road',
+      streetAddress: `${SITE.addressLine}, ${SITE.addressSub}`,
       addressLocality: 'Baraut', addressRegion: 'Uttar Pradesh', postalCode: '250611', addressCountry: 'IN',
     },
     openingHoursSpecification: [{
@@ -116,7 +116,7 @@ function clinicGraph() {
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
       opens: '09:00', closes: '19:00',
     }],
-    sameAs: [SITE.facebook, SITE.instagram, SITE.youtube],
+    sameAs: [SITE.facebook, SITE.instagram, SITE.youtube].filter(Boolean),
   };
 }
 

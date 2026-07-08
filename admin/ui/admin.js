@@ -92,6 +92,7 @@
     if (view === 'faqs') return renderFaqs(v);
     if (view === 'blogs') return renderBlogs(v);
     if (view === 'search') return renderSearch(v);
+    if (view === 'protocol') return renderProtocol(v);
     if (view === 'tracking') return renderTracking(v);
     if (view === 'settings') return renderSettings(v);
   }
@@ -403,16 +404,56 @@
 
   /* ---- Settings ---- */
   function renderSettings(v) {
-    const s = content.site;
+    const s = content.site || {};
+    const geo = s.geo || {};
+    const cta = content.cta || {};
     const st = content.stats || { enabled: false, rating: '', reviews: '', patients: '', specialists: '' };
     v.innerHTML = `
       <div class="head"><h2>Settings</h2><button id="save" class="btn primary">Save settings</button></div>
       <div class="card">
+        <h3 style="margin:0 0 10px">📞 Contact numbers</h3>
         <div class="grid2">
-          <label class="f">Call number (10 digits)<input id="callnum" maxlength="10" value="${esc(s.callNumber)}"></label>
-          <label class="f">WhatsApp number (10 digits)<input id="wanum" maxlength="10" value="${esc(s.whatsappNumber)}"></label>
+          <label class="f">Call number (10 digits)<input id="callnum" maxlength="10" value="${esc(s.callNumber || '')}"></label>
+          <label class="f">WhatsApp number (10 digits)<input id="wanum" maxlength="10" value="${esc(s.whatsappNumber || '')}"></label>
+          <label class="f">Email (optional)<input id="s-email" value="${esc(s.email || '')}" placeholder="care@riimshospitals.com"></label>
         </div>
-        <p class="muted" style="font-size:13px;margin-bottom:0">These update every Call / WhatsApp button, the header, footer, contact page and schema across the whole website (after rebuild).</p>
+        <p class="muted" style="font-size:13px;margin-bottom:0">Har Call/WhatsApp button, header, footer, contact page aur schema in numbers se chalte hain.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 10px">📍 Business info (address, hours, map)</h3>
+        <div class="grid2">
+          <label class="f">City line (utility bar + footer)<input id="s-city" value="${esc(s.city || '')}" placeholder="Baraut, Uttar Pradesh 250611"></label>
+          <label class="f">Opening hours<input id="s-hours" value="${esc(s.hours || '')}" placeholder="Mon–Sat, 9am–7pm"></label>
+          <label class="f">Address line 1<input id="s-addr1" value="${esc(s.addressLine || '')}" placeholder="Near Baraut Medicity Hospital"></label>
+          <label class="f">Address line 2<input id="s-addr2" value="${esc(s.addressSub || '')}" placeholder="Kotana Rd, Baraut, UP 250611"></label>
+          <label class="f">Google Maps link<input id="s-maps" value="${esc(s.mapsLink || '')}" placeholder="https://maps.google.com/…"></label>
+          <label class="f">Service cities (comma-separated, for SEO)<input id="s-cities" value="${esc((s.serviceCities || []).join(', '))}" placeholder="Baraut, Baghpat, Meerut, Shamli"></label>
+          <label class="f">Map latitude<input id="s-lat" value="${esc(geo.lat != null ? geo.lat : '')}" placeholder="29.1066"></label>
+          <label class="f">Map longitude<input id="s-lng" value="${esc(geo.lng != null ? geo.lng : '')}" placeholder="77.2637"></label>
+        </div>
+        <p class="muted" style="font-size:13px;margin-bottom:0">Ye footer, contact page aur Google ke liye business-location (LocalBusiness) schema ko update karte hain. Lat/Lng ko Google Business Profile se verify karo.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 10px">🔗 Social links (blank = us icon ko hide kar do)</h3>
+        <div class="grid2">
+          <label class="f">Facebook URL<input id="s-fb" value="${esc(s.facebook || '')}" placeholder="https://facebook.com/…"></label>
+          <label class="f">Instagram URL<input id="s-ig" value="${esc(s.instagram || '')}" placeholder="https://instagram.com/…"></label>
+          <label class="f">YouTube URL<input id="s-yt" value="${esc(s.youtube || '')}" placeholder="https://youtube.com/@…"></label>
+        </div>
+        <p class="muted" style="font-size:13px;margin-bottom:0">Header + footer icons aur JSON-LD "sameAs" yahan se aate hain. Jo box khali karoge wo icon site se hat jayega.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 10px">📣 Call-to-action band (har page ke neeche wala teal box)</h3>
+        <div class="grid2">
+          <label class="f">Eyebrow (chhota label)<input id="c-eyebrow" value="${esc(cta.eyebrow || '')}"></label>
+          <label class="f">Title (badi heading)<input id="c-title" value="${esc(cta.title || '')}"></label>
+        </div>
+        <label class="f" style="margin-top:10px">Intro line<textarea id="c-intro">${esc(cta.intro || '')}</textarea></label>
+        <div class="grid2" style="margin-top:10px">
+          <label class="f">Book button label<input id="c-book" value="${esc(cta.bookLabel || '')}"></label>
+          <label class="f">WhatsApp button label<input id="c-wa" value="${esc(cta.whatsappLabel || '')}"></label>
+        </div>
+        <p class="muted" style="font-size:13px;margin-bottom:0">⚠️ Compliance: koi "100% cure / guaranteed / dialysis band" jaisa dava mat likho.</p>
       </div>
       <div class="card">
         <h3 style="margin:0 0 10px">Homepage stats strip (Google rating &amp; numbers)</h3>
@@ -427,18 +468,53 @@
         </div>
         <p class="muted" style="font-size:13px;margin-bottom:0">⚠️ Sirf <b>REAL numbers</b> daalo (Google Business Profile se). Medical site par fake rating/reviews Google ranking ko nuksan pahunchate hain. Jo box khali hoga wo stat website par nahi dikhega; checkbox off = poori strip hidden.</p>
       </div>`;
+    const val = (id) => ($(id) ? $(id).value.trim() : '');
     $('#save').onclick = () => {
       const call = $('#callnum').value.replace(/\D/g, ''), wa = $('#wanum').value.replace(/\D/g, '');
       if (call.length !== 10 || wa.length !== 10) { toast('Both numbers must be exactly 10 digits', true); return; }
-      content.site = { callNumber: call, whatsappNumber: wa };
+      content.site = {
+        callNumber: call, whatsappNumber: wa, email: val('#s-email'),
+        facebook: val('#s-fb'), instagram: val('#s-ig'), youtube: val('#s-yt'),
+        city: val('#s-city'), addressLine: val('#s-addr1'), addressSub: val('#s-addr2'), hours: val('#s-hours'),
+        mapsLink: val('#s-maps'),
+        serviceCities: val('#s-cities').split(',').map((x) => x.trim()).filter(Boolean),
+        geo: { lat: Number(val('#s-lat')) || 0, lng: Number(val('#s-lng')) || 0 },
+      };
+      content.cta = {
+        eyebrow: val('#c-eyebrow'), title: val('#c-title'), intro: val('#c-intro'),
+        bookLabel: val('#c-book'), whatsappLabel: val('#c-wa'),
+      };
       content.stats = {
         enabled: $('#st-on').checked,
-        rating: $('#st-rating').value.trim(), reviews: $('#st-reviews').value.trim(),
-        patients: $('#st-patients').value.trim(), specialists: $('#st-specialists').value.trim(),
+        rating: val('#st-rating'), reviews: val('#st-reviews'),
+        patients: val('#st-patients'), specialists: val('#st-specialists'),
       };
-      saveSection('site', content.site, 'Numbers');
+      saveSection('site', content.site, 'Business info');
+      saveSection('cta', content.cta, 'CTA band');
       saveSection('stats', content.stats, 'Stats strip');
     };
+  }
+
+  /* ---- Protocol FAQs (DNA Kayakalp Protocol page) ---- */
+  function renderProtocol(v) {
+    const cfg = (content.protocol && Array.isArray(content.protocol.faqs)) ? content.protocol : { faqs: [] };
+    content.protocol = cfg;
+    const list = cfg.faqs;
+    v.innerHTML = `
+      <div class="head"><h2>Protocol FAQs (${list.length})</h2>
+        <div class="row"><button id="add" class="btn light small">＋ Add FAQ</button>
+        <button id="save" class="btn primary">Save protocol FAQs</button></div></div>
+      <div class="card muted" style="font-size:13px">Ye FAQs <b>/dna-kayakalp-protocol.html</b> page par + uske Google rich-result (FAQPage) schema me dikhte hain. ⚠️ Compliance: honest raho — koi cure/guarantee/"dialysis band" dava nahi. List khali chhodi to built-in default FAQs dikhenge.</div>
+      ${list.map((f, i) => `
+        <div class="card">
+          <label class="f">Question<input data-bind="${i}|q" value="${esc(f.q)}"></label>
+          <label class="f" style="margin-top:10px">Answer<textarea data-bind="${i}|a" style="min-height:90px">${esc(f.a)}</textarea></label>
+          <div class="row" style="margin-top:8px;justify-content:flex-end"><button class="btn danger small" data-del="${i}">Remove</button></div>
+        </div>`).join('')}`;
+    bindFields(v, list);
+    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this FAQ?')) { list.splice(Number(b.dataset.del), 1); render(); } });
+    $('#add').onclick = () => { list.push({ id: newId(), q: '', a: '' }); render(); };
+    $('#save').onclick = () => saveSection('protocol', { faqs: list }, 'Protocol FAQs');
   }
 
   /* ---------------- boot ---------------- */

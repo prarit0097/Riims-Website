@@ -5,7 +5,7 @@ import { icon, button, badge, card, eyebrow, sectionHead, starRow, esc } from '.
 import { appointmentForm } from './chrome.mjs';
 import {
   SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
-  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO, SEARCH,
+  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO, SEARCH, CTA,
 } from './data.mjs';
 
 const TONE = {
@@ -296,12 +296,12 @@ export function ctaBand() {
   return `<section style="padding-block:var(--space-12);background:var(--surface-page)">`
     + `<div class="riims-container">`
     + `<div style="position:relative;overflow:hidden;border-radius:var(--radius-2xl);background:linear-gradient(135deg, var(--teal-700), var(--teal-900));color:#fff;text-align:center;padding:clamp(2rem,1.4rem + 3vw,3.5rem)">`
-    + eyebrow(`${icon('heart-handshake', { size: 15 })} Take the first step`, { onDark: true })
-    + `<h2 style="font-size:var(--fs-3xl);margin:0 auto .6rem;max-width:20ch;color:#fff">Talk to a kidney care expert today</h2>`
-    + `<p style="margin:0 auto 1.6rem;max-width:54ch;font-size:var(--fs-lg);color:rgba(255,255,255,.85)">Share your reports and get doctor-guided, evidence-aware guidance — no false promises, just honest help.</p>`
+    + eyebrow(`${icon('heart-handshake', { size: 15 })} ${esc(CTA.eyebrow)}`, { onDark: true })
+    + `<h2 style="font-size:var(--fs-3xl);margin:0 auto .6rem;max-width:20ch;color:#fff">${esc(CTA.title)}</h2>`
+    + `<p style="margin:0 auto 1.6rem;max-width:54ch;font-size:var(--fs-lg);color:rgba(255,255,255,.85)">${esc(CTA.intro)}</p>`
     + `<div style="display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center">`
-    + button('Book Consultation', { variant: 'white', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
-    + button('WhatsApp Now', { variant: 'whatsapp', size: 'lg', iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
+    + button(esc(CTA.bookLabel), { variant: 'white', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
+    + button(esc(CTA.whatsappLabel), { variant: 'whatsapp', size: 'lg', iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
     + `</div></div></div></section>`;
 }
 
