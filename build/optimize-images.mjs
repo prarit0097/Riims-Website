@@ -57,16 +57,21 @@ console.log(`\n  TOTAL: ${before}KB → ${after}KB  (saved ${(before - after)}KB
 
 // Home hero banners: source PNGs live (gitignored) in repo-root /assets/1..4.png;
 // ship optimised banner-N.webp (+ banner-1.jpg for OG/LCP) into site/assets.
+// Cropped to 3:1 (1920x640, HiiMS-style letterbox), keeping the TOP of the poster
+// (logo/headline/doctors/icons) — the bottom contact bar is already in the header/footer.
+// If you supply native 3:1 art, the crop is a no-op. Tweak BANNER_POS to 'centre'/'top'.
 const SRC = path.resolve('assets');
+const BANNER_W = 1920, BANNER_H = 640, BANNER_POS = 'top';
 for (const n of [1, 2, 3, 4]) {
   const src = path.join(SRC, `${n}.png`);
   if (!existsSync(src)) { console.log(`  banner ${n}: source missing (skip)`); continue; }
   const buf = readFileSync(src);
-  const web = await sharp(buf).resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 80, effort: 6 }).toBuffer();
+  const fit = { width: BANNER_W, height: BANNER_H, fit: 'cover', position: BANNER_POS };
+  const web = await sharp(buf).resize(fit).webp({ quality: 82, effort: 6 }).toBuffer();
   writeFileSync(path.join(A, `banner-${n}.webp`), web);
-  console.log(`  banner-${n}.webp  ${(web.length / 1024).toFixed(0)}KB`);
+  console.log(`  banner-${n}.webp  ${(web.length / 1024).toFixed(0)}KB  (${BANNER_W}x${BANNER_H})`);
   if (n === 1) {
-    const jpg = await sharp(buf).resize({ width: 1600, withoutEnlargement: true }).jpeg({ quality: 78, mozjpeg: true }).toBuffer();
+    const jpg = await sharp(buf).resize(fit).jpeg({ quality: 80, mozjpeg: true }).toBuffer();
     writeFileSync(path.join(A, 'banner-1.jpg'), jpg);
     console.log(`  banner-1.jpg   ${(jpg.length / 1024).toFixed(0)}KB  (OG/LCP fallback)`);
   }

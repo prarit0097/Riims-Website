@@ -58,11 +58,9 @@ html, body { overflow-x: clip; }
 /* Imagery — content images now render as real <img> (reels, doctors, hospital, blog covers). */
 .img-cover { background-size: cover; background-position: center top; background-repeat: no-repeat; }
 
-/* Hero banner slider (home) — full-width, height-capped (HiiMS-style letterbox),
-   4 auto-rotating banners, cross-fade + arrows/dots. On wide screens the height is
-   capped so the 2:1 banners don't get too tall (images cover-fill, centred). */
-.hero-slider { position: relative; width: 100%; height: clamp(190px, 34vw, 560px); overflow: hidden; background: var(--surface-blue-soft); }
-.hero-slide img { object-position: center; }
+/* Hero banner slider (home) — full-width, 3:1 letterbox (HiiMS-style), 4 auto-rotating
+   banners (native 1920x640), cross-fade + arrows/dots. 3:1 ratio = short + full-width. */
+.hero-slider { position: relative; width: 100%; aspect-ratio: 1920 / 640; overflow: hidden; background: var(--surface-blue-soft); }
 .hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity .8s ease; pointer-events: none; }
 .hero-slide.is-active { opacity: 1; pointer-events: auto; }
 .hero-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: clamp(34px, 4vw, 46px); height: clamp(34px, 4vw, 46px); border-radius: 50%; border: none; cursor: pointer; background: rgba(255,255,255,.82); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,.28); transition: background .2s, transform .2s; }

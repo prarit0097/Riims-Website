@@ -612,7 +612,7 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - **Contact map** is now a live Google Maps embed using a generic "RIIMS Baraut" query —
   refine `SITE.geo`/`mapsQuery` to the exact verified Business-Profile place after launch.
 - **Home hero** is a **4-banner auto-rotating slider** (`searchBanner` in `build/sections.mjs`). Source
-  PNGs are owner-supplied in the gitignored repo-root `/assets/1..4.png` (2:1, 1774×887); optimised to
+  PNGs are owner-supplied in the gitignored repo-root `/assets/1..4.png` (cropped to 3:1, HiiMS-style letterbox, keeping the top); optimised to
   `site/assets/banner-1..4.webp` (~125–158 KB) + `banner-1.jpg` (og/LCP fallback) by
   `build/optimize-images.mjs`. Slides cross-fade every 5s (pause on hover / hidden tab; respects
   reduced-motion); left/right arrows + dots let visitors navigate manually. To swap banners: replace `/assets/N.png`, run

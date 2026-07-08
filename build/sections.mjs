@@ -32,8 +32,8 @@ export function searchBanner(base = '') {
   ];
   const slides = BANNERS.map((b, i) => {
     const media = i === 0
-      ? `<picture><source srcset="${base}assets/banner-1.webp" type="image/webp"><img src="${base}assets/banner-1.jpg" width="1600" height="800" fetchpriority="high" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover"></picture>`
-      : `<img src="${base}assets/${b.img}.webp" width="1600" height="800" loading="lazy" decoding="async" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover">`;
+      ? `<picture><source srcset="${base}assets/banner-1.webp" type="image/webp"><img src="${base}assets/banner-1.jpg" width="1920" height="640" fetchpriority="high" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover"></picture>`
+      : `<img src="${base}assets/${b.img}.webp" width="1920" height="640" loading="lazy" decoding="async" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover">`;
     return `<div class="hero-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}">${media}</div>`;
   }).join('');
   const dots = BANNERS.map((b, i) => `<button type="button" class="hero-dot${i === 0 ? ' is-active' : ''}" data-slide-to="${i}" aria-label="Show banner ${i + 1}"></button>`).join('');
