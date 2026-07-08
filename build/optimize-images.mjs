@@ -54,3 +54,20 @@ for (const j of jobs) {
   if (j.del && j.src !== j.to && existsSync(src)) rmSync(src);
 }
 console.log(`\n  TOTAL: ${before}KB → ${after}KB  (saved ${(before - after)}KB, ${(100 * (before - after) / before).toFixed(0)}%)`);
+
+// Home hero banners: source PNGs live (gitignored) in repo-root /assets/1..4.png;
+// ship optimised banner-N.webp (+ banner-1.jpg for OG/LCP) into site/assets.
+const SRC = path.resolve('assets');
+for (const n of [1, 2, 3, 4]) {
+  const src = path.join(SRC, `${n}.png`);
+  if (!existsSync(src)) { console.log(`  banner ${n}: source missing (skip)`); continue; }
+  const buf = readFileSync(src);
+  const web = await sharp(buf).resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 80, effort: 6 }).toBuffer();
+  writeFileSync(path.join(A, `banner-${n}.webp`), web);
+  console.log(`  banner-${n}.webp  ${(web.length / 1024).toFixed(0)}KB`);
+  if (n === 1) {
+    const jpg = await sharp(buf).resize({ width: 1600, withoutEnlargement: true }).jpeg({ quality: 78, mozjpeg: true }).toBuffer();
+    writeFileSync(path.join(A, 'banner-1.jpg'), jpg);
+    console.log(`  banner-1.jpg   ${(jpg.length / 1024).toFixed(0)}KB  (OG/LCP fallback)`);
+  }
+}

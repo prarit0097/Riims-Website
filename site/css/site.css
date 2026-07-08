@@ -58,6 +58,16 @@ html, body { overflow-x: clip; }
 /* Imagery — content images now render as real <img> (reels, doctors, hospital, blog covers). */
 .img-cover { background-size: cover; background-position: center top; background-repeat: no-repeat; }
 
+/* Hero banner slider (home) — 4 auto-rotating banners, cross-fade + dots */
+.hero-slider { position: relative; aspect-ratio: 1600 / 800; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); border: 1px solid var(--border-subtle); background: var(--surface-blue-soft); }
+.hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity .8s ease; pointer-events: none; }
+.hero-slide.is-active { opacity: 1; pointer-events: auto; }
+.hero-dots { position: absolute; left: 0; right: 0; bottom: clamp(8px, 1.4vw, 16px); display: flex; gap: 8px; justify-content: center; z-index: 2; }
+.hero-dot { width: 9px; height: 9px; padding: 0; border-radius: 50%; border: none; cursor: pointer; background: rgba(255,255,255,.55); box-shadow: 0 1px 3px rgba(0,0,0,.35); transition: transform .2s, background .2s; }
+.hero-dot:hover { background: rgba(255,255,255,.85); }
+.hero-dot.is-active { background: #fff; transform: scale(1.25); }
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
+
 /* Reels hover — autoplay-style zoom + pulsing play */
 .reel .reel-bg { transition: transform .6s var(--ease-out); }
 .reel:hover .reel-bg { transform: scale(1.09); }

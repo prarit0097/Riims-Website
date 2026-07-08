@@ -253,6 +253,30 @@
     counters.forEach(animateCount);
   }
 
+  /* ---------------- Hero banner slider (auto-rotate + dots) ---------------- */
+  (function heroSlider() {
+    const root = $('[data-hero-slider]');
+    if (!root) return;
+    const slides = $$('.hero-slide', root);
+    const dots = $$('.hero-dot', root);
+    if (slides.length < 2) return;
+    let idx = 0, timer = null;
+    const AUTO = 5000;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function show(n) {
+      idx = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle('is-active', i === idx));
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function start() { if (reduce) return; stop(); timer = setInterval(() => show(idx + 1), AUTO); }
+    dots.forEach((d, i) => d.addEventListener('click', () => { show(i); start(); }));
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else start(); });
+    start();
+  })();
+
   /* ---------------- Icons ---------------- */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', refreshIcons);

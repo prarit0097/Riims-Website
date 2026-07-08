@@ -14,9 +14,11 @@ RIIMS Design System-handoff.zip
 kidney kavach book-1.pdf
 *.pdf
 
-# Source images for the home hero (2MB originals; compressed copy ships in site/assets/)
+# Source images for the home hero + banners (large originals; compressed copies
+# ship in site/assets/ as banner-*.webp — re-run: node build/optimize-images.mjs)
 /hometop.png
 /1hometop.png
+/assets/
 
 # Admin runtime data (VPS-only; never in git)
 data/leads.json

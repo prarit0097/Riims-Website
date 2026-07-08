@@ -22,10 +22,27 @@ export function searchBanner(base = '') {
     `<button type="button" data-search-term="${esc(p)}" style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:600;cursor:pointer;padding:.35rem .8rem;border-radius:var(--radius-pill);border:1px solid var(--border-brand);background:var(--white);color:var(--text-brand)">${esc(p)}</button>`
   ).join('');
 
+  // Auto-rotating hero banner slider (4 slides). First slide is LCP-optimised
+  // (webp + jpg fallback, fetchpriority); the rest lazy-load. Rotation + dots in site.js.
+  const BANNERS = [
+    { img: 'banner-1', alt: 'RIIMS Baraut — Advanced Care, Compassionate Healing. Whole-person kidney care with Dr. Abhishek, Dr. Vikas Gupta and Dr. Rachna Gupta' },
+    { img: 'banner-2', alt: 'RIIMS — integrated, doctor-led kidney care in Baraut, Uttar Pradesh' },
+    { img: 'banner-3', alt: 'RIIMS — kidney diagnosis, diet and Ayurveda-supported integrated care' },
+    { img: 'banner-4', alt: 'RIIMS — book a kidney consultation in Baraut' },
+  ];
+  const slides = BANNERS.map((b, i) => {
+    const media = i === 0
+      ? `<picture><source srcset="${base}assets/banner-1.webp" type="image/webp"><img src="${base}assets/banner-1.jpg" width="1600" height="800" fetchpriority="high" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover"></picture>`
+      : `<img src="${base}assets/${b.img}.webp" width="1600" height="800" loading="lazy" decoding="async" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover">`;
+    return `<div class="hero-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}">${media}</div>`;
+  }).join('');
+  const dots = BANNERS.map((b, i) => `<button type="button" class="hero-dot${i === 0 ? ' is-active' : ''}" data-slide-to="${i}" aria-label="Show banner ${i + 1}"></button>`).join('');
+  const slider = `<div class="hero-slider" data-hero-slider aria-roledescription="carousel" aria-label="RIIMS highlights">${slides}<div class="hero-dots" role="tablist">${dots}</div></div>`;
+
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
     + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`
     + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
-    + `<picture><source srcset="${base}assets/hometop.webp" type="image/webp"><img src="${base}assets/hometop.jpg" width="1600" height="800" fetchpriority="high" alt="RIIMS Baraut kidney care team — Dr. Vikas Gupta (Director & Chief Nephrologist), Dr. Abhishek and Dr. Rachna Gupta — Advanced Care, Compassionate Healing" style="display:block;width:100%;height:auto;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);border:1px solid var(--border-subtle)"></picture>`
+    + slider
     + `<div style="max-width:780px;margin:clamp(1.2rem, 1rem + 1.5vw, 2rem) auto 0;text-align:center">`
     + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
     + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
