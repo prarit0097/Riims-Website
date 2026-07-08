@@ -61,7 +61,7 @@ console.log(`\n  TOTAL: ${before}KB → ${after}KB  (saved ${(before - after)}KB
 // (logo/headline/doctors/icons) — the bottom contact bar is already in the header/footer.
 // If you supply native wide art at this ratio, the crop is a no-op. Tweak BANNER_POS to 'centre'/'top'.
 const SRC = path.resolve('assets');
-const BANNER_W = 1920, BANNER_H = 500, BANNER_POS = 'top';
+const BANNER_W = 1920, BANNER_H = 400, BANNER_POS = 'centre';
 for (const n of [1, 2, 3, 4]) {
   const src = path.join(SRC, `${n}.png`);
   if (!existsSync(src)) { console.log(`  banner ${n}: source missing (skip)`); continue; }
