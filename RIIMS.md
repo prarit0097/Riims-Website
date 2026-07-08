@@ -614,7 +614,7 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - **Home hero** is a **4-banner auto-rotating slider** (`searchBanner` in `build/sections.mjs`). Source
   PNGs are owner-supplied in the gitignored repo-root `/assets/1..4.png` (cropped to 3:1, HiiMS-style letterbox, keeping the top); optimised to
   `site/assets/banner-1..4.webp` (1920×640, ~96–127 KB) + `banner-1.jpg` (og/LCP fallback) by
-  `build/optimize-images.mjs`. Slides cross-fade every 5s (pause on hover / hidden tab; respects
+  `build/optimize-images.mjs`. Slides cross-fade every 3s (pause on hover / hidden tab; respects
   reduced-motion); left/right arrows + dots let visitors navigate manually. To swap banners: replace `/assets/N.png`, run
   `node build/optimize-images.mjs`, then `npm test` + push. (The banners currently show the RIIMS
   building + real doctors — keep Admin → Doctors names in sync.)
