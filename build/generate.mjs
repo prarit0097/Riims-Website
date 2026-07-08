@@ -12,7 +12,7 @@ import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
 import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS } from './pages.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
-import { CONDITIONS, POSTS, SITE, TRACKING } from './data.mjs';
+import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
@@ -25,6 +25,23 @@ if (GTAG_ID) {
     `window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '${GTAG_ID.replace(/[^A-Za-z0-9_-]/g, '')}');\n`, 'utf8');
 }
 
+/* Disease-search data (admin-driven): the home search widget's "Specialist for you"
+   + "Related articles" + video come from REAL merged content (DOCTORS/POSTS/REELS),
+   not a hardcoded list — so adding/removing a doctor, blog or reel in /admin/ flows
+   straight into search on the next rebuild. External file (CSP script-src 'self'). */
+const SEARCH_CARE = { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' };
+const _featuredDoc = DOCTORS_FULL[0]
+  ? { name: DOCTORS_FULL[0].name, title: DOCTORS_FULL[0].title, init: DOCTORS_FULL[0].init || 'RC' }
+  : SEARCH_CARE;
+const SEARCH_DATA = {
+  doctor: _featuredDoc,               // featured specialist = your FIRST doctor in Admin → Doctors
+  care: SEARCH_CARE,                  // shown for non-kidney topics
+  posts: POSTS.map((p) => ({ title: p.title, href: `blog/${p.slug}.html`, cat: p.cat || '', related: p.related || '' })),
+  reel: REELS[0] ? { title: REELS[0].title, href: REELS[0].url || SITE.instagram } : null,
+};
+writeFileSync(join(OUT, 'js', 'search-data.js'),
+  `window.__RIIMS_SEARCH__=${JSON.stringify(SEARCH_DATA)};\n`, 'utf8');
+
 /* Verification/meta tags (admin "Tracking" tab): only <meta>/<link> lines pass. */
 const META_TAGS = String(TRACKING.metaTags || '')
   .split(/\r?\n/).map((l) => l.trim())
@@ -36,6 +53,7 @@ const META_TAGS = String(TRACKING.metaTags || '')
 const ASSET_FILES = [
   'css/tokens/fonts.css', 'css/tokens/colors.css', 'css/tokens/typography.css',
   'css/tokens/spacing.css', 'css/tokens/base.css', 'css/site.css', 'js/site.js',
+  'js/search-data.js',
   ...(GTAG_ID ? ['js/gtag.js'] : []),
 ];
 const _h = createHash('md5');
@@ -161,6 +179,7 @@ function head(p) {
   <link rel="stylesheet" href="${p.base}css/tokens/base.css?v=${V}" />
   <link rel="stylesheet" href="${p.base}css/site.css?v=${V}" />
   <script src="${p.base}assets/vendor/lucide.min.js" defer></script>
+  <script src="${p.base}js/search-data.js?v=${V}" defer></script>
   <script src="${p.base}js/site.js?v=${V}" defer></script>
 </head>`;
 }

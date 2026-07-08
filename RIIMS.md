@@ -125,6 +125,7 @@ RiimS/
     │       ├── spacing.css   # spacing/radius/shadow/layout/motion/z-index tokens
     │       └── base.css      # element resets + shared primitives + button/card hover states
     ├── js/site.js            # all client interactivity (no dependencies)
+    │   └── (generated) search-data.js (admin-driven search dataset), gtag.js (if Tag ID set)
     ├── assets/               # logo (PNG for social/favicon), + WebP: hero (hometop.webp
     │   │                     #   + hometop.jpg for og), doctor portraits, reels, hospital,
     │   │                     #   video — all optimized by build/optimize-images.mjs
@@ -165,7 +166,9 @@ RiimS/
    - 3 legal pages (privacy, terms, disclaimer)
    → **36 indexable pages** (+ a branded 404 = **37 files written**).
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
-   per-type `<priority>`) and `robots.txt`.
+   per-type `<priority>`) and `robots.txt`. It also emits **`site/js/search-data.js`**
+   (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
+   the home disease-search results (see §8) — and `js/gtag.js` if a Google Tag ID is set.
 
 Run it: `npm run build`. It logs `Generated 37 pages + sitemap.xml + robots.txt into /site`.
 
@@ -230,9 +233,15 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
 - **`POPULAR_TOPICS`** — SEO keyword chips on the blog page.
 - **`TESTIMONIALS`** (Baraut/Baghpat/Meerut), **`FAQS`** (5), **`REELS`** (6),
   **`SERVICES`** (11, "Complete Care").
-- **`HEALTH_DB` + `POPULAR`** — multi-disease search dataset. NOTE: the live search widget uses
-  a **copy of `HEALTH_DB` embedded in `site/js/site.js`** (client-side). If you change the
-  search data, update **both** `data.mjs` and `site.js`.
+- **`HEALTH_DB` + `POPULAR`** — the multi-disease search **taxonomy** (topic keys + tone +
+  `resolveTopic()` regex) is embedded in `site/js/site.js` (with a mirror in `data.mjs`); if you
+  change the *topics/tones*, update **both**. **The actual results are admin-driven, not hardcoded:**
+  the generator writes **`site/js/search-data.js`** (`window.__RIIMS_SEARCH__`) from the REAL merged
+  content — the "Specialist for you" = your **first doctor in Admin → Doctors** (Care Team for
+  non-kidney topics), "Related articles" = your real **blog posts** (real `/blog/<slug>.html` links,
+  topic-filtered), and the video = your first **reel**. So adding/removing a doctor, blog or reel in
+  `/admin/` flows into search on the next rebuild; `site.js` falls back to the embedded defaults only
+  if `search-data.js` is missing (e.g. opening the HTML from disk).
 
 ## 9. Chrome (`build/chrome.mjs`)
 
@@ -346,7 +355,10 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 - **Select placeholder color** — adds `has-value` when a real option is chosen.
 - **FAQ accordion** — `[data-faq]` items; clicking a question opens it (and closes siblings),
   rotates the chevron, animates `grid-template-rows: 0fr→1fr`.
-- **Disease search** — embeds `HEALTH_DB` + `resolveTopic()`; the search form / popular chips
+- **Disease search** — `resolveTopic()` maps the query to a topic; the "Specialist / Related
+  articles / video" cards are populated from **`window.__RIIMS_SEARCH__`** (generated
+  `js/search-data.js`, admin-driven — real doctor/posts/reel), falling back to the embedded
+  `HEALTH_DB` defaults if absent. The search form / popular chips
   render a results block (related articles + a specialist card + a video card) into
   `[data-search-results]`. "No match" offers to contact the care team.
 - **Blog category filter** — `[data-blog-cat]` buttons show/hide the featured post + filter
@@ -535,8 +547,10 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
   The generator auto-creates the page, sitemap entry, and JSON-LD.
 - **Add a blog post** → add an entry to `POSTS` (with `slug` + `related`). The article page,
   links, and JSON-LD are generated automatically.
-- **Change the search data** → update `HEALTH_DB` in **both** `build/data.mjs` and
-  `site/js/site.js`.
+- **Change what search shows** → the specialist doctor, related articles and video are
+  **auto** from admin content (`js/search-data.js`, regenerated on every build) — just edit
+  Doctors/Blogs/Reels in `/admin/`. Only to change the search *topics/tones* do you edit
+  `HEALTH_DB` in **both** `build/data.mjs` and `site/js/site.js`.
 - **Change styling** → tokens in `site/css/tokens/*`, layout/responsive in `site/css/site.css`,
   or the relevant component's inline styles in `build/*.mjs`.
 - After ANY change: update this file, run `npm test` (fix any failure), then commit + push.

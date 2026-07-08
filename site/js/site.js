@@ -138,8 +138,24 @@
     const data = HEALTH_DB[topic];
     const t = TONE[data.tone];
     const cardCss = 'position:relative;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);background:var(--surface-card);border:1px solid var(--border-subtle);overflow:hidden';
-    const blogs = data.blogs.map((b) =>
-      `<li><a href="blog.html" style="display:flex;gap:.5rem;align-items:flex-start;color:var(--text-body);text-decoration:none;font-size:var(--fs-base)">${ic('arrow-right', 15, 'margin-top:3px;color:var(--icon-accent);flex:0 0 auto')} ${b}</a></li>`
+    // Admin-driven content: the generator injects window.__RIIMS_SEARCH__ from the REAL
+    // merged doctors/posts/reels (js/search-data.js). We fall back to the embedded
+    // defaults only if that file is missing (e.g. opening the HTML from disk).
+    const S = window.__RIIMS_SEARCH__;
+    let doctor = data.doctor;
+    let blogItems = data.blogs.map((b) => ({ title: b, href: 'blog.html' }));
+    let videoTitle = data.video;
+    let videoHref = '';
+    if (S) {
+      doctor = topic === 'Kidney' ? S.doctor : (S.care || data.doctor);
+      const key = topic.toLowerCase();
+      const rel = (S.posts || []).filter((p) => (`${p.related} ${p.cat} ${p.title}`).toLowerCase().includes(key));
+      const chosen = (rel.length ? rel : (S.posts || [])).slice(0, 3);
+      if (chosen.length) blogItems = chosen.map((p) => ({ title: p.title, href: p.href }));
+      if (S.reel) { videoTitle = S.reel.title; videoHref = S.reel.href || ''; }
+    }
+    const blogs = blogItems.map((b) =>
+      `<li><a href="${b.href}" style="display:flex;gap:.5rem;align-items:flex-start;color:var(--text-body);text-decoration:none;font-size:var(--fs-base)">${ic('arrow-right', 15, 'margin-top:3px;color:var(--icon-accent);flex:0 0 auto')} ${b.title}</a></li>`
     ).join('');
     container.innerHTML = `<div style="margin-top:var(--space-8)">`
       + `<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;justify-content:center">`
@@ -148,9 +164,9 @@
       + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
       + `<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('book-open', 18, 'color:var(--icon-brand)')} Related articles</span><ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem">${blogs}</ul></div>`
       + `<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('user-round', 18, 'color:var(--icon-brand)')} Specialist for you</span>`
-      + `<div style="display:flex;align-items:center;gap:.8rem"><span style="flex:0 0 auto;display:inline-flex;width:52px;height:52px;border-radius:50%;background:${t.bg};color:${t.fg};align-items:center;justify-content:center;font-family:var(--font-sans);font-weight:800">${data.doctor.init}</span><div><strong style="display:block">${data.doctor.name}</strong><span style="font-size:var(--fs-sm);color:var(--text-muted)">${data.doctor.title}</span></div></div>`
+      + `<div style="display:flex;align-items:center;gap:.8rem"><span style="flex:0 0 auto;display:inline-flex;width:52px;height:52px;border-radius:50%;background:${t.bg};color:${t.fg};align-items:center;justify-content:center;font-family:var(--font-sans);font-weight:800">${doctor.init}</span><div><strong style="display:block">${doctor.name}</strong><span style="font-size:var(--fs-sm);color:var(--text-muted)">${doctor.title}</span></div></div>`
       + `<button type="button" data-book class="riims-btn riims-btn--outline" style="display:flex;width:100%;align-items:center;justify-content:center;gap:.5rem;font-family:var(--font-sans);font-weight:800;line-height:1;white-space:nowrap;border-radius:var(--radius-pill);border:1.5px solid var(--border-strong);cursor:pointer;background:var(--white);color:var(--text-brand);font-size:.875rem;padding:.5rem .9rem;min-height:38px;margin-top:.9rem">${ic('calendar-check', 16)}<span>Book consultation</span></button></div>`
-      + `<div style="${cardCss}"><div style="aspect-ratio:16/9;background:linear-gradient(135deg, var(--teal-700), var(--teal-900));display:flex;align-items:center;justify-content:center;position:relative"><span style="display:inline-flex;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--brand-primary);align-items:center;justify-content:center">${ic('play', 24)}</span></div><div style="padding:var(--space-4) var(--space-5)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong)">${ic('video', 16, 'color:var(--icon-accent)')} ${data.video}</span></div></div>`
+      + `<${videoHref ? 'a' : 'div'} ${videoHref ? `href="${videoHref}" target="_blank" rel="noopener"` : ''} style="${cardCss};display:block;text-decoration:none;color:inherit"><div style="aspect-ratio:16/9;background:linear-gradient(135deg, var(--teal-700), var(--teal-900));display:flex;align-items:center;justify-content:center;position:relative"><span style="display:inline-flex;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--brand-primary);align-items:center;justify-content:center">${ic('play', 24)}</span></div><div style="padding:var(--space-4) var(--space-5)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong)">${ic('video', 16, 'color:var(--icon-accent)')} ${videoTitle}</span></div></${videoHref ? 'a' : 'div'}>`
       + `</div></div>`;
     refreshIcons();
   }
