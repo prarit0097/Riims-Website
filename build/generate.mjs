@@ -132,6 +132,20 @@ function websiteGraph() {
     name: 'RIIMS — Integrated Kidney Care', publisher: { '@id': `${SITE.origin}/#clinic` }, inLanguage: 'en-IN',
   };
 }
+
+/* Physician nodes (doctors page) — one per admin doctor, tied to the clinic.
+   Helps E-E-A-T + doctor rich results. Names/quals come from the admin roster. */
+function physiciansGraph() {
+  return DOCTORS_FULL.map((d) => ({
+    '@type': 'Physician',
+    name: String(d.name || '').trim(),
+    medicalSpecialty: 'Nephrology',
+    worksFor: { '@id': `${SITE.origin}/#clinic` },
+    ...(d.quals ? { description: String(d.quals).trim() } : {}),
+    ...(d.photo ? { image: `${SITE.origin}/${String(d.photo).replace(/^\//, '')}` } : {}),
+    address: { '@type': 'PostalAddress', addressLocality: 'Baraut', addressRegion: 'Uttar Pradesh', addressCountry: 'IN' },
+  }));
+}
 const FAQ_GRAPH = {
   '@type': 'FAQPage', '@id': `${SITE.origin}/#faq`,
   mainEntity: [
@@ -228,7 +242,7 @@ function render(p) {
 const pages = [
   {
     out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home', preload: 'assets/hometop.webp',
-    title: 'RIIMS Baraut | Kidney Care: High Creatinine, CKD, Dialysis',
+    title: 'Kidney Specialist in Baraut | High Creatinine, CKD & Dialysis',
     desc: 'Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
     body: homePage(''), ld: [FAQ_GRAPH],
   },
@@ -242,7 +256,7 @@ const pages = [
     out: 'doctors.html', base: '', path: '/doctors.html', nav: 'doctors.html', mobile: 'doctors.html',
     title: 'Our Doctors & Kidney Care Team | RIIMS Baraut',
     desc: 'Meet the RIIMS nephrology and integrated-care team — kidney specialists, physicians and renal dietitians providing ethical, doctor-led care in Baraut, Uttar Pradesh.',
-    body: doctorsPage(''),
+    body: doctorsPage(''), ld: physiciansGraph(),
   },
   {
     out: 'blog.html', base: '', path: '/blog.html', nav: 'blog.html', mobile: '',

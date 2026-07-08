@@ -12,10 +12,12 @@ const OFFSITE = { target: '_blank', rel: 'noopener noreferrer' };
    Name + Phone + Problem/Disease only. On submit the lead POSTs to /api/lead
    (stored by the admin server; managed in the /admin/ Leads tab). */
 export function appointmentForm() {
+  // Kidney-first — RIIMS is a kidney specialist brand; the list stays focused on
+  // kidney concerns (broad non-kidney options dilute the brand + SEO signal).
   const PROBLEM_OPTIONS = [
-    'Kidney (creatinine / CKD / dialysis)', 'Liver', 'Heart', 'Diabetes / Sugar',
-    'BP / Hypertension', 'Cancer', 'Lungs / Breathing', 'Skin', 'Stomach / Digestion',
-    'Pain (joints / back / body)', 'Parkinson / Neuro', 'Thyroid', 'Other',
+    'High creatinine', 'CKD (chronic kidney disease)', 'Dialysis guidance', 'Kidney failure',
+    'Protein in urine', 'Swelling (edema)', 'Diabetes + kidney', 'BP + kidney',
+    'Kidney stone / UTI', 'Other',
   ];
 
   const form = `<form data-step="0" class="appt-step" style="display:flex;flex-direction:column;gap:.9rem">`

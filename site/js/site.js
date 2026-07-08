@@ -1,7 +1,7 @@
 /* RIIMS static site — interactivity.
    Booking modal, 2-step appointment form, FAQ accordion, multi-disease search,
    blog category filter, newsletter, select state, and count-up stats.
-   No build step, no dependencies (Lucide is loaded separately from CDN). */
+   No build step, no dependencies (Lucide is self-hosted, loaded separately). */
 (function () {
   'use strict';
 
@@ -13,6 +13,16 @@
       window.lucide.createIcons();
     }
   }
+
+  /* Lightweight conversion analytics — fires GA4 events only if a Google Tag is
+     configured (Admin → Tracking). Safe no-op otherwise. */
+  function track(name, params) { try { if (typeof window.gtag === 'function') window.gtag('event', name, params || {}); } catch (e) { /* ignore */ } }
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]'); if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (/wa\.me|api\.whatsapp\.com|whatsapp:/i.test(href)) track('click_whatsapp', { page: location.pathname });
+    else if (/^tel:/i.test(href)) track('click_call', { page: location.pathname });
+  }, true);
 
   /* ---------------- Booking modal ---------------- */
   const modal = $('#booking-modal');
@@ -31,7 +41,7 @@
   }
   document.addEventListener('click', (e) => {
     const book = e.target.closest('[data-book]');
-    if (book) { e.preventDefault(); openModal(); return; }
+    if (book) { e.preventDefault(); track('click_book', { page: location.pathname }); openModal(); return; }
     if (e.target.closest('[data-modal-close]')) { closeModal(); return; }
     if (modal && modal.classList.contains('is-open') && e.target === modal) closeModal();
   });
@@ -68,7 +78,7 @@
 
   $$('[data-apptform]').forEach((form) => {
     const f = $('[data-step="0"]', form);
-    if (f) f.addEventListener('submit', (e) => { e.preventDefault(); postLead(form); showStep(form, 2); });
+    if (f) f.addEventListener('submit', (e) => { e.preventDefault(); track('form_submit', { page: location.pathname }); postLead(form); showStep(form, 2); });
     const reset = $('[data-appt-reset]', form);
     if (reset) reset.addEventListener('click', () => { if (f) f.reset(); showStep(form, 0); });
   });
