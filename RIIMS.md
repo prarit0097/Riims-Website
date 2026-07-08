@@ -237,8 +237,9 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
   `resolveTopic()` regex) is embedded in `site/js/site.js` (with a mirror in `data.mjs`); if you
   change the *topics/tones*, update **both**. **The actual results are admin-driven, not hardcoded:**
   the generator writes **`site/js/search-data.js`** (`window.__RIIMS_SEARCH__`) from the REAL merged
-  content — the "Specialist for you" = your **first doctor in Admin → Doctors** (Care Team for
-  non-kidney topics), "Related articles" = your real **blog posts** (real `/blog/<slug>.html` links,
+  content — the "Specialist for you" = your **nephrologist** (first doctor whose title/specialty
+  says "nephro", else the first doctor in Admin → Doctors; Care Team for non-kidney topics),
+  "Related articles" = your real **blog posts** (real `/blog/<slug>.html` links,
   topic-filtered), and the video = your first **reel**. So adding/removing a doctor, blog or reel in
   `/admin/` flows into search on the next rebuild; `site.js` falls back to the embedded defaults only
   if `search-data.js` is missing (e.g. opening the HTML from disk).

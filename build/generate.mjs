@@ -30,8 +30,13 @@ if (GTAG_ID) {
    not a hardcoded list — so adding/removing a doctor, blog or reel in /admin/ flows
    straight into search on the next rebuild. External file (CSP script-src 'self'). */
 const SEARCH_CARE = { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' };
-const _featuredDoc = DOCTORS_FULL[0]
-  ? { name: DOCTORS_FULL[0].name, title: DOCTORS_FULL[0].title, init: DOCTORS_FULL[0].init || 'RC' }
+// Featured specialist for a KIDNEY search: prefer a doctor whose title/specialty mentions
+// "nephro" (a nephrologist best fits a kidney query); else fall back to the first doctor
+// in Admin → Doctors. Names/titles are trimmed (admin fields can carry stray spaces).
+const _isNephro = (d) => /nephro/i.test(`${d.title || ''} ${(d.specialties || []).join(' ')}`);
+const _kidneyDoc = DOCTORS_FULL.find(_isNephro) || DOCTORS_FULL[0];
+const _featuredDoc = _kidneyDoc
+  ? { name: String(_kidneyDoc.name || '').trim(), title: String(_kidneyDoc.title || '').trim(), init: _kidneyDoc.init || 'RC' }
   : SEARCH_CARE;
 const SEARCH_DATA = {
   doctor: _featuredDoc,               // featured specialist = your FIRST doctor in Admin → Doctors
