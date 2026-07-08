@@ -271,6 +271,9 @@
     function stop() { if (timer) { clearInterval(timer); timer = null; } }
     function start() { if (reduce) return; stop(); timer = setInterval(() => show(idx + 1), AUTO); }
     dots.forEach((d, i) => d.addEventListener('click', () => { show(i); start(); }));
+    const prev = $('[data-slide-prev]', root), next = $('[data-slide-next]', root);
+    if (prev) prev.addEventListener('click', () => { show(idx - 1); start(); });
+    if (next) next.addEventListener('click', () => { show(idx + 1); start(); });
     root.addEventListener('mouseenter', stop);
     root.addEventListener('mouseleave', start);
     document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else start(); });

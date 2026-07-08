@@ -37,7 +37,9 @@ export function searchBanner(base = '') {
     return `<div class="hero-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}">${media}</div>`;
   }).join('');
   const dots = BANNERS.map((b, i) => `<button type="button" class="hero-dot${i === 0 ? ' is-active' : ''}" data-slide-to="${i}" aria-label="Show banner ${i + 1}"></button>`).join('');
-  const slider = `<div class="hero-slider" data-hero-slider aria-roledescription="carousel" aria-label="RIIMS highlights">${slides}<div class="hero-dots" role="tablist">${dots}</div></div>`;
+  const arrows = `<button type="button" class="hero-arrow hero-prev" data-slide-prev aria-label="Previous banner">${icon('chevron-left', { size: 26 })}</button>`
+    + `<button type="button" class="hero-arrow hero-next" data-slide-next aria-label="Next banner">${icon('chevron-right', { size: 26 })}</button>`;
+  const slider = `<div class="hero-slider" data-hero-slider aria-roledescription="carousel" aria-label="RIIMS highlights">${slides}${arrows}<div class="hero-dots" role="tablist">${dots}</div></div>`;
 
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
     + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`

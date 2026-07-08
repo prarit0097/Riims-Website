@@ -293,7 +293,7 @@ Global UI wrapped around every page by the generator:
 ## 10. Sections (`build/sections.mjs`)
 
 Reusable content sections (composed into pages): `searchBanner` (the **hero banner slider** —
-4 auto-rotating `banner-1..4.webp` slides with cross-fade + dots, driven by `site.js`; first slide
+4 auto-rotating `banner-1..4.webp` slides with cross-fade, prev/next arrows + dots, driven by `site.js`; first slide
 is LCP-optimised, rest lazy — followed by the search box + Popular chips from admin `SEARCH`),
 `healthReels` (horizontal video-thumbnail cards, each links to Instagram), `problemsSection`
 (8 condition cards), `statsStrip` (Google rating + 4 count-up stats, admin `STATS`), `completeCare` (11
@@ -615,7 +615,7 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
   PNGs are owner-supplied in the gitignored repo-root `/assets/1..4.png` (2:1, 1774×887); optimised to
   `site/assets/banner-1..4.webp` (~125–158 KB) + `banner-1.jpg` (og/LCP fallback) by
   `build/optimize-images.mjs`. Slides cross-fade every 5s (pause on hover / hidden tab; respects
-  reduced-motion); dots below let visitors jump. To swap banners: replace `/assets/N.png`, run
+  reduced-motion); left/right arrows + dots let visitors navigate manually. To swap banners: replace `/assets/N.png`, run
   `node build/optimize-images.mjs`, then `npm test` + push. (The banners currently show the RIIMS
   building + real doctors — keep Admin → Doctors names in sync.)
 - **Images are now optimized** — all rasters compressed via `build/optimize-images.mjs` (WebP for
