@@ -422,7 +422,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 
 - Per page: unique `<title>`, meta description (**auto-clamped to ≤155 chars** by `clampDesc()`),
   canonical (`https://riimshospitals.com`...),
-  OG + Twitter (share image = `assets/banner-1.jpg` 1600x800 brand banner with width/height meta; no meta-keywords tag). Home page preloads the first WebP banner (`preload: assets/banner-1.webp` in the page manifest).
+  OG + Twitter (share image = `assets/banner-1.jpg` 1920x400 brand banner with width/height meta; no meta-keywords tag). Home page preloads the first WebP banner (`preload: assets/banner-1.webp` in the page manifest).
   `<html lang="en-IN">`.
 - **Performance / Core Web Vitals:** all rasters are optimized (see `build/optimize-images.mjs`) —
   content images (reels, doctor portraits, hospital, blog covers, patient-video tile) ship as
@@ -613,13 +613,17 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
   (stored in `data/content.json` → `posts[].body`). See §24.
 - **Contact map** is now a live Google Maps embed using a generic "RIIMS Baraut" query —
   refine `SITE.geo`/`mapsQuery` to the exact verified Business-Profile place after launch.
-- **Home hero** is a **4-banner auto-rotating slider** (`searchBanner` in `build/sections.mjs`). Source
-  PNGs are owner-supplied in the gitignored repo-root `/assets/1..4.png` (cropped to 3:1, HiiMS-style letterbox, keeping the top); optimised to
-  `site/assets/banner-1..4.webp` (1920×640, ~96–127 KB) + `banner-1.jpg` (og/LCP fallback) by
-  `build/optimize-images.mjs`. Slides + speed are admin-managed (Admin → Home Banners); cross-fade at the set interval (pause on hover / hidden tab; respects
-  reduced-motion); left/right arrows + dots let visitors navigate manually. To swap banners: replace `/assets/N.png`, run
-  `node build/optimize-images.mjs`, then `npm test` + push. (The banners currently show the RIIMS
-  building + real doctors — keep Admin → Doctors names in sync.)
+- **Home hero** is an **admin-managed auto-rotating banner slider** (`searchBanner` in
+  `build/sections.mjs`, data from `BANNERS`/`BANNER_SPEED` in `data.mjs`). **Primary way to change it:
+  Admin → Home Banners** (upload/remove/reorder slides, set per-slide alt + optional click link, set the
+  auto-slide speed). Any image size is safe — each slide cover-fills a fixed **1920×400** frame, so
+  add/remove never breaks the layout; 1 slide = static (no auto-rotate/arrows/dots). Cross-fade with
+  pause-on-hover / hidden-tab, respects reduced-motion; left/right arrows + dots for manual nav.
+  **Repo defaults** (`content.json → banners`, shown until the admin overrides): owner-supplied source
+  PNGs live in the gitignored repo-root `/assets/1..4.png`, **centre-cropped to 1920×400 (~4.8:1)** and
+  optimised to `site/assets/banner-1..4.webp` (~81–101 KB) + `banner-1.jpg` (og/LCP fallback) by
+  `build/optimize-images.mjs` (`BANNER_W/H/POS`). To change the *code defaults*: replace `/assets/N.png`,
+  run `node build/optimize-images.mjs`, then `npm test` + push.
 - **Images are now optimized** — all rasters compressed via `build/optimize-images.mjs` (WebP for
   content images; the social/schema logo shrunk 1.43 MB → 112 KB PNG). `sharp` is a **dev-only,
   build-time** dependency (installed with `npm install sharp` when re-optimizing) and is **not**
