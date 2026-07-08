@@ -203,15 +203,24 @@ Pure functions that return HTML strings. Key helpers:
 
 ## 8. The data layer (`build/data.mjs` + `data/content.json`)
 
-**Admin-editable content** (phone numbers, doctors, reels, testimonials, FAQs, blog posts)
-lives in **`data/content.json`**; on the VPS the admin panel writes overrides to
-`data/content.local.json` (gitignored; the admin file **replaces each section wholesale**, so admin edits,
-additions, deletions and re-orders all apply — admin is fully authoritative. **One narrow exception:** for
-`posts`, an empty `body`/`faqs`/`refs`/`relatedPosts` is filled from the matching repo post, so repo-authored
-blog content is never wiped when the admin copy leaves those fields blank). `build/data.mjs` reads/merges
-both and derives the phone formats. **Fixed content** (conditions, services, WHY/STEPS,
-search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site, or via
-`data/content.json` in the repo.
+**Admin-editable content** lives in **`data/content.json`**; on the VPS the admin panel writes
+overrides to `data/content.local.json` (gitignored; the admin file **replaces each section wholesale**,
+so admin edits, additions, deletions and re-orders all apply — admin is fully authoritative. **One
+narrow exception:** for `posts`, an empty `body`/`faqs`/`refs`/`relatedPosts` is filled from the
+matching repo post, so repo-authored blog content is never wiped when the admin copy leaves those
+fields blank). `build/data.mjs` reads/merges both and derives the phone formats.
+
+The **17 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `site` (numbers + business
+info + social), `tracking`, `stats`, `storyVideo`, `doctors`, `reels`, `testimonials`, `faqs`, `posts`,
+`search`, `cta`, `protocol`, `services`, `why`, `steps`, `about`, `legal`. Each has a `/admin/` tab
+(see §23). For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
+`legal`, `search`), an absent/empty value falls back to the default baked into `data.mjs`/`pages.mjs`,
+so the site always renders.
+
+**Still code-only** (owner chose to keep these in code for SEO/medical quality — see §19): the 8
+condition pages (`CONDITIONS`), the 7 patient guides (`build/guides.mjs` + `build/guides/*.md`), the
+`NAV` links, footer link columns, and the medical disclaimers. Edit content via `/admin/` on the live
+site, or via `data/content.json` in the repo.
 
 - **`SITE`** — name, fullName, `origin` (**`https://riimshospitals.com`** — the production
   domain; non-www is canonical, the server 301-redirects www → apex), `phone`
@@ -281,13 +290,14 @@ Global UI wrapped around every page by the generator:
 
 ## 10. Sections (`build/sections.mjs`)
 
-Reusable content sections (composed into pages): `searchBanner`,
+Reusable content sections (composed into pages): `searchBanner` (Popular chips from admin `SEARCH`),
 `healthReels` (horizontal video-thumbnail cards, each links to Instagram), `problemsSection`
-(8 condition cards), `statsStrip` (Google rating + 4 count-up stats), `completeCare` (11
-services), `whyRiims`, `howItWorks`, `doctorsSection` + `doctorCard`, `meetExperts` +
-`expertCard` (horizontal), `educationSection` + `blogCard` (cards link to `/blog/<slug>.html`),
-`testimonials` (+ video), `faqSection` (accordion, first item open), `ctaBand` (teal gradient),
-`contactSection` (form + map placeholder + contact cards).
+(8 condition cards), `statsStrip` (Google rating + 4 count-up stats, admin `STATS`), `completeCare` (11
+services, admin `SERVICES`), `whyRiims` (admin `WHY`), `howItWorks` (admin `STEPS`), `doctorsSection`
++ `doctorCard`, `meetExperts` + `expertCard` (horizontal), `educationSection` + `blogCard` (cards link
+to `/blog/<slug>.html`), `testimonials` (+ video), `faqSection` (accordion, first item open),
+`ctaBand` (teal gradient, copy from admin `CTA`), `contactSection` (form + map placeholder + contact
+cards). Sections marked "admin X" read their content/copy from the admin-editable data (see §8/§23).
 
 ## 11. Pages (`build/pages.mjs`)
 
@@ -298,7 +308,8 @@ Each function returns a full page body:
 - **`conditionPage(base, slug)`** — page hero + two-column layout: main (about, symptoms split
   into two lists, "How RIIMS approaches it" card, when-to-consult, disclaimer) + sticky aside
   (Book/WhatsApp/Upload card + Related topics) + CTA band.
-- **`aboutPage`** — hero + story + values + doctors section + CTA.
+- **`aboutPage`** — hero + story + values + doctors section + CTA. **Admin-editable** (Admin → About;
+  `DEFAULT_ABOUT` in `pages.mjs` merged with `content.json → about`).
 - **`doctorsPage`** — hero + 6 doctor cards + CTA.
 - **`blogPage`** — hero + category filter + featured post + 9 cards (filtered client-side) +
   popular-topic chips + newsletter + CTA.
@@ -315,13 +326,17 @@ Each function returns a full page body:
   + the three pillars (D: Kidney Mapping 7 domains, root cause, safe detox; N: LDP Protocol™, RiiMS Renal
   Plate ½+¼+¼, 10 nephrotoxins, 7-therapy Panchakarma Support Framework; A: activation & adaptive care) +
   how-it-works + `PROTOCOL_FAQS` + disclaimer + CTA. Exported `PROTOCOL_FAQS` also drives the page's
-  FAQPage JSON-LD in `generate.mjs`.
+  FAQPage JSON-LD in `generate.mjs`. The **FAQs are admin-editable** (Admin → Protocol FAQs;
+  `content.json → protocol.faqs`, empty = the vetted defaults). The pillar prose stays code-only.
 - **`guidesHubPage(base)` / `guidePage(base, key)`** — the Patient Guides library (see §25). One page per
   entry in `GUIDES` (`build/guides.mjs`), body loaded from `build/guides/<key>.md` and rendered by
   `renderBody`, plus per-guide FAQs, related conditions and cross-links. The hub (`/guides.html`) lists all
   7 guides + the DNA Kayakalp Protocol.
 - **`contactPage`** — hero + contact section + FAQ.
-- **`legalPage(base, key)`** — privacy / terms / disclaimer, from the `LEGAL` content map.
+- **`legalPage(base, key)`** — privacy / terms / disclaimer. `DEFAULT_LEGAL` in `pages.mjs` merged with
+  **admin edits** (`content.json → legal`, Admin → Legal pages); a fully-empty page falls back to its
+  default so required legal copy can't be blanked. Legal contact lines are templated from `SITE` (phone/
+  address stay in sync when the admin changes the number).
 
 ## 12. CSS system
 
@@ -353,8 +368,8 @@ images, the `[hidden]` rule).
 
 ## 13. JavaScript interactivity (`site/js/site.js`)
 
-One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
-`lucide.createIcons()` on load and after injecting dynamic markup. Features:
+One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vendor/lucide.min.js`
+(no CDN); `site.js` calls `lucide.createIcons()` on load and after injecting dynamic markup. Features:
 
 - **Booking modal** — `[data-book]` opens it (delegated click), `[data-modal-close]`/overlay/
   Esc close it; body scroll locked while open.
@@ -432,12 +447,13 @@ One dependency-free IIFE. Lucide is loaded separately from CDN; `site.js` calls
 
 ## 16. Wiring / data flow (how a click works)
 
-- **Book/Upload buttons** (anywhere) carry `data-book` → `site.js` delegated handler opens
-  `#booking-modal` → the modal contains `appointmentForm()`.
+- **Book buttons** (anywhere) carry `data-book` → `site.js` delegated handler opens
+  `#booking-modal` → the modal contains `appointmentForm()` → submit POSTs to `/api/lead`.
 - **WhatsApp/Call** links → `SITE.whatsapp` / `tel:SITE.phoneTel` (real `wa.me`/`tel:` URLs).
 - **Nav / footer / cards / related links** → real `.html` files (correct via the `base` prefix);
   enforced to all-resolve by `npm test`.
-- **Search** → `site.js` matches the query against `HEALTH_DB` and renders a results block.
+- **Search** → `site.js` matches the query against the admin-driven `window.__RIIMS_SEARCH__` topics
+  (`js/search-data.js`) and renders a results block (see §8).
 - **Reels / testimonial video** → link to the Instagram profile (`SITE.instagram`).
 
 ## 17. Build, run, test commands
@@ -534,8 +550,9 @@ Confirmed at launch: all pages 200, SSL valid (Let's Encrypt, expires 2026-09-08
 ### 18.6 Scale / 1000+ concurrent
 
 Fully static behind host nginx → served from cache/RAM, thousands of req/s per core. The config adds
-**gzip** (text) + **30-day asset caching** + security headers. No backend, DB, or per-request compute.
-Leads never depend on the server (booking form → prefilled WhatsApp; Call/WhatsApp are plain links).
+**gzip** (text) + **30-day asset caching** + security headers. No backend, DB, or per-request compute
+for the public pages. Leads POST to the admin server's `/api/lead` (a lightweight, rate-limited
+Node endpoint); Call/WhatsApp are plain `tel:`/`wa.me` links that never touch the server.
 
 ### 18.7 Alternatives (not used here)
 
@@ -553,8 +570,13 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 
 ## 19. How to make common changes
 
-- **Change phone / address / social / domain** → `build/data.mjs` (`SITE`) → `npm test` → push.
-- **Edit any copy** (conditions, doctors, posts, FAQs, services) → `build/data.mjs`.
+- **Change phone / WhatsApp / address / hours / social / maps / geo / CTA copy** → **Admin → Settings**
+  (no code). Only the `domain`/`origin` and business/legal *name* stay in `build/data.mjs` (`SITE`).
+- **Edit copy that has an admin tab** (doctors, blogs, reels, testimonials, FAQs, services, why, steps,
+  about, legal, protocol FAQs, search) → **use `/admin/`** (see §23) — it rebuilds automatically.
+  Code defaults live in `build/data.mjs` / `build/pages.mjs`.
+- **Edit code-only copy** (the 8 condition pages `CONDITIONS`, the 7 guides, `NAV`, footer columns,
+  disclaimers) → `build/data.mjs` / `build/guides/*` → `npm test` → push.
 - **Add a condition page** → add an entry to `CONDITIONS` (and to `PROBLEMS` for the home grid).
   The generator auto-creates the page, sitemap entry, and JSON-LD.
 - **Add a blog post** → add an entry to `POSTS` (with `slug` + `related`). The article page,
@@ -571,7 +593,7 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - **Generator is source of truth** (`build/`); `site/` is generated — don't hand-edit it.
 - **Immutability / small modules** preferred; medical compliance (no cure/guarantee claims);
   disclaimers must remain.
-- Icons: Lucide via CDN (`<i data-lucide>`), plus inline SVG for Facebook/Instagram/stars.
+- Icons: Lucide **self-hosted** (`assets/vendor/lucide.min.js`, `<i data-lucide>`), plus inline SVG for Facebook/Instagram/stars.
 - Fonts: Spectral (display), Plus Jakarta Sans (body), Mukta (Hindi) via Google Fonts.
 
 ## 21. Known placeholders / next steps
@@ -611,7 +633,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | Tab | What you can do |
 |-----|-----------------|
 | **Leads** | Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
-| **Doctors** | Add/remove/edit doctors — name, title, qualifications, specialties, languages, photo upload. Drives the doctors page, home experts carousel, and the about-page trio (first 3). |
+| **Doctors** | Add/remove/edit doctors — name, title, qualifications, specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
