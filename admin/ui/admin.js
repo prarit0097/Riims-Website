@@ -93,6 +93,7 @@
   const ICONS = 'video building-2 map clipboard-list salad leaf activity waves heart-pulse user-round repeat target git-merge shield-check file-text stethoscope calendar-check phone message-circle beaker droplets gauge circle-dot search-check book-open';
   const iconField = (i, val) => `<label class="f">Icon<input data-bind="${i}|icon" list="iconlist" value="${esc(val || '')}" placeholder="e.g. salad"></label>`;
   const ICON_DATALIST = `<datalist id="iconlist">${ICONS.split(' ').map((n) => `<option value="${n}">`).join('')}</datalist>`;
+  const fval = (id) => ($(id) ? $(id).value.trim() : '');
 
   /* ---------------- views ---------------- */
   function render() {
@@ -108,6 +109,8 @@
     if (view === 'services') return renderServices(v);
     if (view === 'why') return renderWhy(v);
     if (view === 'steps') return renderSteps(v);
+    if (view === 'about') return renderAbout(v);
+    if (view === 'legal') return renderLegal(v);
     if (view === 'tracking') return renderTracking(v);
     if (view === 'settings') return renderSettings(v);
   }
@@ -396,6 +399,73 @@
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this search topic?')) { list.splice(Number(b.dataset.del), 1); render(); } });
     $('#add').onclick = () => { list.push({ id: newId(), label: 'New topic', keywords: '', popular: false, blogSlugs: [], doctor: '', reel: '' }); render(); };
     $('#save').onclick = () => saveSection('search', { topics: list }, 'Search');
+  }
+
+  /* ---- About page ---- */
+  function renderAbout(v) {
+    const a = content.about || (content.about = {});
+    a.hero = a.hero || {};
+    const values = a.values || (a.values = []);
+    v.innerHTML = `${ICON_DATALIST}
+      <div class="head"><h2>About page</h2><button id="save" class="btn primary">Save About</button></div>
+      <div class="card">
+        <div class="grid2">
+          <label class="f">Hero title<input id="a-htitle" value="${esc(a.hero.title || '')}"></label>
+          <label class="f">Image alt text<input id="a-alt" value="${esc(a.imageAlt || '')}"></label>
+        </div>
+        <label class="f" style="margin-top:10px">Hero intro<textarea id="a-hintro">${esc(a.hero.intro || '')}</textarea></label>
+      </div>
+      <div class="card">
+        <label class="f">Story heading<input id="a-sheading" value="${esc(a.storyHeading || '')}"></label>
+        <label class="f" style="margin-top:10px">Story paragraphs (ek khali line = naya paragraph; &lt;strong&gt; allowed)<textarea id="a-story" style="min-height:180px">${esc((a.story || []).join('\n\n'))}</textarea></label>
+      </div>
+      <div class="card">
+        <label class="f">CKD awareness note (khali = hide; &lt;strong&gt; allowed)<textarea id="a-ckd">${esc(a.ckdNote || '')}</textarea></label>
+        <p class="muted" style="font-size:13px;margin:6px 0 0">⚠️ Compliance: koi cure/guarantee dava nahi.</p>
+      </div>
+      <div class="card">
+        <div class="head" style="margin:0 0 8px"><h3 style="margin:0">Value cards (${values.length})</h3><button id="addval" class="btn light small">＋ Add card</button></div>
+        ${values.map((x, i) => `<div class="card"><div class="row" style="margin-bottom:8px"><b>#${i + 1}</b><span style="flex:1"></span>${reorderBtns(i)}<button class="btn danger small" data-del="${i}">Remove</button></div><div class="grid3">${iconField(i, x.icon)}<label class="f">Title<input data-bind="${i}|t" value="${esc(x.t)}"></label><label class="f">Description<input data-bind="${i}|d" value="${esc(x.d)}"></label></div></div>`).join('')}
+      </div>`;
+    bindFields(v, values); wireReorder(v, values);
+    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { values.splice(Number(b.dataset.del), 1); render(); });
+    $('#addval').onclick = () => { values.push({ icon: 'file-check-2', t: '', d: '' }); render(); };
+    $('#save').onclick = () => {
+      content.about = {
+        hero: { title: fval('#a-htitle'), intro: fval('#a-hintro') },
+        storyHeading: fval('#a-sheading'),
+        story: fval('#a-story').split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean),
+        imageAlt: fval('#a-alt'),
+        ckdNote: fval('#a-ckd'),
+        values,
+      };
+      saveSection('about', content.about, 'About page');
+    };
+  }
+
+  /* ---- Legal pages (Privacy / Terms / Disclaimer) ---- */
+  function renderLegal(v) {
+    const L = content.legal || (content.legal = {});
+    ['privacy', 'terms', 'disclaimer'].forEach((k) => { L[k] = L[k] || { title: '', intro: '', sections: [] }; if (!Array.isArray(L[k].sections)) L[k].sections = []; });
+    const panel = (k, label) => {
+      const p = L[k];
+      return `<div class="card">
+        <h3 style="margin:0 0 10px">${label}</h3>
+        <label class="f">Page title<input data-leg="${k}|title" value="${esc(p.title)}"></label>
+        <label class="f" style="margin-top:10px">Intro<textarea data-leg="${k}|intro">${esc(p.intro)}</textarea></label>
+        <div style="margin:12px 0 4px;font-size:13px;font-weight:600">Sections</div>
+        ${p.sections.map((s, i) => `<div class="card" style="margin-top:8px"><div class="row" style="margin-bottom:6px"><b>#${i + 1}</b><span style="flex:1"></span><button class="btn danger small" data-legdel="${k}|${i}">Remove</button></div><label class="f">Heading<input data-legsec="${k}|${i}|0" value="${esc(s[0] || '')}"></label><label class="f" style="margin-top:8px">Body<textarea data-legsec="${k}|${i}|1">${esc(s[1] || '')}</textarea></label></div>`).join('')}
+        <button class="btn light small" data-legadd="${k}" style="margin-top:8px">＋ Add section</button>
+      </div>`;
+    };
+    v.innerHTML = `<div class="head"><h2>Legal pages</h2><button id="save" class="btn primary">Save legal</button></div>
+      <div class="card muted" style="font-size:13px">⚠️ Medical/legal compliance: disclaimers ko honest rakho (no cure/guarantee). Kisi page ko poora khali chhoda to built-in default wapas aa jayega — required legal copy delete nahi hoti.</div>
+      ${panel('privacy', 'Privacy Policy')}${panel('terms', 'Terms of Use')}${panel('disclaimer', 'Medical Disclaimer')}`;
+    v.querySelectorAll('[data-leg]').forEach((el) => el.addEventListener('input', () => { const [k, f] = el.dataset.leg.split('|'); L[k][f] = el.value; }));
+    v.querySelectorAll('[data-legsec]').forEach((el) => el.addEventListener('input', () => { const [k, i, f] = el.dataset.legsec.split('|'); L[k].sections[Number(i)][Number(f)] = el.value; }));
+    v.querySelectorAll('[data-legdel]').forEach((b) => b.onclick = () => { const [k, i] = b.dataset.legdel.split('|'); L[k].sections.splice(Number(i), 1); render(); });
+    v.querySelectorAll('[data-legadd]').forEach((b) => b.onclick = () => { L[b.dataset.legadd].sections.push(['', '']); render(); });
+    $('#save').onclick = () => saveSection('legal', L, 'Legal pages');
   }
 
   /* ---- Tracking / Tags (gtag + verification meta tags) ---- */

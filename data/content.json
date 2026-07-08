@@ -1012,5 +1012,112 @@
       "title": "Follow-up & monitoring",
       "desc": "Ongoing diet, lifestyle and test monitoring, adapted as your condition changes."
     }
-  ]
+  ],
+  "about": {
+    "hero": {
+      "title": "About RIIMS",
+      "intro": "Rashtriya Institute of Integrated Medical Sciences is a kidney-focused institute for ethical, doctor-led, report-based and integrated kidney care."
+    },
+    "storyHeading": "Kidney care built on reports, not guesswork",
+    "story": [
+      "RIIMS is a doctor-led, report-based institute founded on a simple belief: kidney disease is rarely sudden, and the people living with it deserve honest information, calm guidance and a plan made for them. Every plan begins with your actual reports — creatinine, eGFR and your wider health picture — read alongside your history and daily life. We don’t compare one patient to another, because two people with the same creatinine can have very different causes and needs.",
+      "Our approach is integrated. We bring together the useful strengths of modern medical science and Ayurveda, working alongside your medical treatment rather than in place of it. This is the thinking behind our care backbone, the <strong>DNA Kayakalp Protocol™</strong> — a structured framework combining scientific understanding, nutrition, lifestyle and Ayurveda to support kidney health responsibly.",
+      "We also believe medicine alone is not enough — diet, routine, mental well-being, family support and regular follow-up matter too. Above all we stay honest: no false promises and no shortcuts, just the right information, discipline and steady medical guidance. Kidney disease can be serious, but with the right care and a positive outlook, many people live fuller, better-quality lives."
+    ],
+    "imageAlt": "RIIMS institute building, Baraut",
+    "ckdNote": "<strong>Roughly 1 in 6–7 people in India</strong> may be affected by Chronic Kidney Disease (CKD) at some stage — a general awareness estimate from published studies, not a RIIMS performance measure. CKD is often called a “silent disease” because it can progress with few early symptoms, which is why timely testing and regular check-ups matter.",
+    "values": [
+      {
+        "icon": "file-check-2",
+        "t": "Report-based care",
+        "d": "Every plan starts from your actual reports and full picture — never guesswork."
+      },
+      {
+        "icon": "git-merge",
+        "t": "Truly integrated",
+        "d": "Modern nephrology with safe Ayurveda-supported lifestyle care — alongside, never instead of, treatment."
+      },
+      {
+        "icon": "heart-handshake",
+        "t": "Personalised & honest",
+        "d": "Two people with the same creatinine can need different care. Plain-language guidance, no false promises."
+      }
+    ]
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "How RIIMS handles the information you share with us.",
+      "sections": [
+        [
+          "What we collect",
+          "When you submit the appointment form, call, or message us on WhatsApp, we may collect your name, phone number, city, health concern and any reports you choose to share. We only collect what is needed to respond to your query and guide your care."
+        ],
+        [
+          "How we use it",
+          "Your information is used solely to contact you, review your reports, and provide doctor-guided guidance. We do not sell your data or share it with advertisers. Reports are handled confidentially by our care team."
+        ],
+        [
+          "Data security",
+          "We take reasonable steps to protect the information you share. Please avoid sending sensitive information over unsecured channels where possible; you can share reports securely with our team on request."
+        ],
+        [
+          "Your choices",
+          "You may ask us to update or delete your details at any time by calling or messaging us on +91 85120 40000. Submitting the form means you agree to be contacted by RIIMS about your query."
+        ],
+        [
+          "Contact",
+          "For any privacy question, contact RIIMS, Near Baraut Medicity Hospital, Baraut, Uttar Pradesh 250611, or call +91 85120 40000."
+        ]
+      ]
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "intro": "The terms that apply when you use the RIIMS website.",
+      "sections": [
+        [
+          "Educational information only",
+          "The content on this website is for awareness and patient education. It is not medical advice and does not create a doctor–patient relationship. Always consult a qualified doctor for diagnosis and treatment."
+        ],
+        [
+          "No guarantees",
+          "RIIMS does not promise guaranteed cure or recovery, and never claims that dialysis can be stopped permanently. Outcomes depend on each patient’s reports, condition and doctor evaluation."
+        ],
+        [
+          "Use of the site",
+          "You agree to use this website lawfully and not to misuse the forms, contact channels or content. Information may be updated or changed at any time without notice."
+        ],
+        [
+          "External links",
+          "This site may link to third-party services (such as WhatsApp, Facebook, Instagram and maps). RIIMS is not responsible for the content or practices of those external services."
+        ],
+        [
+          "Contact",
+          "Questions about these terms? Call +91 85120 40000 or visit RIIMS, Baraut, Uttar Pradesh 250611."
+        ]
+      ]
+    },
+    "disclaimer": {
+      "title": "Medical Disclaimer",
+      "intro": "Please read this important note about the information on this site.",
+      "sections": [
+        [
+          "For awareness only",
+          "Information on this site is for awareness only and does not replace medical consultation. Treatment depends on doctor evaluation and patient reports. Never delay seeking medical advice because of something you read here."
+        ],
+        [
+          "No false claims",
+          "RIIMS provides ethical, evidence-aware, integrated kidney care. We do not make claims of “100% cure”, “guaranteed kidney recovery”, or “permanently stopping dialysis”. Ayurveda-supported lifestyle care is offered alongside, and in coordination with, medical treatment — never as a replacement for it."
+        ],
+        [
+          "Individual results vary",
+          "Patient stories and examples reflect individual experiences. Results vary from person to person and depend on the underlying cause, stage, and doctor-led care plan."
+        ],
+        [
+          "Not an emergency service",
+          "This website and its contact channels are not for medical emergencies. If you have a medical emergency, contact your nearest hospital immediately."
+        ]
+      ]
+    }
+  }
 }

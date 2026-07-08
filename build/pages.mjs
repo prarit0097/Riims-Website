@@ -6,6 +6,7 @@ import { pageHero, floatingContact } from './chrome.mjs';
 import * as S from './sections.mjs';
 import {
   SITE, CONDITIONS, DOCTORS_FULL, POSTS, POPULAR_TOPICS, SERVICES, REVIEW_DATE, PROTOCOL,
+  ABOUT_ADMIN, LEGAL_ADMIN,
 } from './data.mjs';
 import { GUIDES, GUIDE_ORDER, CONDITION_GUIDES } from './guides.mjs';
 
@@ -109,36 +110,49 @@ export function conditionPage(base, slug) {
 }
 
 /* ---------- About ---------- */
-export function aboutPage(base) {
-  const values = [
+/* Default About-page content (Admin → About can override any field). */
+export const DEFAULT_ABOUT = {
+  hero: { title: 'About RIIMS', intro: 'Rashtriya Institute of Integrated Medical Sciences is a kidney-focused institute for ethical, doctor-led, report-based and integrated kidney care.' },
+  storyHeading: 'Kidney care built on reports, not guesswork',
+  story: [
+    'RIIMS is a doctor-led, report-based institute founded on a simple belief: kidney disease is rarely sudden, and the people living with it deserve honest information, calm guidance and a plan made for them. Every plan begins with your actual reports — creatinine, eGFR and your wider health picture — read alongside your history and daily life. We don’t compare one patient to another, because two people with the same creatinine can have very different causes and needs.',
+    'Our approach is integrated. We bring together the useful strengths of modern medical science and Ayurveda, working alongside your medical treatment rather than in place of it. This is the thinking behind our care backbone, the <strong>DNA Kayakalp Protocol™</strong> — a structured framework combining scientific understanding, nutrition, lifestyle and Ayurveda to support kidney health responsibly.',
+    'We also believe medicine alone is not enough — diet, routine, mental well-being, family support and regular follow-up matter too. Above all we stay honest: no false promises and no shortcuts, just the right information, discipline and steady medical guidance. Kidney disease can be serious, but with the right care and a positive outlook, many people live fuller, better-quality lives.',
+  ],
+  imageAlt: 'RIIMS institute building, Baraut',
+  ckdNote: '<strong>Roughly 1 in 6–7 people in India</strong> may be affected by Chronic Kidney Disease (CKD) at some stage — a general awareness estimate from published studies, not a RIIMS performance measure. CKD is often called a “silent disease” because it can progress with few early symptoms, which is why timely testing and regular check-ups matter.',
+  values: [
     { icon: 'file-check-2', t: 'Report-based care', d: 'Every plan starts from your actual reports and full picture — never guesswork.' },
     { icon: 'git-merge', t: 'Truly integrated', d: 'Modern nephrology with safe Ayurveda-supported lifestyle care — alongside, never instead of, treatment.' },
     { icon: 'heart-handshake', t: 'Personalised & honest', d: 'Two people with the same creatinine can need different care. Plain-language guidance, no false promises.' },
-  ];
+  ],
+};
+
+export function aboutPage(base) {
+  const A = { ...DEFAULT_ABOUT, ...ABOUT_ADMIN, hero: { ...DEFAULT_ABOUT.hero, ...(ABOUT_ADMIN.hero || {}) } };
+  const story = (Array.isArray(A.story) && A.story.length) ? A.story : DEFAULT_ABOUT.story;
+  const values = (Array.isArray(A.values) && A.values.length) ? A.values : DEFAULT_ABOUT.values;
   const valueCards = values.map((v) =>
     card(
-      `<span style="display:inline-flex;width:48px;height:48px;border-radius:var(--radius-md);background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center;margin-bottom:.7rem">${icon(v.icon, { size: 22 })}</span>`
-      + `<h3 style="font-size:var(--fs-lg);margin:0 0 .3rem">${v.t}</h3>`
-      + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-base)">${v.d}</p>`,
+      `<span style="display:inline-flex;width:48px;height:48px;border-radius:var(--radius-md);background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center;margin-bottom:.7rem">${icon(v.icon || 'file-check-2', { size: 22 })}</span>`
+      + `<h3 style="font-size:var(--fs-lg);margin:0 0 .3rem">${esc(v.t)}</h3>`
+      + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-base)">${esc(v.d)}</p>`,
       { pad: 'lg', hover: true })
   ).join('');
 
-  return pageHero(base, { crumb: 'About RIIMS', icon: 'building-2', title: 'About RIIMS', intro: 'Rashtriya Institute of Integrated Medical Sciences is a kidney-focused institute for ethical, doctor-led, report-based and integrated kidney care.' })
+  return pageHero(base, { crumb: 'About RIIMS', icon: 'building-2', title: esc(A.hero.title), intro: esc(A.hero.intro) })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container about-grid" style="display:grid;grid-template-columns:1.2fr .8fr;gap:var(--space-12);align-items:center">`
-    + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .8rem">Kidney care built on reports, not guesswork</h2>`
-    + `<p style="color:var(--text-body)">RIIMS is a doctor-led, report-based institute founded on a simple belief: kidney disease is rarely sudden, and the people living with it deserve honest information, calm guidance and a plan made for them. Every plan begins with your actual reports — creatinine, eGFR and your wider health picture — read alongside your history and daily life. We don’t compare one patient to another, because two people with the same creatinine can have very different causes and needs.</p>`
-    + `<p style="color:var(--text-body)">Our approach is integrated. We bring together the useful strengths of modern medical science and Ayurveda, working alongside your medical treatment rather than in place of it. This is the thinking behind our care backbone, the <strong>DNA Kayakalp Protocol™</strong> — a structured framework combining scientific understanding, nutrition, lifestyle and Ayurveda to support kidney health responsibly.</p>`
-    + `<p style="color:var(--text-body)">We also believe medicine alone is not enough — diet, routine, mental well-being, family support and regular follow-up matter too. Above all we stay honest: no false promises and no shortcuts, just the right information, discipline and steady medical guidance. Kidney disease can be serious, but with the right care and a positive outlook, many people live fuller, better-quality lives.</p>`
+    + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .8rem">${esc(A.storyHeading)}</h2>`
+    + story.map((p) => `<p style="color:var(--text-body)">${p}</p>`).join('')
     + `<div style="margin-top:1.4rem">${button('Book a consultation', { variant: 'primary', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })}</div></div>`
-    + `<img src="${base}assets/hospital.webp" alt="RIIMS institute building, Baraut" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4 / 5;object-fit:cover;border-radius:var(--radius-xl);border:1px solid var(--border-subtle);box-shadow:var(--shadow-lg)">`
+    + `<img src="${base}assets/hospital.webp" alt="${esc(A.imageAlt)}" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4 / 5;object-fit:cover;border-radius:var(--radius-xl);border:1px solid var(--border-subtle);box-shadow:var(--shadow-lg)">`
     + `</div>`
-    + `<div class="riims-container" style="margin-top:var(--space-16)">`
-    + card(
-      `<p style="margin:0;color:var(--text-body)"><strong>Roughly 1 in 6–7 people in India</strong> may be affected by Chronic Kidney Disease (CKD) at some stage — a general awareness estimate from published studies, not a RIIMS performance measure. CKD is often called a “silent disease” because it can progress with few early symptoms, which is why timely testing and regular check-ups matter.</p>`,
-      { pad: 'lg', style: { boxShadow: 'var(--shadow-sm)', marginBottom: 'var(--space-8)' } })
-    + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${valueCards}</div>`
-    + `</div></section>`
+    + (A.ckdNote ? `<div class="riims-container" style="margin-top:var(--space-16)">`
+      + card(`<p style="margin:0;color:var(--text-body)">${A.ckdNote}</p>`, { pad: 'lg', style: { boxShadow: 'var(--shadow-sm)', marginBottom: 'var(--space-8)' } })
+      + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${valueCards}</div></div>`
+      : `<div class="riims-container" style="margin-top:var(--space-16)"><div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${valueCards}</div></div>`)
+    + `</section>`
     + S.doctorsSection(base)
     + S.ctaBand();
 }
@@ -338,7 +352,7 @@ export function blogPostPage(base, p) {
 }
 
 /* ---------- Legal / disclaimer pages ---------- */
-const LEGAL = {
+export const DEFAULT_LEGAL = {
   privacy: {
     title: 'Privacy Policy', crumb: 'Privacy Policy', icon: 'shield-check',
     intro: 'How RIIMS handles the information you share with us.',
@@ -372,6 +386,18 @@ const LEGAL = {
     ],
   },
 };
+
+/* Merge admin overrides (Admin → Legal) over the defaults; icon/crumb stay from code.
+   Empty admin sections fall back so required legal copy can never be blanked out. */
+const LEGAL = Object.fromEntries(Object.entries(DEFAULT_LEGAL).map(([k, def]) => {
+  const adm = LEGAL_ADMIN[k] || {};
+  return [k, {
+    ...def,
+    title: adm.title || def.title,
+    intro: adm.intro || def.intro,
+    sections: (Array.isArray(adm.sections) && adm.sections.filter((s) => Array.isArray(s) && s[0]).length) ? adm.sections : def.sections,
+  }];
+}));
 
 /* ---------- Kidney Diseases hub (/conditions/) ---------- */
 export function conditionsHubPage(base) {

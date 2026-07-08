@@ -110,6 +110,11 @@ export const PROTOCOL = {
   faqs: Array.isArray(CONTENT.protocol && CONTENT.protocol.faqs) ? CONTENT.protocol.faqs : [],
 };
 
+/* About page + Legal pages admin overrides (Admin → About / Legal). The DEFAULT
+   content lives in pages.mjs; these just carry the admin edits, merged there. */
+export const ABOUT_ADMIN = (CONTENT.about && typeof CONTENT.about === 'object') ? CONTENT.about : {};
+export const LEGAL_ADMIN = (CONTENT.legal && typeof CONTENT.legal === 'object') ? CONTENT.legal : {};
+
 /* Header navigation (Kidney Diseases / Treatments point at the conditions hub). */
 export const NAV = [
   { label: 'About', href: 'about.html' },
