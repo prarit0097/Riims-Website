@@ -12,7 +12,7 @@ import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
 import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS } from './pages.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
-import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH } from './data.mjs';
+import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
@@ -241,7 +241,7 @@ function render(p) {
 /* ---------- Page manifest ---------- */
 const pages = [
   {
-    out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home', preload: 'assets/banner-1.webp',
+    out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home', preload: (BANNERS[0] && BANNERS[0].img) || 'assets/banner-1.webp',
     title: 'Kidney Specialist in Baraut | High Creatinine, CKD & Dialysis',
     desc: 'Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
     body: homePage(''), ld: [FAQ_GRAPH],

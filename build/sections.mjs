@@ -6,6 +6,7 @@ import { appointmentForm } from './chrome.mjs';
 import {
   SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
   TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO, SEARCH, CTA,
+  BANNERS, BANNER_SPEED,
 } from './data.mjs';
 
 const TONE = {
@@ -22,24 +23,21 @@ export function searchBanner(base = '') {
     `<button type="button" data-search-term="${esc(p)}" style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:600;cursor:pointer;padding:.35rem .8rem;border-radius:var(--radius-pill);border:1px solid var(--border-brand);background:var(--white);color:var(--text-brand)">${esc(p)}</button>`
   ).join('');
 
-  // Auto-rotating hero banner slider (4 slides). First slide is LCP-optimised
-  // (webp + jpg fallback, fetchpriority); the rest lazy-load. Rotation + dots in site.js.
-  const BANNERS = [
-    { img: 'banner-1', alt: 'RIIMS Baraut — Advanced Care, Compassionate Healing. Whole-person kidney care with Dr. Abhishek, Dr. Vikas Gupta and Dr. Rachna Gupta' },
-    { img: 'banner-2', alt: 'RIIMS — integrated, doctor-led kidney care in Baraut, Uttar Pradesh' },
-    { img: 'banner-3', alt: 'RIIMS — kidney diagnosis, diet and Ayurveda-supported integrated care' },
-    { img: 'banner-4', alt: 'RIIMS — book a kidney consultation in Baraut' },
-  ];
+  // Auto-rotating hero banner slider — slides + speed are admin-managed (Admin → Banners),
+  // with a code default fallback. ANY image size cover-fills the fixed frame, so uploading
+  // or removing slides never breaks the layout / leaves side gaps. First slide is LCP-priority;
+  // the rest lazy-load. Arrows/dots only show with >1 slide. Rotation logic in site.js.
+  const multi = BANNERS.length > 1;
   const slides = BANNERS.map((b, i) => {
-    const media = i === 0
-      ? `<picture><source srcset="${base}assets/banner-1.webp" type="image/webp"><img src="${base}assets/banner-1.jpg" width="1920" height="400" fetchpriority="high" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover"></picture>`
-      : `<img src="${base}assets/${b.img}.webp" width="1920" height="400" loading="lazy" decoding="async" alt="${esc(b.alt)}" style="display:block;width:100%;height:100%;object-fit:cover">`;
+    const img = `<img src="${base}${b.img}" width="1920" height="400" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"'} alt="${esc(b.alt || 'RIIMS kidney care')}" style="display:block;width:100%;height:100%;object-fit:cover">`;
+    const media = b.url ? `<a href="${esc(b.url)}" aria-label="${esc(b.alt || 'RIIMS')}" style="display:block;width:100%;height:100%">${img}</a>` : img;
     return `<div class="hero-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}">${media}</div>`;
   }).join('');
-  const dots = BANNERS.map((b, i) => `<button type="button" class="hero-dot${i === 0 ? ' is-active' : ''}" data-slide-to="${i}" aria-label="Show banner ${i + 1}"></button>`).join('');
-  const arrows = `<button type="button" class="hero-arrow hero-prev" data-slide-prev aria-label="Previous banner">${icon('chevron-left', { size: 26 })}</button>`
-    + `<button type="button" class="hero-arrow hero-next" data-slide-next aria-label="Next banner">${icon('chevron-right', { size: 26 })}</button>`;
-  const slider = `<div class="hero-slider" data-hero-slider aria-roledescription="carousel" aria-label="RIIMS highlights">${slides}${arrows}<div class="hero-dots" role="tablist">${dots}</div></div>`;
+  const dots = multi ? `<div class="hero-dots" role="tablist">${BANNERS.map((b, i) => `<button type="button" class="hero-dot${i === 0 ? ' is-active' : ''}" data-slide-to="${i}" aria-label="Show banner ${i + 1}"></button>`).join('')}</div>` : '';
+  const arrows = multi
+    ? `<button type="button" class="hero-arrow hero-prev" data-slide-prev aria-label="Previous banner">${icon('chevron-left', { size: 26 })}</button><button type="button" class="hero-arrow hero-next" data-slide-next aria-label="Next banner">${icon('chevron-right', { size: 26 })}</button>`
+    : '';
+  const slider = `<div class="hero-slider" data-hero-slider data-interval="${BANNER_SPEED * 1000}" aria-roledescription="carousel" aria-label="RIIMS highlights">${slides}${arrows}${dots}</div>`;
 
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
     + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`

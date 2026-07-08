@@ -106,6 +106,7 @@
     if (view === 'blogs') return renderBlogs(v);
     if (view === 'search') return renderSearch(v);
     if (view === 'protocol') return renderProtocol(v);
+    if (view === 'banners') return renderBanners(v);
     if (view === 'services') return renderServices(v);
     if (view === 'why') return renderWhy(v);
     if (view === 'steps') return renderSteps(v);
@@ -666,6 +667,44 @@
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this step?')) { list.splice(Number(b.dataset.del), 1); render(); } });
     $('#add').onclick = () => { list.push({ icon: 'file-text', title: '', desc: '' }); render(); };
     $('#save').onclick = () => saveSection('steps', list, 'Steps');
+  }
+
+  /* ---- Banners (home hero slider) ---- */
+  function renderBanners(v) {
+    const cfg = (content.banners && Array.isArray(content.banners.slides)) ? content.banners : { speed: 3, slides: [] };
+    content.banners = cfg;
+    if (typeof cfg.speed !== 'number') cfg.speed = Number(cfg.speed) || 3;
+    const list = cfg.slides;
+    v.innerHTML = `
+      <div class="head"><h2>Home banners (${list.length})</h2>
+        <div class="row"><button id="add" class="btn light small">＋ Add banner</button>
+        <button id="save" class="btn primary">Save banners</button></div></div>
+      <div class="card">
+        <label class="f" style="max-width:260px">Auto-slide speed (seconds each)<input id="b-speed" type="number" min="1" max="30" value="${esc(cfg.speed)}"></label>
+        <p class="muted" style="font-size:13px;margin:8px 0 0">📐 Best banner size: <b>1920 × 400 px</b>. Koi bhi size upload karo — image apne aap fit ho jaayegi (side pe gap/toot nahi aayegi). Sirf <b>1</b> banner ho to slider auto nahi chalega (ek hi image dikhegi). Bade images optimize karke daalo (fast loading ke liye).</p>
+      </div>
+      ${list.map((b, i) => `
+        <div class="card">
+          <div class="row" style="margin-bottom:10px">
+            <img class="thumb wide" src="${imgSrc(b.img)}" alt="" style="aspect-ratio:1920/400;object-fit:cover;background:#eef2f4">
+            <button class="btn light small" data-img="${i}">📷 Banner image</button>
+            <span style="flex:1"></span>${reorderBtns(i)}<button class="btn danger small" data-del="${i}">Remove</button>
+          </div>
+          <div class="grid2">
+            <label class="f">Alt text (SEO / accessibility)<input data-bind="${i}|alt" value="${esc(b.alt || '')}" placeholder="RIIMS — sarkari rates par kidney care"></label>
+            <label class="f">Click link (optional — blank = no link)<input data-bind="${i}|url" value="${esc(b.url || '')}" placeholder="https://…  ya  contact.html"></label>
+          </div>
+        </div>`).join('')}`;
+    bindFields(v, list); wireReorder(v, list);
+    v.querySelectorAll('[data-img]').forEach((btn) => btn.onclick = () => pickImage(list[Number(btn.dataset.img)], 'img'));
+    v.querySelectorAll('[data-del]').forEach((btn) => btn.onclick = () => { if (confirm('Remove this banner?')) { list.splice(Number(btn.dataset.del), 1); render(); } });
+    $('#add').onclick = () => { list.push({ id: newId(), img: '', alt: '', url: '' }); render(); };
+    $('#save').onclick = () => {
+      const speed = Math.min(30, Math.max(1, Number($('#b-speed').value) || 3));
+      const slides = list.filter((b) => b.img);   // drop empty (no image) slides
+      if (!slides.length) { toast('Kam se kam ek banner image add karo', true); return; }
+      saveSection('banners', { speed, slides }, 'Banners');
+    };
   }
 
   /* ---------------- boot ---------------- */

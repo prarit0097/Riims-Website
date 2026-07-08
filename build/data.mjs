@@ -115,6 +115,21 @@ export const PROTOCOL = {
 export const ABOUT_ADMIN = (CONTENT.about && typeof CONTENT.about === 'object') ? CONTENT.about : {};
 export const LEGAL_ADMIN = (CONTENT.legal && typeof CONTENT.legal === 'object') ? CONTENT.legal : {};
 
+/* Home hero banner slider (Admin → Banners). Each slide: img (path, incl. admin uploads),
+   alt (SEO/accessibility), url (optional click link). Any image size is fine — the slider
+   cover-fills a fixed frame, so add/remove never breaks the layout. Empty = defaults.
+   `speed` = seconds each slide is shown (auto-advance). */
+const DEFAULT_BANNERS = [
+  { img: 'assets/banner-1.webp', alt: 'RIIMS Baraut — integrated kidney care', url: '' },
+  { img: 'assets/banner-2.webp', alt: 'RIIMS — doctor-led kidney care in Baraut, UP', url: '' },
+  { img: 'assets/banner-3.webp', alt: 'RIIMS — kidney diagnosis, diet and Ayurveda-supported care', url: '' },
+  { img: 'assets/banner-4.webp', alt: 'RIIMS — book a kidney consultation in Baraut', url: '' },
+];
+export const BANNERS = (CONTENT.banners && Array.isArray(CONTENT.banners.slides) && CONTENT.banners.slides.filter((s) => s && s.img).length)
+  ? CONTENT.banners.slides.filter((s) => s && s.img)
+  : DEFAULT_BANNERS;
+export const BANNER_SPEED = Math.min(30, Math.max(1, Number(CONTENT.banners && CONTENT.banners.speed) || 3));
+
 /* Header navigation (Kidney Diseases / Treatments point at the conditions hub). */
 export const NAV = [
   { label: 'About', href: 'about.html' },

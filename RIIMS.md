@@ -293,8 +293,10 @@ Global UI wrapped around every page by the generator:
 ## 10. Sections (`build/sections.mjs`)
 
 Reusable content sections (composed into pages): `searchBanner` (the **full-width hero banner slider** —
-4 auto-rotating `banner-1..4.webp` slides with cross-fade, prev/next arrows + dots, driven by `site.js`; first slide
-is LCP-optimised, rest lazy — followed by the search box + Popular chips from admin `SEARCH`),
+**admin-managed** `BANNERS` slides (Admin → Home Banners; image + alt + optional link) auto-rotating at the
+admin `BANNER_SPEED` (via `data-interval`), cross-fade + prev/next arrows + dots (arrows/dots only with >1
+slide), driven by `site.js`; first slide is LCP-priority, rest lazy; any image size cover-fills the fixed 1920×400
+frame — followed by the search box + Popular chips from admin `SEARCH`),
 `healthReels` (horizontal video-thumbnail cards, each links to Instagram), `problemsSection`
 (8 condition cards), `statsStrip` (Google rating + 4 count-up stats, admin `STATS`), `completeCare` (11
 services, admin `SERVICES`), `whyRiims` (admin `WHY`), `howItWorks` (admin `STEPS`), `doctorsSection`
@@ -614,7 +616,7 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - **Home hero** is a **4-banner auto-rotating slider** (`searchBanner` in `build/sections.mjs`). Source
   PNGs are owner-supplied in the gitignored repo-root `/assets/1..4.png` (cropped to 3:1, HiiMS-style letterbox, keeping the top); optimised to
   `site/assets/banner-1..4.webp` (1920×640, ~96–127 KB) + `banner-1.jpg` (og/LCP fallback) by
-  `build/optimize-images.mjs`. Slides cross-fade every 3s (pause on hover / hidden tab; respects
+  `build/optimize-images.mjs`. Slides + speed are admin-managed (Admin → Home Banners); cross-fade at the set interval (pause on hover / hidden tab; respects
   reduced-motion); left/right arrows + dots let visitors navigate manually. To swap banners: replace `/assets/N.png`, run
   `node build/optimize-images.mjs`, then `npm test` + push. (The banners currently show the RIIMS
   building + real doctors — keep Admin → Doctors names in sync.)
@@ -650,6 +652,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
 | **About page** | Edit the About page: hero title/intro, story heading + story paragraphs (blank line = new paragraph; `<strong>` allowed), image alt, CKD awareness note, and the value cards (icon+title+desc, reorder). Saved to `content.json → about`; defaults live in `pages.mjs` (`DEFAULT_ABOUT`). |
 | **Legal pages** | Edit Privacy / Terms / Disclaimer — per page: title, intro, and sections (`[heading, body]`, add/remove). Saved to `content.json → legal`; a page left fully empty falls back to the built-in default so required legal copy can't be blanked. Compliance-guarded. |
+| **Home Banners** | Manage the home hero **slider**: add/remove/**reorder** (↑/↓) banner slides (image upload + alt text + optional click link), and set the **auto-slide speed** (seconds). Any image size is safe — it cover-fills the fixed 1920×400 frame, so upload/remove never breaks the layout; 1 slide = no auto-rotate/arrows/dots. Saved to `content.json → banners` (`{speed, slides[]}`); empty = the 4 default banners. |
 | **Services** / **Why RIIMS** / **How it works** | Edit the home "Complete Care" service tiles (also on `/services.html`), the "Why RIIMS" cards, and the consultation steps — icon (Lucide name via datalist) + title + description, add/remove/**reorder** (↑/↓). Saved to `content.json → services` / `why` / `steps`; step numbers auto by order. |
 | **Protocol FAQs** | Add/edit/remove the FAQs on the **DNA Kayakalp Protocol** page (`/dna-kayakalp-protocol.html`). Feeds the visible FAQ block **and** the page's FAQPage rich-result schema. Empty list = built-in default FAQs. Saved to `protocol.faqs` (`[{q,a}]`); compliance-guarded copy. |
 | **Search widget** | Control the home "Search any disease" widget. Add/remove **topics**; per topic set the **label** (Popular-chip + result badge text), **keywords** (comma-separated match terms), a **Popular chip** toggle (which chips show under the search box), the **Related-articles** blogs (tick from your posts), the **Doctor** (Auto = nephrologist, a specific doctor, or RIIMS Care Team) and the **Video/reel** (Auto = first reel, or a specific one). Saved to `search.topics`; drives `site/js/search-data.js` + the Popular chips (see §8). |

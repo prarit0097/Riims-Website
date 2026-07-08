@@ -261,7 +261,7 @@
     const dots = $$('.hero-dot', root);
     if (slides.length < 2) return;
     let idx = 0, timer = null;
-    const AUTO = 3000;
+    const AUTO = Math.max(1500, Number(root.getAttribute('data-interval')) || 3000);
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function show(n) {
       idx = (n + slides.length) % slides.length;

@@ -1119,5 +1119,34 @@
         ]
       ]
     }
+  },
+  "banners": {
+    "speed": 3,
+    "slides": [
+      {
+        "id": "b1",
+        "img": "assets/banner-1.webp",
+        "alt": "RIIMS Baraut — integrated kidney care",
+        "url": ""
+      },
+      {
+        "id": "b2",
+        "img": "assets/banner-2.webp",
+        "alt": "RIIMS — doctor-led kidney care in Baraut, UP",
+        "url": ""
+      },
+      {
+        "id": "b3",
+        "img": "assets/banner-3.webp",
+        "alt": "RIIMS — kidney diagnosis, diet and Ayurveda-supported care",
+        "url": ""
+      },
+      {
+        "id": "b4",
+        "img": "assets/banner-4.webp",
+        "alt": "RIIMS — book a kidney consultation in Baraut",
+        "url": ""
+      }
+    ]
   }
 }

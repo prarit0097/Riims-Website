@@ -31,7 +31,7 @@ const LOCAL_PATH = join(DATA, 'content.local.json');
 const CONFIG_PATH = join(DATA, 'admin-config.json');
 const PORT = process.env.PORT || 5500;
 
-const SECTIONS = ['site', 'tracking', 'stats', 'storyVideo', 'doctors', 'reels', 'testimonials', 'faqs', 'posts', 'search', 'cta', 'protocol', 'services', 'why', 'steps', 'about', 'legal'];
+const SECTIONS = ['site', 'tracking', 'stats', 'storyVideo', 'doctors', 'reels', 'testimonials', 'faqs', 'posts', 'search', 'cta', 'protocol', 'services', 'why', 'steps', 'about', 'legal', 'banners'];
 const LEAD_STATUSES = ['new', 'contacted', 'booked', 'closed'];
 const MAX_BODY = 8 * 1024 * 1024; // 8MB (base64 image uploads)
 
