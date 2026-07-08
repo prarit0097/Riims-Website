@@ -292,7 +292,7 @@ Global UI wrapped around every page by the generator:
 
 ## 10. Sections (`build/sections.mjs`)
 
-Reusable content sections (composed into pages): `searchBanner` (the **hero banner slider** —
+Reusable content sections (composed into pages): `searchBanner` (the **full-width hero banner slider** —
 4 auto-rotating `banner-1..4.webp` slides with cross-fade, prev/next arrows + dots, driven by `site.js`; first slide
 is LCP-optimised, rest lazy — followed by the search box + Popular chips from admin `SEARCH`),
 `healthReels` (horizontal video-thumbnail cards, each links to Instagram), `problemsSection`

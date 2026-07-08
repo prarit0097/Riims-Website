@@ -42,10 +42,10 @@ export function searchBanner(base = '') {
   const slider = `<div class="hero-slider" data-hero-slider aria-roledescription="carousel" aria-label="RIIMS highlights">${slides}${arrows}<div class="hero-dots" role="tablist">${dots}</div></div>`;
 
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
-    + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`
     + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
     + slider
-    + `<div style="max-width:780px;margin:clamp(1.2rem, 1rem + 1.5vw, 2rem) auto 0;text-align:center">`
+    + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`
+    + `<div style="max-width:780px;margin:0 auto;text-align:center">`
     + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
     + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
     + icon('search', { size: 20, style: 'color:var(--icon-default);flex:0 0 auto' })
