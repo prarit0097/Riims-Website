@@ -901,5 +901,116 @@
         "a": "Be very careful with this idea. In kidney disease, water may be restricted and unsupervised fasting, strong kadhas or excess water can be harmful. Here, detox means safe, controlled support for the body’s own systems, under medical guidance — nothing aggressive or self-directed."
       }
     ]
-  }
+  },
+  "services": [
+    {
+      "icon": "video",
+      "t": "Video Consultation",
+      "d": "Consult expert doctors online"
+    },
+    {
+      "icon": "building-2",
+      "t": "Clinic Consultation",
+      "d": "Visit our Baraut clinic"
+    },
+    {
+      "icon": "map",
+      "t": "Kidney Mapping & Report Review",
+      "d": "Whole-picture assessment, not one number"
+    },
+    {
+      "icon": "clipboard-list",
+      "t": "DNA Kayakalp Protocol Care",
+      "d": "Doctor-led, patient-specific care plan"
+    },
+    {
+      "icon": "salad",
+      "t": "RiiMS Renal Plate Diet Planning",
+      "d": "Balanced, portion-aware kidney meals"
+    },
+    {
+      "icon": "leaf",
+      "t": "Panchakarma Support (supervised)",
+      "d": "Ayurvedic support alongside medical care"
+    },
+    {
+      "icon": "activity",
+      "t": "Lifestyle & Activation Coaching",
+      "d": "Routine, sleep, activity & stress support"
+    },
+    {
+      "icon": "waves",
+      "t": "Dialysis Guidance",
+      "d": "Understand & prepare safely"
+    },
+    {
+      "icon": "heart-pulse",
+      "t": "BP & Sugar Care",
+      "d": "Protect kidneys from risk"
+    },
+    {
+      "icon": "user-round",
+      "t": "Doctors",
+      "d": "Connect with nephrology experts"
+    },
+    {
+      "icon": "repeat",
+      "t": "Follow-up Care",
+      "d": "Ongoing monitoring & support"
+    }
+  ],
+  "why": [
+    {
+      "icon": "target",
+      "title": "Kidney-focused institute",
+      "desc": "A team and process built specifically around nephrology and kidney health."
+    },
+    {
+      "icon": "git-merge",
+      "title": "DNA Kayakalp Protocol care",
+      "desc": "An integrated D-N-A approach: Diagnosis, Nutrition and Ayurveda-led activation."
+    },
+    {
+      "icon": "map",
+      "title": "Kidney Mapping first",
+      "desc": "We map your full kidney picture — function, markers, diet and lifestyle — before advising."
+    },
+    {
+      "icon": "salad",
+      "title": "RiiMS Renal Plate & lifestyle",
+      "desc": "Practical, region-aware kidney diet and daily-routine guidance you can follow."
+    },
+    {
+      "icon": "leaf",
+      "title": "Supervised Ayurveda support",
+      "desc": "Panchakarma-based support used only alongside medical care, never instead of it."
+    },
+    {
+      "icon": "shield-check",
+      "title": "Ethical patient education",
+      "desc": "Honest information. No “100% cure” or “stop dialysis” promises, ever."
+    }
+  ],
+  "steps": [
+    {
+      "icon": "file-text",
+      "title": "Share symptoms & reports",
+      "desc": "Send your concern and reports over WhatsApp, the form, or in clinic."
+    },
+    {
+      "icon": "map",
+      "title": "Kidney Mapping & doctor review",
+      "desc": "We assess your full kidney picture — function, markers, diet, medicines and lifestyle."
+    },
+    {
+      "icon": "clipboard-list",
+      "title": "Personalized DNA Kayakalp plan",
+      "desc": "A doctor-guided diet and lifestyle plan shaped to your reports and daily life."
+    },
+    {
+      "icon": "repeat",
+      "title": "Follow-up & monitoring",
+      "desc": "Ongoing diet, lifestyle and test monitoring, adapted as your condition changes."
+    }
+  ]
 }

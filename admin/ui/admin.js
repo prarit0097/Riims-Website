@@ -82,6 +82,18 @@
   }
   const newId = () => 'x' + Date.now().toString(36);
 
+  /* Up/down reordering shared by every list tab. */
+  function moveRow(list, i, dir) { const j = i + dir; if (j < 0 || j >= list.length) return; const t = list[i]; list[i] = list[j]; list[j] = t; render(); }
+  function reorderBtns(i) { return `<button class="btn light small" data-up="${i}" title="Move up">↑</button><button class="btn light small" data-down="${i}" title="Move down">↓</button>`; }
+  function wireReorder(v, list) {
+    v.querySelectorAll('[data-up]').forEach((b) => b.onclick = () => moveRow(list, Number(b.dataset.up), -1));
+    v.querySelectorAll('[data-down]').forEach((b) => b.onclick = () => moveRow(list, Number(b.dataset.down), 1));
+  }
+  // Common Lucide icon names available (self-hosted set) — offered as a datalist hint.
+  const ICONS = 'video building-2 map clipboard-list salad leaf activity waves heart-pulse user-round repeat target git-merge shield-check file-text stethoscope calendar-check phone message-circle beaker droplets gauge circle-dot search-check book-open';
+  const iconField = (i, val) => `<label class="f">Icon<input data-bind="${i}|icon" list="iconlist" value="${esc(val || '')}" placeholder="e.g. salad"></label>`;
+  const ICON_DATALIST = `<datalist id="iconlist">${ICONS.split(' ').map((n) => `<option value="${n}">`).join('')}</datalist>`;
+
   /* ---------------- views ---------------- */
   function render() {
     const v = $('#view');
@@ -93,6 +105,9 @@
     if (view === 'blogs') return renderBlogs(v);
     if (view === 'search') return renderSearch(v);
     if (view === 'protocol') return renderProtocol(v);
+    if (view === 'services') return renderServices(v);
+    if (view === 'why') return renderWhy(v);
+    if (view === 'steps') return renderSteps(v);
     if (view === 'tracking') return renderTracking(v);
     if (view === 'settings') return renderSettings(v);
   }
@@ -161,7 +176,7 @@
           <div class="row" style="margin-bottom:10px">
             <img class="thumb" src="${imgSrc(d.photo)}" alt="">
             <button class="btn light small" data-img="${i}">📷 Change photo</button>
-            <span style="flex:1"></span>
+            <span style="flex:1"></span>${reorderBtns(i)}
             <button class="btn danger small" data-del="${i}">Remove</button>
           </div>
           <div class="grid3">
@@ -172,7 +187,7 @@
             <label class="f">Languages<input data-bind="${i}|languages" value="${esc(d.languages || 'Hindi, English')}"></label>
           </div>
         </div>`).join('')}`;
-    bindFields(v, list);
+    bindFields(v, list); wireReorder(v, list);
     v.querySelectorAll('[data-img]').forEach((b) => b.onclick = () => pickImage(list[Number(b.dataset.img)], 'photo'));
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this doctor?')) { list.splice(Number(b.dataset.del), 1); render(); } });
     $('#add').onclick = () => { list.push({ id: newId(), name: 'Dr. ', title: '', quals: '', specialties: [], languages: 'Hindi, English', photo: '' }); render(); };
@@ -515,6 +530,72 @@
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this FAQ?')) { list.splice(Number(b.dataset.del), 1); render(); } });
     $('#add').onclick = () => { list.push({ id: newId(), q: '', a: '' }); render(); };
     $('#save').onclick = () => saveSection('protocol', { faqs: list }, 'Protocol FAQs');
+  }
+
+  /* ---- Services (Complete Care tiles) ---- */
+  function renderServices(v) {
+    const list = content.services || (content.services = []);
+    v.innerHTML = `${ICON_DATALIST}
+      <div class="head"><h2>Services — Complete Care (${list.length})</h2>
+        <div class="row"><button id="add" class="btn light small">＋ Add service</button>
+        <button id="save" class="btn primary">Save services</button></div></div>
+      <div class="card muted" style="font-size:13px">Ye tiles home "Complete Care" grid + <b>/services.html</b> par dikhte hain. Icon = Lucide naam (list se choose karo).</div>
+      ${list.map((s, i) => `
+        <div class="card">
+          <div class="row" style="margin-bottom:10px"><b style="font-size:14px">#${i + 1}</b><span style="flex:1"></span>${reorderBtns(i)}<button class="btn danger small" data-del="${i}">Remove</button></div>
+          <div class="grid3">${iconField(i, s.icon)}
+            <label class="f">Title<input data-bind="${i}|t" value="${esc(s.t)}"></label>
+            <label class="f">Description<input data-bind="${i}|d" value="${esc(s.d)}"></label>
+          </div>
+        </div>`).join('')}`;
+    bindFields(v, list); wireReorder(v, list);
+    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this service?')) { list.splice(Number(b.dataset.del), 1); render(); } });
+    $('#add').onclick = () => { list.push({ icon: 'stethoscope', t: '', d: '' }); render(); };
+    $('#save').onclick = () => saveSection('services', list, 'Services');
+  }
+
+  /* ---- Why RIIMS cards ---- */
+  function renderWhy(v) {
+    const list = content.why || (content.why = []);
+    v.innerHTML = `${ICON_DATALIST}
+      <div class="head"><h2>Why RIIMS (${list.length})</h2>
+        <div class="row"><button id="add" class="btn light small">＋ Add card</button>
+        <button id="save" class="btn primary">Save Why RIIMS</button></div></div>
+      <div class="card muted" style="font-size:13px">Home "Why RIIMS" cards. ⚠️ Koi cure/guarantee dava nahi.</div>
+      ${list.map((s, i) => `
+        <div class="card">
+          <div class="row" style="margin-bottom:10px"><b style="font-size:14px">#${i + 1}</b><span style="flex:1"></span>${reorderBtns(i)}<button class="btn danger small" data-del="${i}">Remove</button></div>
+          <div class="grid3">${iconField(i, s.icon)}
+            <label class="f">Title<input data-bind="${i}|title" value="${esc(s.title)}"></label>
+            <label class="f">Description<input data-bind="${i}|desc" value="${esc(s.desc)}"></label>
+          </div>
+        </div>`).join('')}`;
+    bindFields(v, list); wireReorder(v, list);
+    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this card?')) { list.splice(Number(b.dataset.del), 1); render(); } });
+    $('#add').onclick = () => { list.push({ icon: 'shield-check', title: '', desc: '' }); render(); };
+    $('#save').onclick = () => saveSection('why', list, 'Why RIIMS');
+  }
+
+  /* ---- How-it-works steps ---- */
+  function renderSteps(v) {
+    const list = content.steps || (content.steps = []);
+    v.innerHTML = `${ICON_DATALIST}
+      <div class="head"><h2>How it works — steps (${list.length})</h2>
+        <div class="row"><button id="add" class="btn light small">＋ Add step</button>
+        <button id="save" class="btn primary">Save steps</button></div></div>
+      <div class="card muted" style="font-size:13px">"How consultation works" steps (home + services page). Step number order se auto lagta hai.</div>
+      ${list.map((s, i) => `
+        <div class="card">
+          <div class="row" style="margin-bottom:10px"><b style="font-size:14px">Step ${i + 1}</b><span style="flex:1"></span>${reorderBtns(i)}<button class="btn danger small" data-del="${i}">Remove</button></div>
+          <div class="grid3">${iconField(i, s.icon)}
+            <label class="f">Title<input data-bind="${i}|title" value="${esc(s.title)}"></label>
+            <label class="f">Description<input data-bind="${i}|desc" value="${esc(s.desc)}"></label>
+          </div>
+        </div>`).join('')}`;
+    bindFields(v, list); wireReorder(v, list);
+    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this step?')) { list.splice(Number(b.dataset.del), 1); render(); } });
+    $('#add').onclick = () => { list.push({ icon: 'file-text', title: '', desc: '' }); render(); };
+    $('#save').onclick = () => saveSection('steps', list, 'Steps');
   }
 
   /* ---------------- boot ---------------- */

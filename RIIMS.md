@@ -232,7 +232,9 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
   `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`. Slugs:
   `high-creatinine, ckd, kidney-failure, dialysis, proteinuria, swelling, diabetes-bp, stone-uti`.
 - **`PROBLEMS`** — the home "conditions we help with" grid (links to the 8 condition pages).
-- **`WHY`, `STEPS`** — "Why RIIMS" + "How consultation works".
+- **`WHY`, `STEPS`** — "Why RIIMS" cards + "How consultation works" steps. **Admin-editable**
+  (Admin → Why RIIMS / How it works; `content.json → why` / `steps`; empty = code defaults; `STEPS`
+  numbering `n` is auto by order). **`SERVICES`** likewise (Admin → Services; `content.json → services`).
 - **`DOCTORS`** (3), **`DOCTORS_FULL`** (6, doctors page), **`EXPERTS`** (5, home carousel).
 - **`POSTS`** — the 9 blog posts. Each has `slug` (→ `/blog/<slug>.html`), `related` (a
   condition slug used to build the article body), `cat`, `title`, `excerpt`, `time`, `tone`,
@@ -614,6 +616,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
+| **Services** / **Why RIIMS** / **How it works** | Edit the home "Complete Care" service tiles (also on `/services.html`), the "Why RIIMS" cards, and the consultation steps — icon (Lucide name via datalist) + title + description, add/remove/**reorder** (↑/↓). Saved to `content.json → services` / `why` / `steps`; step numbers auto by order. |
 | **Protocol FAQs** | Add/edit/remove the FAQs on the **DNA Kayakalp Protocol** page (`/dna-kayakalp-protocol.html`). Feeds the visible FAQ block **and** the page's FAQPage rich-result schema. Empty list = built-in default FAQs. Saved to `protocol.faqs` (`[{q,a}]`); compliance-guarded copy. |
 | **Search widget** | Control the home "Search any disease" widget. Add/remove **topics**; per topic set the **label** (Popular-chip + result badge text), **keywords** (comma-separated match terms), a **Popular chip** toggle (which chips show under the search box), the **Related-articles** blogs (tick from your posts), the **Doctor** (Auto = nephrologist, a specific doctor, or RIIMS Care Team) and the **Video/reel** (Auto = first reel, or a specific one). Saved to `search.topics`; drives `site/js/search-data.js` + the Popular chips (see §8). |
 | **Tracking / Tags** | Set the **Google Tag ID** (`G-…` GA4 / `AW-…` Ads) → gtag.js loads on every page (generator writes `site/js/gtag.js`, external file so CSP `script-src 'self'` covers the config; the loader comes from `googletagmanager.com`, allowed in CSP). Paste **verification meta tags** (Search Console, Bing, FB) — one per line; only `<meta>`/`<link>` lines are accepted (scripts are stripped), injected into every page's `<head>`. |

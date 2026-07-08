@@ -217,7 +217,7 @@ export const PROBLEMS = [
   { icon: 'circle-dot', title: 'Kidney Stone / UTI', tone: 'cream', slug: 'stone-uti', desc: 'Education on stones and urinary infections, and prevention.' },
 ];
 
-export const WHY = [
+const DEFAULT_WHY = [
   { icon: 'target', title: 'Kidney-focused institute', desc: 'A team and process built specifically around nephrology and kidney health.' },
   { icon: 'git-merge', title: 'DNA Kayakalp Protocol care', desc: 'An integrated D-N-A approach: Diagnosis, Nutrition and Ayurveda-led activation.' },
   { icon: 'map', title: 'Kidney Mapping first', desc: 'We map your full kidney picture — function, markers, diet and lifestyle — before advising.' },
@@ -225,13 +225,18 @@ export const WHY = [
   { icon: 'leaf', title: 'Supervised Ayurveda support', desc: 'Panchakarma-based support used only alongside medical care, never instead of it.' },
   { icon: 'shield-check', title: 'Ethical patient education', desc: 'Honest information. No “100% cure” or “stop dialysis” promises, ever.' },
 ];
+/* "Why RIIMS" cards (Admin → Why RIIMS). Empty = defaults above. */
+export const WHY = (Array.isArray(CONTENT.why) && CONTENT.why.length) ? CONTENT.why : DEFAULT_WHY;
 
-export const STEPS = [
+const DEFAULT_STEPS = [
   { n: 1, icon: 'file-text', title: 'Share symptoms & reports', desc: 'Send your concern and reports over WhatsApp, the form, or in clinic.' },
   { n: 2, icon: 'map', title: 'Kidney Mapping & doctor review', desc: 'We assess your full kidney picture — function, markers, diet, medicines and lifestyle.' },
   { n: 3, icon: 'clipboard-list', title: 'Personalized DNA Kayakalp plan', desc: 'A doctor-guided diet and lifestyle plan shaped to your reports and daily life.' },
   { n: 4, icon: 'repeat', title: 'Follow-up & monitoring', desc: 'Ongoing diet, lifestyle and test monitoring, adapted as your condition changes.' },
 ];
+/* "How consultation works" steps (Admin → Steps). Number `n` is auto by order. */
+export const STEPS = ((Array.isArray(CONTENT.steps) && CONTENT.steps.length) ? CONTENT.steps : DEFAULT_STEPS)
+  .map((s, i) => ({ ...s, n: i + 1 }));
 
 /* ---- Admin-editable content (from data/content.json + content.local.json) ---- */
 
@@ -267,7 +272,7 @@ export const FAQS = CONTENT.faqs || [];
 
 export const REELS = CONTENT.reels || [];
 
-export const SERVICES = [
+const DEFAULT_SERVICES = [
   { icon: 'video', t: 'Video Consultation', d: 'Consult expert doctors online' },
   { icon: 'building-2', t: 'Clinic Consultation', d: 'Visit our Baraut clinic' },
   { icon: 'map', t: 'Kidney Mapping & Report Review', d: 'Whole-picture assessment, not one number' },
@@ -280,6 +285,8 @@ export const SERVICES = [
   { icon: 'user-round', t: 'Doctors', d: 'Connect with nephrology experts' },
   { icon: 'repeat', t: 'Follow-up Care', d: 'Ongoing monitoring & support' },
 ];
+/* "Complete Care" service tiles (Admin → Services). Empty = defaults above. */
+export const SERVICES = (Array.isArray(CONTENT.services) && CONTENT.services.length) ? CONTENT.services : DEFAULT_SERVICES;
 
 /* Multi-disease search dataset (used by the home search banner + site.js). */
 export const HEALTH_DB = {
