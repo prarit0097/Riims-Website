@@ -265,3 +265,19 @@ export const HEALTH_DB = {
   Heart: { tone: 'blue', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['BP control protects kidneys & heart', 'Heart-friendly Indian diet', 'When chest symptoms need care'], video: 'Blood pressure & your organs' },
 };
 export const POPULAR = ['Kidney', 'High creatinine', 'CKD', 'Dialysis'];
+
+/* Admin-managed disease-search config (Admin → Search). Each topic: label (chip/badge
+   text), keywords (comma match terms), popular (show as a Popular chip), blogSlugs
+   (which posts to surface), doctor (specific doctor name or '' = auto nephrologist),
+   reel (specific reel title or '' = auto first reel). Falls back to a code default so
+   the site still works if the section is absent. */
+const DEFAULT_SEARCH = {
+  topics: [
+    { id: 't-kidney', label: 'Kidney', keywords: 'kidney,creat,ckd,dialys,nephro,gfr,egfr,urine,renal', popular: true, blogSlugs: ['high-creatinine-symptoms-causes', 'ckd-diet-chart-indian-veg', 'dialysis-myths-vs-facts'], doctor: '', reel: '' },
+    { id: 't-creat', label: 'High creatinine', keywords: 'creatinine,creat', popular: true, blogSlugs: ['high-creatinine-symptoms-causes', 'reduce-creatinine-safely'], doctor: '', reel: '' },
+    { id: 't-ckd', label: 'CKD', keywords: 'ckd,chronic kidney', popular: true, blogSlugs: ['ckd-diet-chart-indian-veg', 'reduce-creatinine-safely'], doctor: '', reel: '' },
+    { id: 't-dialysis', label: 'Dialysis', keywords: 'dialys', popular: true, blogSlugs: ['dialysis-myths-vs-facts'], doctor: '', reel: '' },
+  ],
+};
+export const SEARCH = (CONTENT.search && Array.isArray(CONTENT.search.topics) && CONTENT.search.topics.length)
+  ? CONTENT.search : DEFAULT_SEARCH;

@@ -91,6 +91,7 @@
     if (view === 'stories') return renderStories(v);
     if (view === 'faqs') return renderFaqs(v);
     if (view === 'blogs') return renderBlogs(v);
+    if (view === 'search') return renderSearch(v);
     if (view === 'tracking') return renderTracking(v);
     if (view === 'settings') return renderSettings(v);
   }
@@ -327,6 +328,58 @@
       }
       saveSection('posts', list, 'Blogs');
     };
+  }
+
+  /* ---- Search widget (Popular chips + per-topic blog/doctor/video) ---- */
+  function renderSearch(v) {
+    const cfg = (content.search && Array.isArray(content.search.topics)) ? content.search : { topics: [] };
+    content.search = cfg;                 // keep the reference we save
+    const list = cfg.topics;
+    const posts = content.posts || [];
+    const doctors = content.doctors || [];
+    const reels = content.reels || [];
+    const docOptions = (sel) => `<option value="" ${!sel ? 'selected' : ''}>Auto (nephrologist)</option>`
+      + `<option value="RIIMS Care Team" ${sel === 'RIIMS Care Team' ? 'selected' : ''}>RIIMS Care Team</option>`
+      + doctors.map((d) => `<option value="${esc(d.name)}" ${sel === d.name ? 'selected' : ''}>${esc(d.name)}</option>`).join('');
+    const reelOptions = (sel) => `<option value="" ${!sel ? 'selected' : ''}>Auto (first reel)</option>`
+      + reels.map((r) => `<option value="${esc(r.title)}" ${sel === r.title ? 'selected' : ''}>${esc(r.title)}</option>`).join('');
+    const blogChecks = (i, slugs) => (posts.length
+      ? posts.map((p) => `<label style="display:flex;gap:6px;align-items:center;font-size:13px;font-weight:500"><input type="checkbox" data-blog="${i}" value="${esc(p.slug)}" ${slugs.includes(p.slug) ? 'checked' : ''}> ${esc(p.title)}</label>`).join('')
+      : '<span class="muted" style="font-size:13px">No blogs yet — add some in the Blogs tab.</span>');
+    v.innerHTML = `
+      <div class="head"><h2>Search widget (${list.length} topics)</h2>
+        <div class="row"><button id="add" class="btn light small">＋ Add topic</button>
+        <button id="save" class="btn primary">Save search</button></div></div>
+      <div class="card muted" style="font-size:13px">Home page ke search me: <b>Popular</b> chips wahi topics dikhte hain jinpar "Popular chip" tick hai. Jab koi topic ke <b>keywords</b> me se kuch search kare, to uske liye niche chune gaye <b>blogs</b>, <b>doctor</b> aur <b>video</b> dikhte hain. Doctor/Video "Auto" chhodo to system khud (nephrologist / pehli reel) bhar dega.</div>
+      ${list.map((tp, i) => `
+        <div class="card">
+          <div class="row" style="margin-bottom:10px">
+            <b style="font-size:15px">${esc(tp.label || 'Topic')}</b>
+            <label style="display:flex;align-items:center;gap:6px;font-size:14px;margin-left:8px"><input type="checkbox" data-pop="${i}" ${tp.popular ? 'checked' : ''}> Popular chip</label>
+            <span style="flex:1"></span>
+            <button class="btn danger small" data-del="${i}">Remove</button>
+          </div>
+          <div class="grid2">
+            <label class="f">Chip / topic label<input data-bind="${i}|label" value="${esc(tp.label || '')}"></label>
+            <label class="f">Match keywords (comma-separated)<input data-bind="${i}|keywords" value="${esc(tp.keywords || '')}" placeholder="creatinine, creat"></label>
+            <label class="f">Doctor<select data-bind="${i}|doctor">${docOptions(tp.doctor || '')}</select></label>
+            <label class="f">Video / reel<select data-bind="${i}|reel">${reelOptions(tp.reel || '')}</select></label>
+          </div>
+          <div class="f" style="margin-top:10px"><span style="font-size:13px;font-weight:600">Related articles (tick the blogs to show)</span>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:4px 14px;margin-top:6px">${blogChecks(i, tp.blogSlugs || [])}</div>
+          </div>
+        </div>`).join('')}`;
+    bindFields(v, list);
+    v.querySelectorAll('[data-pop]').forEach((c) => c.onchange = () => { list[Number(c.dataset.pop)].popular = c.checked; });
+    v.querySelectorAll('[data-blog]').forEach((c) => c.onchange = () => {
+      const tp = list[Number(c.dataset.blog)];
+      const set = new Set(tp.blogSlugs || []);
+      if (c.checked) set.add(c.value); else set.delete(c.value);
+      tp.blogSlugs = [...set];
+    });
+    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this search topic?')) { list.splice(Number(b.dataset.del), 1); render(); } });
+    $('#add').onclick = () => { list.push({ id: newId(), label: 'New topic', keywords: '', popular: false, blogSlugs: [], doctor: '', reel: '' }); render(); };
+    $('#save').onclick = () => saveSection('search', { topics: list }, 'Search');
   }
 
   /* ---- Tracking / Tags (gtag + verification meta tags) ---- */

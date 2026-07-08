@@ -233,16 +233,18 @@ search DB, NAV) stays in `data.mjs`. Edit content via `/admin/` on the live site
 - **`POPULAR_TOPICS`** — SEO keyword chips on the blog page.
 - **`TESTIMONIALS`** (Baraut/Baghpat/Meerut), **`FAQS`** (5), **`REELS`** (6),
   **`SERVICES`** (11, "Complete Care").
-- **`HEALTH_DB` + `POPULAR`** — the multi-disease search **taxonomy** (topic keys + tone +
-  `resolveTopic()` regex) is embedded in `site/js/site.js` (with a mirror in `data.mjs`); if you
-  change the *topics/tones*, update **both**. **The actual results are admin-driven, not hardcoded:**
-  the generator writes **`site/js/search-data.js`** (`window.__RIIMS_SEARCH__`) from the REAL merged
-  content — the "Specialist for you" = your **nephrologist** (first doctor whose title/specialty
-  says "nephro", else the first doctor in Admin → Doctors; Care Team for non-kidney topics),
-  "Related articles" = your real **blog posts** (real `/blog/<slug>.html` links,
-  topic-filtered), and the video = your first **reel**. So adding/removing a doctor, blog or reel in
-  `/admin/` flows into search on the next rebuild; `site.js` falls back to the embedded defaults only
-  if `search-data.js` is missing (e.g. opening the HTML from disk).
+- **`SEARCH`** (`data/content.json` → `search.topics`, admin-editable) — **fully controls the home
+  disease-search widget** (Admin → **Search widget** tab, see §23). Each topic has: `label` (the
+  Popular chip + result badge text), `keywords` (comma-separated match terms), `popular` (show as a
+  Popular chip), `blogSlugs` (which posts appear as "Related articles"), `doctor` (a specific doctor
+  **name**, `"RIIMS Care Team"`, or `''` = auto-pick the nephrologist / first doctor) and `reel` (a
+  specific reel **title**, or `''` = first reel). The generator resolves these against the REAL merged
+  content and writes **`site/js/search-data.js`** (`window.__RIIMS_SEARCH__` = `{popular, care, topics[]}`),
+  and renders the Popular chips (`searchBanner`) from the `popular` topics. `site.js` matches a query
+  to a topic via its `keys` and shows that topic's blogs/specialist/video. So editing the Search tab —
+  or adding/removing a doctor, blog or reel — flows into search on the next rebuild; removed items drop
+  out. A tiny `FALLBACK_TOPICS` in `site.js` covers the case where `search-data.js` didn't load (HTML
+  opened from disk). *(The old `HEALTH_DB`/`POPULAR` in `data.mjs`/`site.js` are now legacy fallbacks.)*
 
 ## 9. Chrome (`build/chrome.mjs`)
 
@@ -548,10 +550,9 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
   The generator auto-creates the page, sitemap entry, and JSON-LD.
 - **Add a blog post** → add an entry to `POSTS` (with `slug` + `related`). The article page,
   links, and JSON-LD are generated automatically.
-- **Change what search shows** → the specialist doctor, related articles and video are
-  **auto** from admin content (`js/search-data.js`, regenerated on every build) — just edit
-  Doctors/Blogs/Reels in `/admin/`. Only to change the search *topics/tones* do you edit
-  `HEALTH_DB` in **both** `build/data.mjs` and `site/js/site.js`.
+- **Change what search shows** → use **Admin → Search widget** (§23): add/remove topics, set the
+  Popular chips, and pick the blogs/doctor/video per keyword. It regenerates `js/search-data.js` on
+  rebuild — no code edit needed. (Seed defaults live in `data/content.json` → `search.topics`.)
 - **Change styling** → tokens in `site/css/tokens/*`, layout/responsive in `site/css/site.css`,
   or the relevant component's inline styles in `build/*.mjs`.
 - After ANY change: update this file, run `npm test` (fix any failure), then commit + push.
@@ -606,6 +607,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
+| **Search widget** | Control the home "Search any disease" widget. Add/remove **topics**; per topic set the **label** (Popular-chip + result badge text), **keywords** (comma-separated match terms), a **Popular chip** toggle (which chips show under the search box), the **Related-articles** blogs (tick from your posts), the **Doctor** (Auto = nephrologist, a specific doctor, or RIIMS Care Team) and the **Video/reel** (Auto = first reel, or a specific one). Saved to `search.topics`; drives `site/js/search-data.js` + the Popular chips (see §8). |
 | **Tracking / Tags** | Set the **Google Tag ID** (`G-…` GA4 / `AW-…` Ads) → gtag.js loads on every page (generator writes `site/js/gtag.js`, external file so CSP `script-src 'self'` covers the config; the loader comes from `googletagmanager.com`, allowed in CSP). Paste **verification meta tags** (Search Console, Bing, FB) — one per line; only `<meta>`/`<link>` lines are accepted (scripts are stripped), injected into every page's `<head>`. |
 | **Settings** | Call + WhatsApp numbers (10 digits each, sitewide), and the **homepage stats strip** — show/hide toggle + Google rating / reviews / patients / specialists values. Stats are **hidden by default** and must only carry REAL Google Business numbers (fake stats on a YMYL medical site suppress rankings). Empty fields are skipped; real values render in the HTML (crawler-visible) with JS count-up as enhancement. |
 

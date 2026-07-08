@@ -5,7 +5,7 @@ import { icon, button, badge, card, eyebrow, sectionHead, starRow, esc } from '.
 import { appointmentForm } from './chrome.mjs';
 import {
   SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
-  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO,
+  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO, SEARCH,
 } from './data.mjs';
 
 const TONE = {
@@ -16,8 +16,10 @@ const TONE = {
 
 /* ---------- Search banner (home hero) ---------- */
 export function searchBanner(base = '') {
-  const chips = POPULAR.map((p) =>
-    `<button type="button" data-search-term="${p}" style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:600;cursor:pointer;padding:.35rem .8rem;border-radius:var(--radius-pill);border:1px solid var(--border-brand);background:var(--white);color:var(--text-brand)">${p}</button>`
+  // Popular chips are admin-managed (Admin → Search → "Popular" toggle); fall back to POPULAR.
+  const popularLabels = (SEARCH.topics || []).filter((t) => t.popular).map((t) => t.label);
+  const chips = (popularLabels.length ? popularLabels : POPULAR).map((p) =>
+    `<button type="button" data-search-term="${esc(p)}" style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:600;cursor:pointer;padding:.35rem .8rem;border-radius:var(--radius-pill);border:1px solid var(--border-brand);background:var(--white);color:var(--text-brand)">${esc(p)}</button>`
   ).join('');
 
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`

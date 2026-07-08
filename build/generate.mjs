@@ -12,7 +12,7 @@ import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
 import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS } from './pages.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
-import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS } from './data.mjs';
+import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
@@ -30,19 +30,43 @@ if (GTAG_ID) {
    not a hardcoded list — so adding/removing a doctor, blog or reel in /admin/ flows
    straight into search on the next rebuild. External file (CSP script-src 'self'). */
 const SEARCH_CARE = { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' };
-// Featured specialist for a KIDNEY search: prefer a doctor whose title/specialty mentions
-// "nephro" (a nephrologist best fits a kidney query); else fall back to the first doctor
-// in Admin → Doctors. Names/titles are trimmed (admin fields can carry stray spaces).
+// Auto doctor (when a topic leaves "doctor" blank): prefer a nephrologist, else the first
+// doctor in Admin → Doctors. Names/titles trimmed (admin fields can carry stray spaces).
 const _isNephro = (d) => /nephro/i.test(`${d.title || ''} ${(d.specialties || []).join(' ')}`);
 const _kidneyDoc = DOCTORS_FULL.find(_isNephro) || DOCTORS_FULL[0];
-const _featuredDoc = _kidneyDoc
+const _autoDoc = _kidneyDoc
   ? { name: String(_kidneyDoc.name || '').trim(), title: String(_kidneyDoc.title || '').trim(), init: _kidneyDoc.init || 'RC' }
   : SEARCH_CARE;
+const _postBySlug = new Map(POSTS.map((p) => [p.slug, p]));
+const _docByName = new Map(DOCTORS_FULL.map((d) => [String(d.name || '').trim(), d]));
+const _reelByTitle = new Map(REELS.map((r) => [String(r.title || '').trim(), r]));
+const _pickDoctor = (name) => {
+  const n = String(name || '').trim();
+  if (!n) return _autoDoc;                                     // blank = auto nephrologist
+  if (/^riims care team$/i.test(n)) return SEARCH_CARE;
+  const d = _docByName.get(n);
+  return d ? { name: String(d.name).trim(), title: String(d.title || '').trim(), init: d.init || 'RC' } : _autoDoc;
+};
+const _pickReel = (title) => {
+  const t = String(title || '').trim();
+  const r = (t && _reelByTitle.get(t)) || REELS[0];
+  return r ? { title: r.title, href: r.url || SITE.instagram } : null;
+};
+// Per-topic search cards (blogs/specialist/video) resolved from REAL merged content,
+// driven by the admin "Search" config (Admin → Search). Removed doctors/blogs/reels
+// drop out automatically on rebuild.
+const _searchTopics = (SEARCH.topics || []).map((t) => ({
+  label: t.label,
+  keys: String(t.keywords || t.label || '').toLowerCase().split(',').map((s) => s.trim()).filter(Boolean),
+  popular: !!t.popular,
+  blogs: (t.blogSlugs || []).map((s) => _postBySlug.get(s)).filter(Boolean).map((p) => ({ title: p.title, href: `blog/${p.slug}.html` })),
+  doctor: _pickDoctor(t.doctor),
+  video: _pickReel(t.reel),
+}));
 const SEARCH_DATA = {
-  doctor: _featuredDoc,               // featured specialist = your FIRST doctor in Admin → Doctors
-  care: SEARCH_CARE,                  // shown for non-kidney topics
-  posts: POSTS.map((p) => ({ title: p.title, href: `blog/${p.slug}.html`, cat: p.cat || '', related: p.related || '' })),
-  reel: REELS[0] ? { title: REELS[0].title, href: REELS[0].url || SITE.instagram } : null,
+  popular: _searchTopics.filter((t) => t.popular).map((t) => t.label),
+  care: SEARCH_CARE,
+  topics: _searchTopics,
 };
 writeFileSync(join(OUT, 'js', 'search-data.js'),
   `window.__RIIMS_SEARCH__=${JSON.stringify(SEARCH_DATA)};\n`, 'utf8');

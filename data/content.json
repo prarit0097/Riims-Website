@@ -750,5 +750,101 @@
         "protein-in-urine-meaning"
       ]
     }
-  ]
+  ],
+  "search": {
+    "topics": [
+      {
+        "id": "t-kidney",
+        "label": "Kidney",
+        "keywords": "kidney,creat,ckd,dialys,nephro,gfr,egfr,urine,renal",
+        "popular": true,
+        "blogSlugs": [
+          "high-creatinine-symptoms-causes",
+          "ckd-diet-chart-indian-veg",
+          "dialysis-myths-vs-facts"
+        ],
+        "doctor": "",
+        "reel": ""
+      },
+      {
+        "id": "t-creat",
+        "label": "High creatinine",
+        "keywords": "creatinine,creat",
+        "popular": true,
+        "blogSlugs": [
+          "high-creatinine-symptoms-causes",
+          "reduce-creatinine-safely"
+        ],
+        "doctor": "",
+        "reel": ""
+      },
+      {
+        "id": "t-ckd",
+        "label": "CKD",
+        "keywords": "ckd,chronic kidney",
+        "popular": true,
+        "blogSlugs": [
+          "ckd-diet-chart-indian-veg",
+          "reduce-creatinine-safely"
+        ],
+        "doctor": "",
+        "reel": ""
+      },
+      {
+        "id": "t-dialysis",
+        "label": "Dialysis",
+        "keywords": "dialys",
+        "popular": true,
+        "blogSlugs": [
+          "dialysis-myths-vs-facts"
+        ],
+        "doctor": "",
+        "reel": ""
+      },
+      {
+        "id": "t-diabetes",
+        "label": "Diabetes & kidney",
+        "keywords": "diabet,sugar,hba1c",
+        "popular": false,
+        "blogSlugs": [
+          "diabetes-kidney-disease"
+        ],
+        "doctor": "",
+        "reel": ""
+      },
+      {
+        "id": "t-protein",
+        "label": "Protein in urine",
+        "keywords": "protein,proteinuria,foam,albumin",
+        "popular": false,
+        "blogSlugs": [
+          "protein-in-urine-meaning"
+        ],
+        "doctor": "",
+        "reel": ""
+      },
+      {
+        "id": "t-swelling",
+        "label": "Swelling",
+        "keywords": "swell,edema,oedema,puff",
+        "popular": false,
+        "blogSlugs": [
+          "swelling-feet-face-kidneys"
+        ],
+        "doctor": "",
+        "reel": ""
+      },
+      {
+        "id": "t-stones",
+        "label": "Stones & UTI",
+        "keywords": "stone,uti,infection,burning urine",
+        "popular": false,
+        "blogSlugs": [
+          "kidney-stones-uti-prevention"
+        ],
+        "doctor": "",
+        "reel": ""
+      }
+    ]
+  }
 }

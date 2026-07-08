@@ -105,68 +105,62 @@
     item.style.boxShadow = open ? 'var(--shadow-sm)' : 'none';
   }
 
-  /* ---------------- Multi-disease search ---------------- */
-  const HEALTH_DB = {
-    Kidney: { tone: 'green', doctor: { name: 'Dr. Abhishek Gupta', title: 'Senior Nephrologist', init: 'AG' }, blogs: ['High creatinine: symptoms & causes', 'CKD diet chart (Indian, veg)', 'Dialysis myths vs facts'], video: '5 signs your creatinine is rising' },
-    Liver: { tone: 'cream', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['Fatty liver: causes & reversal', 'Foods that support liver health', 'When jaundice needs a doctor'], video: 'Understanding fatty liver in 3 minutes' },
-    Diabetes: { tone: 'blue', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['Protect your kidneys with diabetes', 'Diabetic diet basics', 'HbA1c explained simply'], video: 'Diabetes & kidney health: what to watch' },
-    Cancer: { tone: 'cream', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['Early warning signs to discuss', 'Nutrition during treatment', 'Getting a second opinion'], video: 'Talking to your doctor about a diagnosis' },
-    Heart: { tone: 'blue', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['BP control protects kidneys & heart', 'Heart-friendly Indian diet', 'When chest symptoms need care'], video: 'Blood pressure & your organs' },
-  };
+  /* ---------------- Disease search (admin-driven) ----------------
+     Topics + their blogs/specialist/video come from window.__RIIMS_SEARCH__
+     (generated js/search-data.js, built from the admin "Search" config). A tiny
+     fallback keeps the widget working if that file didn't load. */
   const TONE = {
     green: { bg: 'var(--surface-green-soft)', fg: 'var(--icon-accent)', badgeBg: 'var(--surface-green-soft)', badgeFg: 'var(--text-accent)' },
     blue: { bg: 'var(--surface-blue-soft)', fg: 'var(--icon-brand)', badgeBg: 'var(--surface-blue-soft)', badgeFg: 'var(--text-brand)' },
     cream: { bg: 'var(--surface-cream-deep)', fg: 'var(--sand-500)', badgeBg: 'var(--surface-cream-deep)', badgeFg: 'var(--text-on-cream)' },
   };
+  const FALLBACK_TOPICS = [{
+    label: 'Kidney', keys: ['kidney', 'creat', 'ckd', 'dialys', 'nephro', 'urine', 'gfr'],
+    blogs: [{ title: 'High creatinine: symptoms & causes', href: 'blog.html' }, { title: 'CKD diet chart (Indian, veg)', href: 'blog.html' }, { title: 'Dialysis myths vs facts', href: 'blog.html' }],
+    doctor: { name: 'RIIMS Nephrology Team', title: 'Kidney specialists', init: 'RN' }, video: null,
+  }];
+  function searchTopics() {
+    const S = window.__RIIMS_SEARCH__;
+    return (S && Array.isArray(S.topics) && S.topics.length) ? S.topics : FALLBACK_TOPICS;
+  }
   function resolveTopic(q) {
     if (!q) return null;
     const s = q.toLowerCase();
-    if (/creat|ckd|dialys|kidney|nephro|urine|gfr/.test(s)) return 'Kidney';
-    for (const k of Object.keys(HEALTH_DB)) if (s.includes(k.toLowerCase())) return k;
+    for (const t of searchTopics()) {
+      const keys = (t.keys && t.keys.length) ? t.keys : [String(t.label || '').toLowerCase()];
+      if (keys.some((k) => k && s.indexOf(k) !== -1)) return t;
+    }
     return null;
   }
   function ic(n, size, style) { return `<i data-lucide="${n}" aria-hidden="true" style="width:${size}px;height:${size}px;${style || ''}"></i>`; }
 
   function renderSearch(container, q) {
-    const topic = resolveTopic(q);
     if (!q) { container.innerHTML = ''; return; }
+    const topic = resolveTopic(q);
     if (!topic) {
       container.innerHTML = `<p style="text-align:center;margin-top:1.6rem;color:var(--text-muted);font-family:var(--font-sans)">No direct match — <a href="#" data-book style="color:var(--text-link);font-weight:700">talk to our care team</a> and we’ll guide you.</p>`;
       refreshIcons();
       return;
     }
-    const data = HEALTH_DB[topic];
-    const t = TONE[data.tone];
+    const t = TONE[topic.tone] || TONE.green;
     const cardCss = 'position:relative;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);background:var(--surface-card);border:1px solid var(--border-subtle);overflow:hidden';
-    // Admin-driven content: the generator injects window.__RIIMS_SEARCH__ from the REAL
-    // merged doctors/posts/reels (js/search-data.js). We fall back to the embedded
-    // defaults only if that file is missing (e.g. opening the HTML from disk).
-    const S = window.__RIIMS_SEARCH__;
-    let doctor = data.doctor;
-    let blogItems = data.blogs.map((b) => ({ title: b, href: 'blog.html' }));
-    let videoTitle = data.video;
-    let videoHref = '';
-    if (S) {
-      doctor = topic === 'Kidney' ? S.doctor : (S.care || data.doctor);
-      const key = topic.toLowerCase();
-      const rel = (S.posts || []).filter((p) => (`${p.related} ${p.cat} ${p.title}`).toLowerCase().includes(key));
-      const chosen = (rel.length ? rel : (S.posts || [])).slice(0, 3);
-      if (chosen.length) blogItems = chosen.map((p) => ({ title: p.title, href: p.href }));
-      if (S.reel) { videoTitle = S.reel.title; videoHref = S.reel.href || ''; }
-    }
-    const blogs = blogItems.map((b) =>
-      `<li><a href="${b.href}" style="display:flex;gap:.5rem;align-items:flex-start;color:var(--text-body);text-decoration:none;font-size:var(--fs-base)">${ic('arrow-right', 15, 'margin-top:3px;color:var(--icon-accent);flex:0 0 auto')} ${b.title}</a></li>`
-    ).join('');
+    const blogItems = (topic.blogs && topic.blogs.length) ? topic.blogs : [];
+    const blogsHtml = blogItems.length
+      ? blogItems.map((b) => `<li><a href="${b.href}" style="display:flex;gap:.5rem;align-items:flex-start;color:var(--text-body);text-decoration:none;font-size:var(--fs-base)">${ic('arrow-right', 15, 'margin-top:3px;color:var(--icon-accent);flex:0 0 auto')} ${b.title}</a></li>`).join('')
+      : `<li style="list-style:none;color:var(--text-muted);font-size:var(--fs-base)">More articles coming soon.</li>`;
+    const doctor = topic.doctor || { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' };
+    const video = topic.video || null;
+    const videoHref = video ? (video.href || '') : '';
+    const cards = [];
+    cards.push(`<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('book-open', 18, 'color:var(--icon-brand)')} Related articles</span><ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem">${blogsHtml}</ul></div>`);
+    cards.push(`<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('user-round', 18, 'color:var(--icon-brand)')} Specialist for you</span><div style="display:flex;align-items:center;gap:.8rem"><span style="flex:0 0 auto;display:inline-flex;width:52px;height:52px;border-radius:50%;background:${t.bg};color:${t.fg};align-items:center;justify-content:center;font-family:var(--font-sans);font-weight:800">${doctor.init}</span><div><strong style="display:block">${doctor.name}</strong><span style="font-size:var(--fs-sm);color:var(--text-muted)">${doctor.title}</span></div></div><button type="button" data-book class="riims-btn riims-btn--outline" style="display:flex;width:100%;align-items:center;justify-content:center;gap:.5rem;font-family:var(--font-sans);font-weight:800;line-height:1;white-space:nowrap;border-radius:var(--radius-pill);border:1.5px solid var(--border-strong);cursor:pointer;background:var(--white);color:var(--text-brand);font-size:.875rem;padding:.5rem .9rem;min-height:38px;margin-top:.9rem">${ic('calendar-check', 16)}<span>Book consultation</span></button></div>`);
+    if (video) cards.push(`<${videoHref ? 'a' : 'div'} ${videoHref ? `href="${videoHref}" target="_blank" rel="noopener"` : ''} style="${cardCss};display:block;text-decoration:none;color:inherit"><div style="aspect-ratio:16/9;background:linear-gradient(135deg, var(--teal-700), var(--teal-900));display:flex;align-items:center;justify-content:center;position:relative"><span style="display:inline-flex;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--brand-primary);align-items:center;justify-content:center">${ic('play', 24)}</span></div><div style="padding:var(--space-4) var(--space-5)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong)">${ic('video', 16, 'color:var(--icon-accent)')} ${video.title}</span></div></${videoHref ? 'a' : 'div'}>`);
     container.innerHTML = `<div style="margin-top:var(--space-8)">`
       + `<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;justify-content:center">`
-      + `<span style="display:inline-flex;align-items:center;gap:.34rem;background:${t.badgeBg};color:${t.badgeFg};font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1;padding:.38rem .7rem;border-radius:var(--radius-pill)">${topic}</span>`
+      + `<span style="display:inline-flex;align-items:center;gap:.34rem;background:${t.badgeBg};color:${t.badgeFg};font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1;padding:.38rem .7rem;border-radius:var(--radius-pill)">${topic.label}</span>`
       + `<span style="font-family:var(--font-sans);color:var(--text-muted)">Here’s what we found for you</span></div>`
-      + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
-      + `<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('book-open', 18, 'color:var(--icon-brand)')} Related articles</span><ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem">${blogs}</ul></div>`
-      + `<div style="${cardCss};padding:var(--space-6)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong);margin-bottom:.6rem">${ic('user-round', 18, 'color:var(--icon-brand)')} Specialist for you</span>`
-      + `<div style="display:flex;align-items:center;gap:.8rem"><span style="flex:0 0 auto;display:inline-flex;width:52px;height:52px;border-radius:50%;background:${t.bg};color:${t.fg};align-items:center;justify-content:center;font-family:var(--font-sans);font-weight:800">${doctor.init}</span><div><strong style="display:block">${doctor.name}</strong><span style="font-size:var(--fs-sm);color:var(--text-muted)">${doctor.title}</span></div></div>`
-      + `<button type="button" data-book class="riims-btn riims-btn--outline" style="display:flex;width:100%;align-items:center;justify-content:center;gap:.5rem;font-family:var(--font-sans);font-weight:800;line-height:1;white-space:nowrap;border-radius:var(--radius-pill);border:1.5px solid var(--border-strong);cursor:pointer;background:var(--white);color:var(--text-brand);font-size:.875rem;padding:.5rem .9rem;min-height:38px;margin-top:.9rem">${ic('calendar-check', 16)}<span>Book consultation</span></button></div>`
-      + `<${videoHref ? 'a' : 'div'} ${videoHref ? `href="${videoHref}" target="_blank" rel="noopener"` : ''} style="${cardCss};display:block;text-decoration:none;color:inherit"><div style="aspect-ratio:16/9;background:linear-gradient(135deg, var(--teal-700), var(--teal-900));display:flex;align-items:center;justify-content:center;position:relative"><span style="display:inline-flex;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--brand-primary);align-items:center;justify-content:center">${ic('play', 24)}</span></div><div style="padding:var(--space-4) var(--space-5)"><span style="display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-family:var(--font-sans);color:var(--text-strong)">${ic('video', 16, 'color:var(--icon-accent)')} ${videoTitle}</span></div></${videoHref ? 'a' : 'div'}>`
+      + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(${cards.length},1fr);gap:var(--space-5)">`
+      + cards.join('')
       + `</div></div>`;
     refreshIcons();
   }
