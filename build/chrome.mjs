@@ -66,7 +66,7 @@ export function header(base, current) {
 
   const main = `<div style="background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-subtle)">`
     + `<div class="riims-container" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:72px">`
-    + logo(base)
+    + logo(base, { mark: 'assets/riims-emblem.png' })
     + `<nav class="nav-links" aria-label="Main navigation" style="display:flex;align-items:center;gap:1.4rem">${links}</nav>`
     + `<div class="nav-cta" style="display:flex;align-items:center;gap:.6rem">`
     + iconButton(icon('phone', { size: 18 }), { label: 'Call now', variant: 'solid', href: tel })

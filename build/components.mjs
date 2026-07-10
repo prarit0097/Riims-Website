@@ -72,13 +72,16 @@ export function starRow(rating = 5, size = 18, extra = '') {
 }
 
 /* ---------------- Brand mark / logo ---------------- */
-export function logo(base = '', { light = false, size = 54 } = {}) {
+export function logo(base = '', { light = false, size = 54, mark } = {}) {
+  // `mark` optionally overrides the default logo image (.riims-logo-mark → riims-logo-sm.png)
+  // with an inline background-image — e.g. the compact circular emblem in the header.
   const markStyle = st({
     height: size, width: size, display: 'block',
     borderRadius: light ? 12 : 0,
     backgroundColor: light ? '#fff' : 'transparent',
     padding: light ? 5 : 0,
     boxShadow: light ? 'var(--shadow-sm)' : 'none',
+    backgroundImage: mark ? `url('${base}${mark}')` : undefined,
   });
   return `<a href="${base}index.html" aria-label="RIIMS — Rashtriya Institute of Integrated Medical Sciences" style="display:inline-flex;align-items:center;text-decoration:none">`
     + `<span class="riims-logo-mark" role="img" aria-label="RIIMS — Rashtriya Institute of Integrated Medical Sciences" style="${markStyle}"></span></a>`;

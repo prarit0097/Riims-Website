@@ -196,8 +196,13 @@ Pure functions that return HTML strings. Key helpers:
 - **`icon(name, {size, style})`** — renders a Lucide icon as `<i data-lucide aria-hidden>`
   (turned into SVG by `site.js`). Facebook/Instagram/YouTube are inline SVG (not in the pinned Lucide).
 - **`star()/starRow()`** — inline gold star SVGs (used for ratings; reliable fill).
-- **`logo(base, {light})`** — the brand mark (CSS background image `riims-logo-sm.png`),
-  links to home; `light` = white chip for the dark footer.
+- **`logo(base, {light, size, mark})`** — the brand mark (CSS background image
+  `riims-logo-sm.png` = full logo), links to home; `light` = white chip for the dark footer;
+  `mark` = inline `background-image` override. The **header** passes `mark: 'assets/riims-emblem.png'`
+  (the compact **circular emblem** — `site/assets/riims-emblem.png` 320×320, derived from the
+  gitignored master `assets/logo1.png`) so the small square header slot shows a clean round mark,
+  while the **footer** keeps the full logo (emblem + RiiMS wordmark). Favicon/apple-touch/manifest
+  still use `riims-logo-sm.png`; social/JSON-LD use `riims-logo.png`.
 - **`button(children, {variant, size, iconLeft/Right, fullWidth, href, extraAttrs})`** —
   variants: `primary, secondary, whatsapp, outline, ghost, white`. `extraAttrs:{ 'data-book': true }`
   makes a button open the booking modal.
