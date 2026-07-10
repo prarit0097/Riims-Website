@@ -282,14 +282,13 @@ Global UI wrapped around every page by the generator:
 - **`header(base, current)`** — sticky top. A dark utility bar (phone, address, hours,
   WhatsApp, Facebook, Instagram, YouTube) + the main nav (logo, 7 links, Call icon, WhatsApp Now +
   Book Consultation buttons — "Upload Reports" was removed sitewide by owner request). On
-  tablet/mobile (≤1024px) the text nav + desktop CTAs collapse (CSS) and a **hamburger button**
-  (`.nav-toggle`, `menu` icon) shows instead. It toggles a slide-down **mobile menu**
-  (`#riims-mobilemenu` / `.riims-mobilemenu`) listing all 7 nav links + a Book Consultation button;
-  `site.js` flips its `hidden` attribute + the button's `aria-expanded`, and closes it on link tap,
-  Escape, or resize to desktop. (The old header Call + WhatsApp mobile icons were removed — those
-  actions already live in the sticky bottom `mobileBar`.) Active nav state: the matching link is
-  highlighted (desktop + mobile menu via `aria-current`); on any condition page the "Kidney
-  Diseases" link is highlighted.
+  tablet/mobile (≤1024px) the text nav + desktop CTAs collapse (CSS); the brand row instead shows a
+  compact `.nav-mobile-cta` (Call icon + Book button), and an **always-visible horizontal-scroll
+  nav-chips bar** (`.nav-chips` / `.nav-chip` — one icon+label pill per nav item, icon map in
+  `header()`) sits below it, so every section is one tap away with **no hamburger/menu** (per the
+  claude.ai "Mobile Homepage v2" design). On mobile the logo shrinks to 50px and the brand row
+  (`.header-row`) to 60px. Active nav state via `aria-current`: the matching link (desktop) / chip
+  (mobile) is highlighted; on any condition page the "Kidney Diseases" one is highlighted.
 - **`footer(base)`** — dark footer: brand + social, three link columns (Conditions = all 8,
   Care, Institute), a medical disclaimer, copyright, and **Privacy / Terms / Disclaimer** links
   (→ the real legal pages).

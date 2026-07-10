@@ -49,22 +49,6 @@
     if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) closeModal();
   });
 
-  /* ---------------- Mobile nav menu (hamburger) ---------------- */
-  const navToggle = $('.nav-toggle');
-  const mobileMenu = $('#riims-mobilemenu');
-  if (navToggle && mobileMenu) {
-    const setMenu = (open) => {
-      navToggle.setAttribute('aria-expanded', String(open));
-      if (open) mobileMenu.removeAttribute('hidden'); else mobileMenu.setAttribute('hidden', '');
-    };
-    navToggle.addEventListener('click', () => setMenu(mobileMenu.hasAttribute('hidden')));
-    // Close after tapping any link or the Book button inside the menu.
-    mobileMenu.addEventListener('click', (e) => { if (e.target.closest('a, button')) setMenu(false); });
-    // Close if the viewport grows to desktop (menu is mobile-only).
-    window.addEventListener('resize', () => { if (window.innerWidth > 1024) setMenu(false); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
-  }
-
   /* ---------------- Appointment form (2 steps) ---------------- */
   function showStep(form, n) {
     $$('.appt-step', form).forEach((el) => {

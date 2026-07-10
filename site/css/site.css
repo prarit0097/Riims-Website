@@ -42,17 +42,12 @@ html, body { overflow-x: clip; }
 /* White button hover (used on the dark CTA band) */
 .riims-btn--white:hover { background: var(--neutral-50) !important; box-shadow: var(--shadow-lg) !important; }
 
-/* Nav visibility toggles */
-.nav-mobile { display: none; }
+/* Nav visibility toggles — mobile CTAs + chips are hidden on desktop, shown <=1024px */
+.nav-mobile-cta, .nav-chips { display: none; }
 
-/* Mobile hamburger + slide-down nav menu (shown only <=1024px; see media query) */
-.nav-toggle { border: none; background: transparent; cursor: pointer; color: var(--brand-primary); padding: .35rem; border-radius: var(--radius-md); align-items: center; justify-content: center; }
-.nav-toggle:hover { background: var(--surface-blue-soft); }
-.riims-mobilemenu { display: none; background: var(--surface-page); border-top: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); }
-.riims-mobilemenu-inner { display: flex; flex-direction: column; padding-top: .3rem; padding-bottom: .9rem; }
-.riims-mobilemenu-link { font-family: var(--font-sans); font-weight: 600; font-size: 1.02rem; color: var(--text-body); text-decoration: none; padding: .85rem .15rem; border-bottom: 1px solid var(--border-subtle); }
-.riims-mobilemenu-link[aria-current="page"] { color: var(--text-brand); }
-.riims-mobilemenu-book { margin-top: .9rem; display: flex; align-items: center; justify-content: center; gap: .5rem; }
+/* Mobile nav chips — always-visible horizontal scroll (replaces the hamburger) */
+.nav-chip { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 999px; border: 1px solid var(--border-default); background: #fff; color: var(--text-brand); font-family: var(--font-sans); font-size: 13px; font-weight: 700; white-space: nowrap; text-decoration: none; }
+.nav-chip.is-active { background: var(--surface-blue-soft); border-color: var(--border-brand); }
 
 /* Booking modal */
 #booking-modal { display: none; }
@@ -110,8 +105,11 @@ html, body { overflow-x: clip; }
   .condition-grid aside { position: static !important; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; }
   .nav-links, .nav-cta { display: none !important; }
-  .nav-mobile { display: flex !important; }
-  .riims-mobilemenu:not([hidden]) { display: block; }
+  .nav-mobile-cta { display: flex !important; align-items: center; gap: .5rem; }
+  .nav-chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 1.1rem 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .nav-chips::-webkit-scrollbar { display: none; }
+  .header-row { min-height: 60px !important; }
+  .riims-logo-mark { width: 50px !important; height: 50px !important; }
   .services-grid { grid-template-columns: repeat(3, 1fr) !important; }
 }
 

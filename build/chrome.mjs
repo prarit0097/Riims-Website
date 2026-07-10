@@ -64,8 +64,16 @@ export function header(base, current) {
     return `<a href="${base}${n.href}" style="font-family:var(--font-sans);font-size:.95rem;font-weight:600;text-decoration:none;color:${active ? 'var(--text-brand)' : 'var(--text-body)'}">${n.label}</a>`;
   }).join('');
 
+  // Mobile: an always-visible horizontal scroll of nav "chips" (icon + label) replaces the
+  // hamburger — every section is one tap away with no menu to open (Mobile Homepage v2 design).
+  const CHIP_ICON = { About: 'building-2', 'Kidney Diseases': 'activity', Treatments: 'stethoscope', Guides: 'book-open', Doctors: 'users', Blog: 'newspaper', Contact: 'phone' };
+  const chips = NAV.map((n) => {
+    const active = onCondition ? (n.label === 'Kidney Diseases') : (current && n.href === current);
+    return `<a href="${base}${n.href}" class="nav-chip${active ? ' is-active' : ''}"${active ? ' aria-current="page"' : ''}>${icon(CHIP_ICON[n.label] || 'circle-dot', { size: 15, style: 'color:var(--icon-accent)' })}<span>${n.label}</span></a>`;
+  }).join('');
+
   const main = `<div style="background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-subtle)">`
-    + `<div class="riims-container" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:80px">`
+    + `<div class="riims-container header-row" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:80px">`
     + logo(base, { size: 68 })
     + `<nav class="nav-links" aria-label="Main navigation" style="display:flex;align-items:center;gap:1.4rem">${links}</nav>`
     + `<div class="nav-cta" style="display:flex;align-items:center;gap:.6rem">`
@@ -73,15 +81,12 @@ export function header(base, current) {
     + button('WhatsApp Now', { variant: 'whatsapp', size: 'sm', iconLeft: icon('message-circle', { size: 16 }), href: SITE.whatsapp, extraAttrs: OFFSITE })
     + button('Book Consultation', { variant: 'primary', size: 'sm', iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
     + `</div>`
-    + `<button type="button" class="nav-mobile nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="riims-mobilemenu">${icon('menu', { size: 26 })}</button>`
+    + `<div class="nav-mobile-cta">`
+    + iconButton(icon('phone', { size: 18 }), { label: 'Call now', variant: 'solid', href: tel })
+    + button('Book', { variant: 'primary', size: 'sm', iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
     + `</div>`
-    + `<nav id="riims-mobilemenu" class="riims-mobilemenu" aria-label="Mobile navigation" hidden><div class="riims-container riims-mobilemenu-inner">`
-    + NAV.map((n) => {
-      const active = onCondition ? (n.label === 'Kidney Diseases') : (current && n.href === current);
-      return `<a href="${base}${n.href}" class="riims-mobilemenu-link"${active ? ' aria-current="page"' : ''}>${n.label}</a>`;
-    }).join('')
-    + `<button type="button" data-book class="riims-btn riims-btn--primary riims-mobilemenu-book">${icon('calendar-check', { size: 18 })}<span>Book Consultation</span></button>`
-    + `</div></nav>`
+    + `</div>`
+    + `<nav class="nav-chips" aria-label="Sections">${chips}</nav>`
     + `</div>`;
 
   return `<header style="position:sticky;top:0;z-index:100">${utility}${main}</header>`;
