@@ -6,7 +6,7 @@
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#007a38",
+  "theme_color": "#0a6168",
   "lang": "en-IN",
   "icons": [
     { "src": "/assets/riims-logo-sm.png", "sizes": "any", "type": "image/png", "purpose": "any" }

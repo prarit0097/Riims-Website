@@ -84,10 +84,10 @@ img { max-width: 100%; display: block; }
 /* Buttons lift on hover, settle/compress on press. */
 .riims-btn:hover { transform: translateY(-2px); }
 .riims-btn:active { transform: translateY(0) scale(0.985); }
-.riims-btn--primary:hover { background: var(--brand-primary-hover) !important; box-shadow: 0 14px 32px rgba(0,122,56,0.30) !important; }
+.riims-btn--primary:hover { background: var(--brand-primary-hover) !important; box-shadow: 0 14px 32px rgba(17,78,143,0.30) !important; }
 .riims-btn--secondary:hover { background: var(--brand-secondary-hover) !important; }
 .riims-btn--whatsapp:hover { background: var(--whatsapp-dark) !important; }
-.riims-btn--outline:hover { border-color: var(--brand-primary) !important; background: var(--surface-blue-soft) !important; }
+.riims-btn--outline:hover { border-color: var(--blue-400) !important; background: var(--surface-blue-soft) !important; }
 .riims-btn--ghost:hover { background: var(--surface-blue-soft) !important; }
 .riims-btn--cream:hover { background: var(--cream-300) !important; }
 .riims-btn[aria-disabled="true"]:hover { transform: none; }
