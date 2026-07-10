@@ -128,7 +128,9 @@ RiimS/
     │       └── base.css      # element resets + shared primitives + button/card hover states
     ├── js/site.js            # all client interactivity (no dependencies)
     │   └── (generated) search-data.js (admin-driven search dataset), gtag.js (if Tag ID set)
-    ├── assets/               # logo (PNG for social/favicon), + WebP: hero banners
+    ├── assets/               # official RIIMS logo (teal/petrol emblem + RiiMS badge, transparent
+    │                         #   PNG — riims-logo.png 393x512 + riims-logo-sm.png 246x320, from the
+    │                         #   gitignored master assets/logo.png), + WebP: hero banners
     │   │                     #   (banner-1..4.webp + banner-1.jpg for og/LCP), doctor
     │   │                     #   portraits, reels, hospital, video — optimized by build/optimize-images.mjs
     │   └── vendor/lucide.min.js   # self-hosted, pinned Lucide (no CDN)
