@@ -40,7 +40,7 @@ export function searchBanner(base = '') {
   const slider = `<div class="hero-slider" data-hero-slider data-interval="${BANNER_SPEED * 1000}" aria-roledescription="carousel" aria-label="RIIMS highlights">${slides}${arrows}${dots}</div>`;
 
   return `<section style="position:relative;background:linear-gradient(180deg, var(--surface-blue-soft) 0%, var(--surface-page) 100%);border-bottom:1px solid var(--border-subtle)">`
-    + `<h1 class="sr-only">Kidney Care in Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
+    + `<h1 class="sr-only">Kidney Care in Delhi-NCR &amp; Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
     + slider
     + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`
     + `<div style="max-width:780px;margin:0 auto;text-align:center">`

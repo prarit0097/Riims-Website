@@ -463,8 +463,9 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
   opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post; and a **`Physician`** node per doctor on the doctors page (`physiciansGraph()`, from the admin roster — for doctor rich results + E-E-A-T).
 - `sitemap.xml` (36 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
-- One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Baraut — High Creatinine, CKD,
-  Dialysis & Diet Guidance"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
+- One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Delhi-NCR & Baraut — High
+  Creatinine, CKD, Dialysis & Diet Guidance"; home `<title>` targets "Kidney Specialist in
+  Delhi-NCR"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
   + `aria-label` on image tiles. Lucide is **self-hosted** (pinned) — no CDN dependency.
 - Branded **404 page**, real **Google Maps embed** on contact, all off-site links `rel="noopener"`.
 - **Already set for go-live:** `SITE.origin = https://riimshospitals.com`. Off-site actions that

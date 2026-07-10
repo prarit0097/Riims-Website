@@ -243,8 +243,8 @@ function render(p) {
 const pages = [
   {
     out: 'index.html', base: '', path: '/', nav: 'home', mobile: 'home', preload: (BANNERS[0] && BANNERS[0].img) || 'assets/banner-1.webp',
-    title: 'Kidney Specialist in Baraut | High Creatinine, CKD & Dialysis',
-    desc: 'Ethical, doctor-led kidney care in Baraut, UP — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
+    title: 'Kidney Specialist in Delhi-NCR | High Creatinine, CKD & Dialysis',
+    desc: 'Ethical, doctor-led kidney care across Delhi-NCR (based in Baraut, UP) — high creatinine, CKD, dialysis guidance, kidney diet & report review, with integrated Ayurveda support.',
     body: homePage(''), ld: [FAQ_GRAPH],
   },
   {
