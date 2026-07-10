@@ -80,7 +80,7 @@ export function conditionPage(base, slug) {
     + disclaimer()
     + `</div>`;
 
-  const aside = `<aside style="position:sticky;top:120px;display:flex;flex-direction:column;gap:var(--space-5)">`
+  const aside = `<aside style="position:sticky;top:128px;display:flex;flex-direction:column;gap:var(--space-5)">`
     + card(
       `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Get your reports reviewed</h3>`
       + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion.</p>`

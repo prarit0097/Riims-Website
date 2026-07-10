@@ -197,12 +197,14 @@ Pure functions that return HTML strings. Key helpers:
   (turned into SVG by `site.js`). Facebook/Instagram/YouTube are inline SVG (not in the pinned Lucide).
 - **`star()/starRow()`** — inline gold star SVGs (used for ratings; reliable fill).
 - **`logo(base, {light, size, mark})`** — the brand mark (CSS background image
-  `riims-logo-sm.png` = full logo), links to home; `light` = white chip for the dark footer;
-  `mark` = inline `background-image` override. The **header** passes `mark: 'assets/riims-emblem.png'`
-  (the compact **circular emblem** — `site/assets/riims-emblem.png` 320×320, derived from the
-  gitignored master `assets/logo1.png`) so the small square header slot shows a clean round mark,
-  while the **footer** keeps the full logo (emblem + RiiMS wordmark). Favicon/apple-touch/manifest
-  still use `riims-logo-sm.png`; social/JSON-LD use `riims-logo.png`.
+  `riims-logo-sm.png` = full logo: emblem + RiiMS wordmark), links to home; `light` = white chip
+  for the dark footer; `size` sets the square box (default 54); `mark` = optional inline
+  `background-image` override. The **header** uses the full logo at **`size: 68`** in an **80px**
+  header (main header `min-height:80px`; the conditions-page sticky aside `top` is **128px** to
+  match) so it reads clearly. Footer uses the default (full logo, size 54). Favicon/apple-touch/
+  manifest use `riims-logo-sm.png`; social/JSON-LD use `riims-logo.png`. (A compact circular emblem
+  `site/assets/riims-emblem.png` — from the gitignored master `assets/logo1.png` — is kept for
+  optional use via `mark`.)
 - **`button(children, {variant, size, iconLeft/Right, fullWidth, href, extraAttrs})`** —
   variants: `primary, secondary, whatsapp, outline, ghost, white`. `extraAttrs:{ 'data-book': true }`
   makes a button open the booking modal.
