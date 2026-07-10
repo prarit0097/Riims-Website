@@ -128,7 +128,7 @@ function disclaimerDark() {
 /* ---------- Mobile bottom nav ---------- */
 export function mobileBar(base, current) {
   const tab = (active) => `flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:.12rem;border:none;background:transparent;cursor:pointer;padding:.55rem .2rem;font-family:var(--font-sans);font-weight:700;font-size:10px;color:${active ? 'var(--text-brand)' : 'var(--text-muted)'};text-decoration:none`;
-  return `<nav class="riims-mobilebar" aria-label="Mobile" style="position:fixed;left:0;right:0;bottom:0;z-index:110;display:none;align-items:flex-end;min-height:62px;background:#fff;border-top:1px solid var(--border-default);box-shadow:0 -8px 24px rgba(4,45,49,.12)">`
+  return `<nav class="riims-mobilebar" aria-label="Mobile" style="position:fixed;left:0;right:0;bottom:0;z-index:110;display:none;align-items:flex-end;min-height:62px;background:#fff;border-top:1px solid var(--border-default);box-shadow:0 -8px 24px rgba(0,45,22,.12)">`
     + `<a href="${base}index.html" style="${tab(current === 'home')}">${icon('home', { size: 20 })} Home</a>`
     + `<a href="${base}doctors.html" style="${tab(current === 'doctors.html')}">${icon('stethoscope', { size: 20 })} Doctors</a>`
     + `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:relative">`

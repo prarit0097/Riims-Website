@@ -39,9 +39,9 @@
   --shadow-md: 0 6px 18px rgba(10, 47, 89, 0.08);
   --shadow-lg: 0 14px 36px rgba(10, 47, 89, 0.10);
   --shadow-xl: 0 26px 60px rgba(8, 37, 69, 0.14);
-  --shadow-brand: 0 10px 26px rgba(10, 97, 104, 0.26);
-  --shadow-green: 0 10px 26px rgba(20, 144, 91, 0.22);
-  --shadow-focus: 0 0 0 4px rgba(15, 117, 125, 0.20);
+  --shadow-brand: 0 10px 26px rgba(0, 122, 56, 0.26);
+  --shadow-green: 0 10px 26px rgba(0, 122, 56, 0.22);
+  --shadow-focus: 0 0 0 4px rgba(0, 122, 56, 0.22);
 
   /* ---- Layout ---- */
   --container-max: 1200px;

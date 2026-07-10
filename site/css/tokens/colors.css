@@ -1,6 +1,7 @@
 /* ============================================================
    RIIMS — Color Tokens
-   Deep medical blue · kidney/health green · warm cream accents
+   RIIMS logo green (primary) · warm cream accents · blue for status
+   Brand primary is anchored on the RIIMS logo green (#007836).
    ============================================================ */
 
 :root {
@@ -32,25 +33,27 @@
   --blue-800: #0a2f59;
   --blue-900: #082545;   /* deepest — headers, footer */
 
-  /* ---- Secondary · Kidney / Health Green ---- */
-  --green-50:  #e8f7ef;
-  --green-100: #c8ecd9;
-  --green-200: #97dbb8;
-  --green-300: #5fc492;
-  --green-400: #2faa71;
-  --green-500: #14905b;  /* brand green */
-  --green-600: #0d764a;
-  --green-700: #0a5d3b;
-  --green-800: #08482e;
+  /* ---- Primary · RIIMS Logo Green (kidney / health) ---- */
+  /* Anchored on the RIIMS logo green (#007836 — ring, leaf & "RiiMS" badge). */
+  --green-50:  #e6f5ec;
+  --green-100: #c5e9d4;
+  --green-200: #97d6b2;
+  --green-300: #5ebe8b;
+  --green-400: #23a061;
+  --green-500: #0a8747;  /* bright brand green */
+  --green-600: #007a38;  /* BRAND PRIMARY — RIIMS logo green */
+  --green-700: #00622d;  /* hover */
+  --green-800: #004e25;  /* press / deep */
+  --green-900: #00381b;  /* deepest — header bar, footer, inverse */
 
-  /* ---- Primary accent · Apollo-style Teal / Petrol ---- */
+  /* ---- Legacy teal (no longer the brand; kept for reference only) ---- */
   --teal-50:  #e6f3f4;
   --teal-100: #c3e2e4;
   --teal-200: #8fc7cb;
   --teal-300: #57a8af;
   --teal-400: #2c8b93;
   --teal-500: #0f757d;  /* mid */
-  --teal-600: #0a6168;  /* brand primary (Apollo teal) */
+  --teal-600: #0a6168;  /* was brand primary — now superseded by --green-600 */
   --teal-700: #084e54;
   --teal-800: #063b40;
   --teal-900: #042d31;  /* deepest — header bar, footer */
@@ -81,10 +84,10 @@
      SEMANTIC ALIASES — reference these in components/UI
      ============================================================ */
 
-  /* Brand — Apollo-inspired teal primary, RIIMS green secondary */
-  --brand-primary: var(--teal-600);
-  --brand-primary-hover: var(--teal-700);
-  --brand-primary-press: var(--teal-800);
+  /* Brand — RIIMS logo green primary (teal/cream kept only as status/legacy) */
+  --brand-primary: var(--green-600);
+  --brand-primary-hover: var(--green-700);
+  --brand-primary-press: var(--green-800);
   --brand-secondary: var(--green-500);
   --brand-secondary-hover: var(--green-600);
   --brand-accent: var(--cream-200);
@@ -96,10 +99,10 @@
   --surface-card: var(--white);
   --surface-cream: var(--cream-100);
   --surface-cream-deep: var(--cream-200);
-  --surface-blue-soft: var(--teal-50);
+  --surface-blue-soft: var(--green-50);   /* soft brand tint (kept name for consumers) */
   --surface-green-soft: var(--green-50);
-  --surface-inverse: var(--teal-900);
-  --surface-overlay: rgba(4, 45, 49, 0.55);
+  --surface-inverse: var(--green-900);
+  --surface-overlay: rgba(0, 45, 22, 0.55);
 
   /* Text */
   --text-strong: var(--neutral-900);
@@ -107,20 +110,20 @@
   --text-muted: var(--neutral-500);
   --text-faint: var(--neutral-400);
   --text-on-brand: var(--white);
-  --text-on-cream: var(--teal-800);
-  --text-link: var(--teal-600);
-  --text-brand: var(--teal-700);
+  --text-on-cream: var(--green-800);
+  --text-link: var(--green-700);
+  --text-brand: var(--green-700);
   --text-accent: var(--green-600);
 
   /* Borders */
   --border-subtle: var(--neutral-100);
   --border-default: var(--neutral-200);
   --border-strong: var(--neutral-300);
-  --border-brand: var(--teal-200);
-  --border-focus: var(--teal-500);
+  --border-brand: var(--green-200);
+  --border-focus: var(--green-500);
 
   /* Icon */
   --icon-default: var(--neutral-600);
-  --icon-brand: var(--teal-600);
+  --icon-brand: var(--green-600);
   --icon-accent: var(--green-500);
 }

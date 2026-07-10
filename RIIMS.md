@@ -304,7 +304,7 @@ frame — followed by the search box + Popular chips from admin `SEARCH`),
 services, admin `SERVICES`), `whyRiims` (admin `WHY`), `howItWorks` (admin `STEPS`), `doctorsSection`
 + `doctorCard`, `meetExperts` + `expertCard` (horizontal), `educationSection` + `blogCard` (cards link
 to `/blog/<slug>.html`), `testimonials` (+ video), `faqSection` (accordion, first item open),
-`ctaBand` (teal gradient, copy from admin `CTA`), `contactSection` (form + map placeholder + contact
+`ctaBand` (green gradient, copy from admin `CTA`), `contactSection` (form + map placeholder + contact
 cards). Sections marked "admin X" read their content/copy from the admin-editable data (see §8/§23).
 
 ## 11. Pages (`build/pages.mjs`)
@@ -351,9 +351,17 @@ Each function returns a full page body:
 Loaded per page as two stylesheets: `css/styles.css` then `css/site.css`.
 
 - **`tokens/`** (design tokens, unchanged from the handoff):
-  - `colors.css` — palette (deep blue, kidney green, **Apollo-style teal = brand primary
-    `--brand-primary: var(--teal-600) #0a6168`**, cream) + semantic aliases
-    (`--surface-*`, `--text-*`, `--border-*`, `--icon-*`).
+  - `colors.css` — palette. **Brand primary is the RIIMS logo green `--brand-primary:
+    var(--green-600) #007a38`** (anchored on the logo green `#007836` — ring, leaf & "RiiMS"
+    badge). The `--green-*` scale (50–900) is tuned to that green; all brand semantic aliases
+    (`--brand-primary/hover/press`, `--surface-inverse`, `--surface-blue-soft`, `--text-link`,
+    `--text-brand`, `--text-on-cream`, `--border-brand`, `--border-focus`, `--icon-brand`,
+    `--surface-overlay`) point at the green scale, so header, footer, buttons, links, icons,
+    hero wash and the CTA band are all green. `theme-color` (`build/generate.mjs`) and
+    `site.webmanifest` `theme_color` are `#007a38`. Brand shadows/focus ring (`spacing.css`)
+    and the primary-button hover glow (`base.css`) are green-tinted. The old `--teal-*` scale
+    is kept defined but **legacy/unused** (superseded by green); `--blue-*` remains for the
+    `--info` status color only; cream + gold-stars + WhatsApp-green are intentional accents.
   - `typography.css` — families (`--font-display: Spectral`, `--font-sans: Plus Jakarta Sans`,
     `--font-hindi: Mukta`), fluid `--fs-*` scale, weights, tracking.
   - `spacing.css` — `--space-*`, section rhythm, **radii** (soft/rounded), **shadows** (soft,

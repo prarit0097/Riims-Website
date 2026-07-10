@@ -65,7 +65,7 @@ function reelCard(base, r) {
     ? `<img src="${base}${r.img}" alt="${esc(r.title)}" width="190" height="253" loading="lazy" decoding="async" class="reel-bg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
     : '';
   return `<a href="${href}" target="_blank" rel="noopener" aria-label="Watch reel: ${r.title}" class="reel riims-card--hover" style="display:block;flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
-    + `<div style="aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--teal-600), var(--teal-900))">`
+    + `<div style="aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--green-600), var(--green-900))">`
     + media
     + badge(r.tag, { tone: badgeTone, style: { alignSelf: 'flex-start', position: 'relative' } })
     + `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 20 })}</span>`
@@ -185,7 +185,7 @@ function photoTile(base, d, height) {
   if (d.photo) {
     return `<img class="img-cover" src="${base}${d.photo}" alt="${esc(d.name)}, ${esc(d.title)}" loading="lazy" decoding="async" style="display:block;width:100%;height:${height}px;object-fit:cover;object-position:center top">`;
   }
-  return `<div style="height:${height}px;background:var(--surface-blue-soft);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--teal-300)">${d.init || ''}</span></div>`;
+  return `<div style="height:${height}px;background:var(--surface-blue-soft);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--green-300)">${d.init || ''}</span></div>`;
 }
 export function doctorCard(base, d) {
   const specs = d.specialties ? d.specialties.map((sp) => `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:600;color:var(--text-brand);background:var(--surface-blue-soft);padding:.25rem .6rem;border-radius:var(--radius-pill)">${sp}</span>`).join('') : '';
@@ -236,7 +236,7 @@ export function blogCard(base, p) {
   const g = { blue: 'linear-gradient(135deg,var(--surface-blue-soft),var(--surface-green-soft))', green: 'linear-gradient(135deg,var(--surface-green-soft),var(--cream-100))', cream: 'linear-gradient(135deg,var(--surface-cream-deep),var(--surface-blue-soft))' }[p.tone];
   const cover = p.img
     ? `<img class="img-cover" src="${base}${p.img}" alt="${esc(p.title)}" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:16 / 9;object-fit:cover">`
-    : `<div style="aspect-ratio:16 / 9;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 28, style: 'color:var(--teal-300)' })}</div>`;
+    : `<div style="aspect-ratio:16 / 9;background:${g};display:flex;align-items:center;justify-content:center">${icon('image', { size: 28, style: 'color:var(--green-300)' })}</div>`;
   return `<a href="${base}blog/${p.slug}.html" class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;text-decoration:none;color:inherit">`
     + cover
     + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
@@ -312,7 +312,7 @@ export function faqSection() {
 export function ctaBand() {
   return `<section style="padding-block:var(--space-12);background:var(--surface-page)">`
     + `<div class="riims-container">`
-    + `<div style="position:relative;overflow:hidden;border-radius:var(--radius-2xl);background:linear-gradient(135deg, var(--teal-700), var(--teal-900));color:#fff;text-align:center;padding:clamp(2rem,1.4rem + 3vw,3.5rem)">`
+    + `<div style="position:relative;overflow:hidden;border-radius:var(--radius-2xl);background:linear-gradient(135deg, var(--green-700), var(--green-900));color:#fff;text-align:center;padding:clamp(2rem,1.4rem + 3vw,3.5rem)">`
     + eyebrow(`${icon('heart-handshake', { size: 15 })} ${esc(CTA.eyebrow)}`, { onDark: true })
     + `<h2 style="font-size:var(--fs-3xl);margin:0 auto .6rem;max-width:20ch;color:#fff">${esc(CTA.title)}</h2>`
     + `<p style="margin:0 auto 1.6rem;max-width:54ch;font-size:var(--fs-lg);color:rgba(255,255,255,.85)">${esc(CTA.intro)}</p>`

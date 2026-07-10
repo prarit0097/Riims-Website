@@ -194,7 +194,7 @@ function head(p) {
   <meta name="description" content="${esc(clampDesc(p.desc))}" />
   <meta name="author" content="RIIMS — Rashtriya Institute of Integrated Medical Sciences" />
   <meta name="robots" content="${p.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}" />
-  <meta name="theme-color" content="#0a6168" />
+  <meta name="theme-color" content="#007a38" />
   <link rel="canonical" href="${url}" />
   ${p.preload ? `<link rel="preload" as="image" href="${p.base}${p.preload}"${p.preload.endsWith('.webp') ? ' type="image/webp"' : ''} fetchpriority="high" />\n  ` : ''}<link rel="icon" type="image/png" href="${p.base}assets/riims-logo-sm.png" />
   <link rel="apple-touch-icon" href="${p.base}assets/riims-logo-sm.png" />
