@@ -101,7 +101,7 @@ An honest reassurance: not every CKD patient develops high potassium, so there i
 
 ## Hemoglobin — why CKD can lower it
 
-Hemoglobin (Hb) is a protein in your blood that carries oxygen to every part of the body — the body's "oxygen carrier". Many people do not realise the kidney does more than clean blood: it also makes a hormone called **erythropoietin (EPO)**, which signals the body to make new red blood cells. When the kidneys are affected, less EPO may be produced, and hemoglobin can fall. Low Hb can leave you tired, weak, dizzy, breathless on mild effort, or short of concentration.
+Hemoglobin (Hb) is a protein in your blood that carries oxygen to every part of the body — the body's "oxygen carrier". Many people do not realise the kidney does more than clean blood: it also makes a hormone called **erythropoietin (EPO)**, which signals the body to make new red blood cells. When the kidneys are affected, less EPO may be produced, and hemoglobin can fall. This EPO signalling is part of the body's oxygen-sensing "HIF pathway" — the discovery that won the 2019 Nobel Prize in Medicine — which is why kidney disease and anaemia are so closely linked. Low Hb can leave you tired, weak, dizzy, breathless on mild effort, or short of concentration.
 
 Iron deficiency is not the only cause. In CKD, low hemoglobin can come from EPO deficiency, iron deficiency, chronic inflammation, nutritional deficiency or blood loss — so simply eating more iron may not fix it. Anaemia in CKD is common but important, and worth monitoring.
 

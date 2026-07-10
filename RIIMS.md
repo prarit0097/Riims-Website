@@ -729,6 +729,18 @@ What was integrated (all via the generator + `data/content.json`, then `npm test
   ("~1 in 6–7 people in India may have CKD" — cited as a general estimate, not a RIIMS metric).
   (A "founder note" card was added then removed on owner request.)
 
+- **Verification pass (2026-07-10)** — the site's content was re-checked page-by-page against the
+  actual PDF (rendered via PyMuPDF). Everything matched: the **D-N-A** framework wording, the 7
+  Kidney Mapping domains, LDP Protocol, RiiMS Renal Plate, the Panchakarma therapies, the five herb
+  monographs (botanicals/phytochemicals/karma), the world diet models, and the full normal-lab-value
+  chart + CKD Stage (G1–G5) table (Appendix, book p.154). The one book topic not yet on the site was
+  **Part 6 — modern science (HIF pathway)**; it was added:
+  - `build/guides/how-kidneys-work.md` — new section **"The kidney's oxygen sensor: the HIF pathway"**
+    (HIF = Hypoxia-Inducible Factor; body's oxygen sensor; **2019 Nobel Prize in Physiology/Medicine**;
+    ties EPO → kidney disease → anaemia) + a 4th guide FAQ ("Why does kidney disease cause anaemia?").
+  - `build/guides/understand-kidney-reports.md` — one sentence in the Hemoglobin section linking EPO
+    to the HIF pathway / 2019 Nobel Prize. All compliance-safe (education, no treatment claims).
+
 Source-of-truth note: the book PDF (`kidney kavach book-1.pdf`) is kept locally / not required by
 the build. To extend content, edit the generator/`data/content.json` as above and keep this file in
 sync (Rule 1). Doctor rosters/photos remain owner-managed (see §21) — the book's real founder bio is
@@ -746,7 +758,8 @@ main educational depth and a major SEO asset — each guide is a full, original,
   `### ` h3, `> ` blockquotes, `1.` ordered lists, `| a | b |` tables, and inline `**bold**`/`*italic*`).
 - **Rendering:** `guidePage(base, key)` (hero + body + FAQ + CTA + related conditions + more-guides +
   disclaimer) and `guidesHubPage(base)` (`/guides.html`, cards for all 7 guides + the protocol).
-- **The 7 guides:** `how-kidneys-work`, `understand-kidney-reports` (creatinine/eGFR/CKD-stage tables,
+- **The 7 guides:** `how-kidneys-work` (7 kidney jobs, how CKD begins, AKI vs CKD, and the **HIF
+  oxygen-sensing pathway / 2019 Nobel Prize** link to EPO & anaemia), `understand-kidney-reports` (creatinine/eGFR/CKD-stage tables,
   the Kidney Alert System, a normal-lab-value chart), `kidney-diet-renal-plate` (the definitive diet
   reference: RiiMS Renal Plate, 6 tastes, protein/sodium/potassium/phosphorus/fluids, world diet models),
   `ayurvedic-kidney-herbs` (honest herb monographs — Punarnava/Gokshura/Varuna/Guduchi/Amalaki + others,

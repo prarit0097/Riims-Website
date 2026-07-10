@@ -88,6 +88,19 @@ The kidney does not work alone — it functions like a network with several impo
 - **Blood:** The kidney makes EPO, which supports red blood cell formation — so low haemoglobin is commonly seen in kidney patients.
 - **Gut (gut–kidney axis):** Modern science is increasingly studying how digestion, constipation, gut health and inflammation connect with kidney health.
 
+## The kidney's oxygen sensor: the HIF pathway
+
+Modern kidney science is no longer only about creatinine. One of the most important discoveries in this field is the body's **oxygen-sensing system**, known as the **HIF pathway** — HIF stands for *Hypoxia-Inducible Factor*. The research behind it was awarded the **2019 Nobel Prize in Physiology or Medicine**.
+
+In simple terms, HIF is the body's built-in "oxygen sensor":
+
+- When the body has enough oxygen, the system stays quiet.
+- When oxygen begins to fall, it switches on protective changes to help the body adapt.
+
+The kidney is a key part of this system. It makes the hormone **erythropoietin (EPO)**, which signals the bone marrow to produce more red blood cells. This is why the discovery of the HIF pathway opened a new way to understand both **kidney disease and anaemia** — when the kidneys are affected, this oxygen-sensing and EPO signalling can be disturbed, and haemoglobin can fall.
+
+The takeaway for patients is simple: kidney health is tied to how the whole body senses oxygen, makes energy and protects its cells — far more than any single lab number can show. (This is background science to help you understand your body, not a treatment or diagnosis.)
+
 ## Early warning signs you shouldn't ignore
 
 The biggest challenge with kidney disease is that early stages often show **no clear symptoms** — many people only find out when creatinine has already risen or function has fallen significantly. Still, the body may give some signals:
