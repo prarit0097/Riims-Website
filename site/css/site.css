@@ -45,6 +45,15 @@ html, body { overflow-x: clip; }
 /* Nav visibility toggles */
 .nav-mobile { display: none; }
 
+/* Mobile hamburger + slide-down nav menu (shown only <=1024px; see media query) */
+.nav-toggle { border: none; background: transparent; cursor: pointer; color: var(--brand-primary); padding: .35rem; border-radius: var(--radius-md); align-items: center; justify-content: center; }
+.nav-toggle:hover { background: var(--surface-blue-soft); }
+.riims-mobilemenu { display: none; background: var(--surface-page); border-top: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); }
+.riims-mobilemenu-inner { display: flex; flex-direction: column; padding-top: .3rem; padding-bottom: .9rem; }
+.riims-mobilemenu-link { font-family: var(--font-sans); font-weight: 600; font-size: 1.02rem; color: var(--text-body); text-decoration: none; padding: .85rem .15rem; border-bottom: 1px solid var(--border-subtle); }
+.riims-mobilemenu-link[aria-current="page"] { color: var(--text-brand); }
+.riims-mobilemenu-book { margin-top: .9rem; display: flex; align-items: center; justify-content: center; gap: .5rem; }
+
 /* Booking modal */
 #booking-modal { display: none; }
 #booking-modal.is-open { display: flex; }
@@ -102,6 +111,7 @@ html, body { overflow-x: clip; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; }
   .nav-links, .nav-cta { display: none !important; }
   .nav-mobile { display: flex !important; }
+  .riims-mobilemenu:not([hidden]) { display: block; }
   .services-grid { grid-template-columns: repeat(3, 1fr) !important; }
 }
 

@@ -73,10 +73,16 @@ export function header(base, current) {
     + button('WhatsApp Now', { variant: 'whatsapp', size: 'sm', iconLeft: icon('message-circle', { size: 16 }), href: SITE.whatsapp, extraAttrs: OFFSITE })
     + button('Book Consultation', { variant: 'primary', size: 'sm', iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
     + `</div>`
-    + `<div class="nav-mobile" style="display:none;align-items:center;gap:.5rem">`
-    + iconButton(icon('phone', { size: 18 }), { label: 'Call now', variant: 'solid', href: tel })
-    + iconButton(icon('message-circle', { size: 18 }), { label: 'WhatsApp', variant: 'whatsapp', href: SITE.whatsapp, extraAttrs: OFFSITE })
-    + `</div></div></div>`;
+    + `<button type="button" class="nav-mobile nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="riims-mobilemenu">${icon('menu', { size: 26 })}</button>`
+    + `</div>`
+    + `<nav id="riims-mobilemenu" class="riims-mobilemenu" aria-label="Mobile navigation" hidden><div class="riims-container riims-mobilemenu-inner">`
+    + NAV.map((n) => {
+      const active = onCondition ? (n.label === 'Kidney Diseases') : (current && n.href === current);
+      return `<a href="${base}${n.href}" class="riims-mobilemenu-link"${active ? ' aria-current="page"' : ''}>${n.label}</a>`;
+    }).join('')
+    + `<button type="button" data-book class="riims-btn riims-btn--primary riims-mobilemenu-book">${icon('calendar-check', { size: 18 })}<span>Book Consultation</span></button>`
+    + `</div></nav>`
+    + `</div>`;
 
   return `<header style="position:sticky;top:0;z-index:100">${utility}${main}</header>`;
 }
