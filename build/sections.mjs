@@ -77,7 +77,7 @@ function reelCard(base, r) {
 export function healthReels(base = '') {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container">`
-    + `<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:var(--space-6)">`
+    + `<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:var(--space-8)">`
     + `<div><h2 style="margin:0;font-family:var(--font-sans);font-size:var(--fs-3xl);font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--text-accent);display:inline-flex;align-items:center;gap:.6rem">${icon('clapperboard', { size: 30 })} Health Reels</h2></div>`
     + button('View all reels', { variant: 'ghost', iconRight: icon('arrow-right', { size: 16 }), href: SITE.instagram, extraAttrs: { target: '_blank', rel: 'noopener' } })
     + `</div>`
