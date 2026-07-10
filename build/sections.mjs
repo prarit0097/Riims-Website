@@ -78,7 +78,7 @@ export function healthReels(base = '') {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container">`
     + `<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:var(--space-6)">`
-    + `<div>${eyebrow(`${icon('clapperboard', { size: 15 })} Health Reels`)}<h2 style="font-size:var(--fs-3xl);margin:0">Short videos by our experts</h2></div>`
+    + `<div>${eyebrow(`${icon('clapperboard', { size: 15 })} Health Reels`)}<h2 style="font-size:var(--fs-3xl);margin:0">Top Reels</h2></div>`
     + button('View all reels', { variant: 'ghost', iconRight: icon('arrow-right', { size: 16 }), href: SITE.instagram, extraAttrs: { target: '_blank', rel: 'noopener' } })
     + `</div>`
     + `<div class="reel-track" style="display:flex;gap:var(--space-4);overflow-x:auto;padding-bottom:.6rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch">`
