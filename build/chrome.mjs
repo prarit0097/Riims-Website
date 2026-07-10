@@ -84,7 +84,7 @@ export function header(base, current) {
 /* ---------- Footer ---------- */
 export function footer(base) {
   const cols = [
-    { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html'], ['Swelling (Edema)', 'conditions/swelling.html'], ['Kidney Stone / UTI', 'conditions/stone-uti.html']] },
+    { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html'], ['Kidney Swelling', 'conditions/kidney-swelling-treatment.html'], ['Kidney Stone Treatment', 'conditions/kidney-stone-treatment.html']] },
     { h: 'Care', links: [['DNA Kayakalp Protocol', 'dna-kayakalp-protocol.html'], ['Patient Guides', 'guides.html'], ['Understand Your Reports', 'understand-kidney-reports.html'], ['Kidney Diet & Renal Plate', 'kidney-diet-renal-plate.html'], ['Treatments & Services', 'services.html']] },
     { h: 'Institute', links: [['About RIIMS', 'about.html'], ['Our Doctors', 'doctors.html'], ['Blog', 'blog.html'], ['Contact', 'contact.html']] },
   ];

@@ -29,7 +29,7 @@ export const GUIDES = {
     desc: `Learn what your kidneys do, their 7 jobs, how kidney disease quietly begins, CKD vs AKI, and the early warning signs worth testing for.`,
     intro: `Most people think the kidneys only make urine, but they are one of the body's most multi-functional organs — cleaning blood, balancing water and minerals, and much more. Understanding how they work makes it far easier to see how kidney disease quietly begins, often years before any symptom appears.`,
     blurb: `See what your kidneys do every day and how kidney disease quietly begins — the foundation for everything else.`,
-    related: ['ckd', 'high-creatinine', 'diabetes-bp', 'proteinuria'],
+    related: ['ckd', 'high-creatinine', 'diabetic-kidney-disease', 'proteinuria'],
     faqs: [
       [`Do the kidneys only make urine?`, `No. Making urine is only one part of their work. The kidneys also clean the blood, balance water and minerals, help control blood pressure, make the EPO hormone for blood formation, activate vitamin D for bone health, and maintain the body's acid–base balance.`],
       [`Does chronic kidney disease (CKD) always lead to dialysis?`, `No — this is a common misconception. Not everyone with CKD needs dialysis. With early detection, regular monitoring, nutrition, lifestyle changes and doctor-led care, many people stay stable for years. Finding it early gives the best chance to plan care well.`],
@@ -59,7 +59,7 @@ export const GUIDES = {
     desc: `A definitive, India-aware kidney diet guide: the RiiMS Renal Plate, protein, sodium, potassium, phosphorus, fluids and the 6 tastes, personalised to you.`,
     intro: `There is no single "kidney diet" that fits every patient. The right plate depends on your CKD stage, your reports, whether you are on dialysis, and conditions like diabetes and blood pressure. This guide explains the science behind each nutrient and introduces the RiiMS Renal Plate — a simple, personalised way to eat well.`,
     blurb: `Build kidney-friendly Indian meals with the RiiMS Renal Plate — practical portions for protein, salt and potassium.`,
-    related: ['ckd', 'dialysis', 'proteinuria', 'diabetes-bp'],
+    related: ['ckd', 'dialysis', 'proteinuria', 'diabetic-kidney-disease'],
     faqs: [
       [`Do I have to stop dal, fruit and milk completely if I have kidney disease?`, `No. These are valuable foods and are not banned for everyone. Protein foods like dal and milk, and fruits, are restricted only if your stage or reports (for example high potassium or phosphorus) call for it. The right amount is decided from your reports and your doctor or dietitian, not from general advice.`],
       [`How many litres of water should a kidney patient drink daily?`, `There is no fixed number. The right amount depends on your CKD stage, urine output, swelling, dialysis status, heart function, weather and activity. Some patients need to limit fluids while others can drink normally. Also remember that tea, milk, soup, juice and coconut water all count as fluid. Follow your doctor's advice for your situation.`],
@@ -74,7 +74,7 @@ export const GUIDES = {
     desc: `An evidence-honest look at Ayurvedic herbs studied for kidney health — Punarnava, Gokshura, Varuna and more. Supportive only, never cures, always doctor-guided.`,
     intro: `Ayurveda has described several herbs for the urinary system and kidney health for centuries, and modern researchers are now studying some of them. This guide explains what those herbs are traditionally used for and what current research actually explores — honestly. None is a proven cure, and none should be self-started; they may have a supportive role only, always alongside proper medical care.`,
     blurb: `An honest look at herbs studied for kidney health — what is known, what is not, and why nothing replaces your medicines.`,
-    related: ['stone-uti', 'ckd', 'high-creatinine', 'proteinuria'],
+    related: ['kidney-stone-treatment', 'ckd', 'high-creatinine', 'proteinuria'],
     faqs: [
       [`Can Ayurvedic herbs cure kidney disease or reverse kidney damage?`, `No. These herbs are studied for a possible supportive role only, and much of the evidence is still preliminary. They are not proven to cure kidney disease or reverse damage, and they should never replace the treatment your doctor has prescribed.`],
       [`If a herb is natural, is it safe for my kidneys?`, `Not necessarily. "Natural" does not mean "safe." Herbs are biologically active, can interact with your medicines, and some products can even harm the kidneys if they are poor quality or adulterated. Anyone with kidney disease should get their nephrologist's clearance first and use only quality-assured products.`],
@@ -104,7 +104,7 @@ export const GUIDES = {
     desc: `Gentle, kitchen-level comfort measures for 9 common kidney-disease symptoms, alongside medical care, with clear red-flag signs to see a doctor promptly.`,
     intro: `Kidney disease often brings everyday discomforts like poor appetite, nausea, swelling, or cramps. The measures below are gentle comfort steps to ease these symptoms alongside your prescribed treatment. They are not cures or substitutes for medical care, and every symptom carries red flags where you must see your doctor promptly.`,
     blurb: `Gentle, supportive ways to feel more comfortable with swelling, poor appetite, fatigue and other daily symptoms.`,
-    related: ['swelling', 'ckd', 'high-creatinine', 'kidney-failure'],
+    related: ['kidney-swelling-treatment', 'ckd', 'high-creatinine', 'kidney-failure'],
     faqs: [
       [`Are these home measures a treatment for kidney disease?`, `No. They are gentle comfort steps to ease everyday symptoms alongside your prescribed treatment, diet, and medicines. They do not cure kidney disease or replace your doctor's care. Always follow your medical team's plan and the salt, fluid, potassium, and protein limits set for you.`],
       [`Can I start iron or supplements myself if my hemoglobin or cramps feel bad?`, `No. Iron, EPO therapy, and any supplement should be started only on your doctor's advice, after the right tests. Starting them on your own can be harmful in kidney disease. Report low hemoglobin, breathlessness, dizziness, or repeated cramps to your doctor instead.`],
@@ -119,7 +119,7 @@ export const GUIDES = {
     desc: `A simple 30-day plan of daily habits, weekly checks and a yes/no kidney health checklist to build a lasting routine alongside your doctor's care.`,
     intro: `Kidney health is not built in a single day. It grows from small, correct choices repeated every day. Follow these simple habits for 30 days, alongside your doctor's plan, and you can build a steady, kidney-protective routine that stays with you for the long term.`,
     blurb: `A simple 30-day checklist to build kidney-protective habits, track your numbers and stay on top of follow-ups.`,
-    related: ['ckd', 'diabetes-bp', 'high-creatinine'],
+    related: ['ckd', 'diabetic-kidney-disease', 'high-creatinine'],
     faqs: [
       [`Will 30 days of these habits cure my kidney disease?`, `No, and this plan does not promise that. Kidney disease needs ongoing medical care. What 30 days can do is help you build steady, healthy habits and better discipline that support your treatment. Always continue the plan your own doctor has given you.`],
       [`What if I miss a day or cannot tick every box?`, `That is normal, and it is not a failure. The goal is consistency over time, not a perfect record. Simply start again the next day. Small correct choices repeated daily are what matter most, so keep going rather than giving up.`],
@@ -136,7 +136,7 @@ export const CONDITION_GUIDES = {
   'kidney-failure': ['understand-kidney-reports', 'everyday-symptom-care', 'kidney-diet-renal-plate'],
   'dialysis': ['kidney-diet-renal-plate', 'everyday-symptom-care', 'kidney-myths-facts'],
   'proteinuria': ['understand-kidney-reports', 'how-kidneys-work', 'kidney-diet-renal-plate'],
-  'swelling': ['everyday-symptom-care', 'kidney-diet-renal-plate', 'understand-kidney-reports'],
-  'diabetes-bp': ['how-kidneys-work', '30-day-kidney-plan', 'kidney-diet-renal-plate'],
-  'stone-uti': ['everyday-symptom-care', 'understand-kidney-reports', 'kidney-myths-facts'],
+  'kidney-swelling-treatment': ['everyday-symptom-care', 'kidney-diet-renal-plate', 'understand-kidney-reports'],
+  'diabetic-kidney-disease': ['how-kidneys-work', '30-day-kidney-plan', 'kidney-diet-renal-plate'],
+  'kidney-stone-treatment': ['everyday-symptom-care', 'understand-kidney-reports', 'kidney-myths-facts'],
 };

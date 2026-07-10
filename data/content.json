@@ -627,7 +627,7 @@
     {
       "id": "p7",
       "slug": "diabetes-kidney-disease",
-      "related": "diabetes-bp",
+      "related": "diabetic-kidney-disease",
       "cat": "Risk",
       "title": "Diabetes & Kidney Disease: Protecting Your Kidneys",
       "excerpt": "Diabetic kidney disease is common in India. Learn the early signs and how tight sugar and BP control protects your kidneys.",
@@ -675,7 +675,7 @@
     {
       "id": "p8",
       "slug": "swelling-feet-face-kidneys",
-      "related": "swelling",
+      "related": "kidney-swelling-treatment",
       "cat": "Symptoms",
       "title": "Swelling in Feet & Face: Could It Be Your Kidneys?",
       "excerpt": "When edema points to the kidneys, what tests help, and when swelling means you should consult a kidney doctor.",
@@ -723,7 +723,7 @@
     {
       "id": "p9",
       "slug": "kidney-stones-uti-prevention",
-      "related": "stone-uti",
+      "related": "kidney-stone-treatment",
       "cat": "Prevention",
       "title": "Kidney Stones & UTI: Prevention Tips for India",
       "excerpt": "Hydration, diet and lifestyle habits that lower your risk of kidney stones and urinary infections in a hot climate.",

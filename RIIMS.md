@@ -40,7 +40,7 @@ Why this stack (the owner's #1 goal is national SEO ranking + easy, cheap hostin
 - **No build dependencies** → only Node's standard library; `npm install` installs nothing.
 
 The HTML is produced by a small **Node generator** (in `build/`) and written to `site/`.
-`site/` is the deployable website. The generator exists so the 36 pages stay DRY (shared
+`site/` is the deployable website. The generator exists so the pages stay DRY (shared
 header/footer/chrome never drift) while the deployed output is 100% static.
 
 ## 4. High-level architecture
@@ -110,9 +110,11 @@ RiimS/
     ├── index.html            # home
     ├── about.html  doctors.html  blog.html  contact.html
     ├── privacy.html  terms.html  disclaimer.html
-    ├── conditions/           # 8 condition pages
-    │   ├── high-creatinine.html  ckd.html  kidney-failure.html  dialysis.html
-    │   └── proteinuria.html  swelling.html  diabetes-bp.html  stone-uti.html
+    ├── conditions/           # 15 condition/SEO pages
+    │   ├── high-creatinine.html  high-creatinine-without-dialysis.html  ckd.html  stage-3-ckd.html
+    │   │   stage-4-ckd.html  kidney-failure.html  kidney-disease-treatment.html  dialysis.html
+    │   ├── proteinuria.html  kidney-swelling-treatment.html  diabetic-kidney-disease.html
+    │   └── hypertensive-kidney-disease.html  kidney-stone-treatment.html  uti-treatment.html  laser-kidney-stone-treatment.html
     ├── blog/                 # 9 blog-article pages (one per post)
     │   └── <slug>.html × 9
     ├── css/
@@ -133,7 +135,7 @@ RiimS/
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
     ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
-    ├── sitemap.xml           # all 36 indexable URLs with lastmod/priority (404 excluded)
+    ├── sitemap.xml           # all 43 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -160,17 +162,17 @@ RiimS/
    `nav`/`mobile` (active-state hints), `title`, `desc`, optional `keywords`, `body` (HTML), and
    optional `ld` (extra JSON-LD).
    - 9 core pages (home, kidney-diseases hub, treatments/services, **DNA Kayakalp Protocol**, **Patient Guides hub**, about, doctors, blog, contact)
-   - 8 condition pages (looped over `CONDITIONS`)
+   - 15 condition pages (looped over `CONDITIONS`)
    - 9 blog-article pages (looped over `POSTS`)
    - **7 patient-guide pages** (looped over `GUIDE_ORDER` in `build/guides.mjs`)
    - 3 legal pages (privacy, terms, disclaimer)
-   → **36 indexable pages** (+ a branded 404 = **37 files written**).
+   → **43 indexable pages** (+ a branded 404 = **44 files written**).
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`. It also emits **`site/js/search-data.js`**
    (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
    the home disease-search results (see §8) — and `js/gtag.js` if a Google Tag ID is set.
 
-Run it: `npm run build`. It logs `Generated 37 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 44 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -237,10 +239,10 @@ site, or via `data/content.json` in the repo.
   `content.json → protocol.faqs`, Admin → Protocol FAQs) — the DNA Kayakalp Protocol page FAQs
   (`[{q,a}]`; empty = built-in defaults), driving both the visible block and the FAQPage schema.
 - **`NAV`** — the 7 header links (About, Kidney Diseases, Treatments, Guides, Doctors, Blog, Contact).
-- **`CONDITIONS`** — the 8 condition pages, each with: `icon`, `title`, `crumb`, `intro`,
+- **`CONDITIONS`** — the 15 condition pages, each with: `icon`, `title`, `crumb`, `intro`,
   `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`. Slugs:
   `high-creatinine, ckd, kidney-failure, dialysis, proteinuria, swelling, diabetes-bp, stone-uti`.
-- **`PROBLEMS`** — the home "conditions we help with" grid (links to the 8 condition pages).
+- **`PROBLEMS`** — the home "conditions we help with" grid (links to the main condition pages).
 - **`WHY`, `STEPS`** — "Why RIIMS" cards + "How consultation works" steps. **Admin-editable**
   (Admin → Why RIIMS / How it works; `content.json → why` / `steps`; empty = code defaults; `STEPS`
   numbering `n` is auto by order). **`SERVICES`** likewise (Admin → Services; `content.json → services`).
@@ -400,7 +402,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (36 indexable URLs + a 404)
+## 14. Page inventory (43 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
@@ -415,7 +417,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 | `/blog.html` | Blog index | filter, featured, 9 cards, newsletter |
 | `/contact.html` | Contact | form, map placeholder, FAQ |
 | `/privacy.html` `/terms.html` `/disclaimer.html` | Legal | real content pages |
-| `/conditions/{8 slugs}.html` | Conditions | breadcrumb + MedicalWebPage JSON-LD |
+| `/conditions/{15 slugs}.html` | Conditions / SEO landing pages | breadcrumb + MedicalWebPage + per-condition FAQPage JSON-LD. Incl. high-creatinine(+without-dialysis), ckd(+stage-3/4), kidney-failure, kidney-disease-treatment, dialysis, proteinuria, kidney-swelling-treatment, diabetic-/hypertensive-kidney-disease, kidney-stone-/uti-/laser-kidney-stone-treatment. **3 old slugs 301-redirect** to new ones (diabetes-bp→diabetic-kidney-disease, stone-uti→kidney-stone-treatment, swelling→kidney-swelling-treatment) via `deploy/nginx-riims-bootstrap.conf`. |
 | `/blog/{9 slugs}.html` | Blog articles | breadcrumb + Article JSON-LD |
 
 ## 15. SEO implementation
