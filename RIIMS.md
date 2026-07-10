@@ -137,7 +137,7 @@ RiimS/
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
     ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
-    ├── sitemap.xml           # all 43 indexable URLs with lastmod/priority (404 excluded)
+    ├── sitemap.xml           # all 49 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -168,13 +168,13 @@ RiimS/
    - 9 blog-article pages (looped over `POSTS`)
    - **7 patient-guide pages** (looped over `GUIDE_ORDER` in `build/guides.mjs`)
    - 3 legal pages (privacy, terms, disclaimer)
-   → **43 indexable pages** (+ a branded 404 = **44 files written**).
+   → **49 indexable pages** (+ a branded 404 = **50 files written**).
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`. It also emits **`site/js/search-data.js`**
    (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
    the home disease-search results (see §8) — and `js/gtag.js` if a Google Tag ID is set.
 
-Run it: `npm run build`. It logs `Generated 44 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 50 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -331,7 +331,18 @@ Each function returns a full page body:
   (Book/WhatsApp/Upload card + Related topics) + CTA band.
 - **`aboutPage`** — hero + story + values + doctors section + CTA. **Admin-editable** (Admin → About;
   `DEFAULT_ABOUT` in `pages.mjs` merged with `content.json → about`).
-- **`doctorsPage`** — hero + 6 doctor cards + CTA.
+- **`doctorsPage`** — hero + 6 doctor cards + a **"Specialist kidney care"** grid linking the 6
+  specialist landing pages + CTA.
+- **`specialistPage(base, slug)` + `SPECIALISTS` (exported)** — 6 SEO doctor/keyword landing pages
+  under `/doctors/<slug>.html`, each featuring founder **Dr. Abhishek Gupta** (a `doctorFeature`
+  card) + a "How we help" list + "when to see a doctor" + related-condition links + booking aside.
+  Slugs: `best-kidney-doctor-delhi-ncr`, `high-creatinine-specialist`, `kidney-failure-specialist`,
+  `kidney-stone-specialist`, `uti-specialist`, `kidney-doctor-for-diabetic-patients`. **Compliance:**
+  Dr. Abhishek is presented honestly as a **B.A.M.S. (Ayurvedacharya) kidney-care physician** — never
+  an MD/DM nephrologist — with RIIMS coordinating with nephrologists for medical/dialysis needs; no
+  "best"/cure/guarantee claims. Each page emits BreadcrumbList + MedicalWebPage + **Physician**
+  JSON-LD. Registered in `generate.mjs` (needs `mkdirSync(site/doctors)`); linked from `doctorsPage`
+  + the footer Institute column.
 - **`blogPage`** — hero + category filter + featured post + 9 cards (filtered client-side) +
   popular-topic chips + newsletter + CTA.
 - **`blogPostPage(base, p)`** — one per post: hero, article meta, lead, then the **full article body**
@@ -415,7 +426,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (43 indexable URLs + a 404)
+## 14. Page inventory (49 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
@@ -426,7 +437,8 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 | `/guides.html` | Patient Guides hub | Cards linking the 7 guides + the protocol (nav "Guides") |
 | `/{7 guide slugs}.html` | Patient Guides | how-kidneys-work, understand-kidney-reports, kidney-diet-renal-plate, ayurvedic-kidney-herbs, kidney-myths-facts, everyday-symptom-care, 30-day-kidney-plan — each breadcrumb + MedicalWebPage + FAQPage schema (Kidney Kavach) |
 | `/about.html` | About | story, values, doctors |
-| `/doctors.html` | Doctors | 6 doctors |
+| `/doctors.html` | Doctors | 6 doctors + Specialist-care grid linking the 6 specialist pages |
+| `/doctors/{6 specialist slugs}.html` | Doctor/Specialist SEO pages | best-kidney-doctor-delhi-ncr, high-creatinine-specialist, kidney-failure-specialist, kidney-stone-specialist, uti-specialist, kidney-doctor-for-diabetic-patients — each features Dr. Abhishek Gupta; breadcrumb + MedicalWebPage + Physician schema |
 | `/blog.html` | Blog index | filter, featured, 9 cards, newsletter |
 | `/contact.html` | Contact | form, map placeholder, FAQ |
 | `/privacy.html` `/terms.html` `/disclaimer.html` | Legal | real content pages |

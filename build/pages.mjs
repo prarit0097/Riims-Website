@@ -158,12 +158,190 @@ export function aboutPage(base) {
 }
 
 /* ---------- Doctors ---------- */
+/* ---------- Doctor / specialist landing pages (SEO) ----------
+   Each page targets a "… specialist / kidney doctor" keyword and features RIIMS
+   founder Dr. Abhishek Gupta. Copy stays honest and compliance-safe: he is an
+   Ayurvedacharya (B.A.M.S.) kidney-care physician — never described as an MD/DM
+   nephrologist — and RIIMS coordinates with nephrologists for medical/dialysis
+   needs. No "best"/cure/guarantee claims. */
+export const SPECIALIST_DOCTOR = {
+  name: 'Dr. Abhishek Gupta',
+  cred: 'B.A.M.S. · Ayurvedacharya',
+  role: 'Founder & Senior Kidney-Care Physician, RIIMS',
+  note: 'Creator of the DNA Kayakalp Protocol™ and author of the patient book <em>Kidney Kavach</em> — an integrated, report-based approach that brings modern medical understanding together with Ayurveda and lifestyle care. Always alongside your medical treatment, never instead of it.',
+  init: 'AG',
+};
+
+export const SPECIALISTS = {
+  'best-kidney-doctor-delhi-ncr': {
+    icon: 'stethoscope', h1: 'Kidney Doctor in Delhi-NCR & Baraut',
+    metaTitle: 'Kidney Doctor in Delhi-NCR & Baraut — Dr. Abhishek Gupta | RIIMS',
+    crumb: 'Doctors · Kidney Doctor (Delhi-NCR)',
+    intro: 'Looking for an experienced, ethical kidney doctor near Delhi-NCR? Dr. Abhishek Gupta leads integrated, report-based kidney care at RIIMS in Baraut — within the NCR region and easily reached from Delhi, Ghaziabad, Meerut and Baghpat.',
+    lead: 'Kidney problems deserve calm, honest guidance — not fear or false promises. At RIIMS, Dr. Abhishek Gupta and the care team read your actual reports (creatinine, eGFR, urine protein and your wider health picture) before advising, and build a plan made for you. Care is integrated: modern medical understanding works alongside Ayurveda and lifestyle support, and we coordinate with nephrologists for medical or dialysis needs — never replacing them.',
+    helps: [
+      'High creatinine, CKD (all stages), kidney failure and dialysis guidance',
+      'Protein in urine, kidney swelling, stones and urinary infections',
+      'Diabetic and hypertensive kidney disease — protecting remaining function',
+      'Personalised kidney diet (RiiMS Renal Plate) and lifestyle coaching',
+      'Report-based Kidney Mapping and clear, jargon-free explanations',
+    ],
+    when: 'If you have a raised creatinine, falling eGFR, protein in urine, swelling, or diabetes/BP with abnormal kidney tests, an early kidney-care consultation gives you the most options. Video, phone or in-clinic visits are available.',
+    related: [['High Creatinine', 'high-creatinine'], ['Chronic Kidney Disease', 'ckd'], ['Kidney Failure', 'kidney-failure'], ['Kidney Disease Treatment', 'kidney-disease-treatment']],
+  },
+  'high-creatinine-specialist': {
+    icon: 'droplet', h1: 'High Creatinine Specialist',
+    metaTitle: 'High Creatinine Specialist — Dr. Abhishek Gupta | RIIMS Baraut',
+    crumb: 'Doctors · High Creatinine Specialist',
+    intro: 'A raised creatinine is a signal to investigate calmly, not a diagnosis on its own. Dr. Abhishek Gupta helps you understand why it is high and what to do next — honestly, and without panic.',
+    lead: 'Creatinine is a marker, not the disease. Dr. Abhishek Gupta reads it alongside eGFR, urine protein, potassium and your history, then looks for the real cause — dehydration, certain medicines, infection, diabetes or blood pressure. The goal is not to chase a single number, but to protect your kidney function with a personalised diet, lifestyle changes and treating the underlying cause.',
+    helps: [
+      'Root-cause review of a raised creatinine — reversible causes treated first',
+      'Reading creatinine with eGFR, urine protein and your full history',
+      'A personalised kidney diet (RiiMS Renal Plate) and nephrotoxin avoidance',
+      'Coordinating blood-pressure and sugar control with your treating doctors',
+      'Regular monitoring so any change is caught early',
+    ],
+    when: 'If creatinine stays high across repeat reports or eGFR is falling — or you have diabetes, BP or swelling — see a kidney-care doctor early. A sudden drop in urine, breathlessness or very high potassium needs prompt medical care.',
+    related: [['High Creatinine', 'high-creatinine'], ['High Creatinine Without Dialysis', 'high-creatinine-without-dialysis'], ['CKD', 'ckd'], ['Protein in Urine', 'proteinuria']],
+  },
+  'kidney-failure-specialist': {
+    icon: 'heart-pulse', h1: 'Kidney Failure Specialist',
+    metaTitle: 'Kidney Failure Specialist — Dr. Abhishek Gupta | RIIMS Baraut',
+    crumb: 'Doctors · Kidney Failure Specialist',
+    intro: 'A kidney-failure diagnosis is frightening, but the right information changes everything. Dr. Abhishek Gupta helps you understand your stage and the realistic options — with honesty and support.',
+    lead: 'Kidney failure means the kidneys are working at a very low level. Care depends on your stage, symptoms and reports. Dr. Abhishek Gupta and the RIIMS team focus on protecting remaining function, managing symptoms and quality of life, and preparing you for the right decisions — coordinating closely with nephrologists for dialysis or advanced medical care when needed. We stay honest: we never promise cure, or that dialysis can always be avoided or stopped.',
+    helps: [
+      'Understanding your stage and the realistic options, in plain language',
+      'Protecting remaining kidney function and managing symptoms',
+      'Personalised renal diet and fluid guidance for your stage',
+      'Dialysis-preparation guidance, coordinated with your nephrologist',
+      'Family support and steady, honest follow-up',
+    ],
+    when: 'Very low eGFR, breathlessness, severe swelling, drowsiness or a big fall in urine need urgent medical care. For ongoing kidney failure, early, coordinated care planning gives the best quality of life.',
+    related: [['Kidney Failure', 'kidney-failure'], ['Dialysis Guidance', 'dialysis'], ['Stage 4 CKD', 'stage-4-ckd'], ['CKD', 'ckd']],
+  },
+  'kidney-stone-specialist': {
+    icon: 'circle-dot', h1: 'Kidney Stone Specialist',
+    metaTitle: 'Kidney Stone Specialist — Dr. Abhishek Gupta | RIIMS Baraut',
+    crumb: 'Doctors · Kidney Stone Specialist',
+    intro: 'Kidney stones cause severe pain and can come back. Dr. Abhishek Gupta helps with evaluation, safe treatment guidance and — importantly — preventing the next stone.',
+    lead: 'Most stones are diagnosed with an ultrasound or CT and simple tests. Small stones often pass with fluids, pain control and medical support; larger stones or a blockage may need a urologist procedure (such as laser/RIRS), which RIIMS helps coordinate and refer for. Just as important is prevention — Dr. Abhishek Gupta reviews your diet, fluids and metabolic factors to lower the risk of recurrence.',
+    helps: [
+      'Evaluation of stone size, position and any obstruction',
+      'Guidance on when a stone can pass vs when a procedure is needed',
+      'Coordination and referral for laser/RIRS with a urologist',
+      'Diet, fluid and metabolic review to help prevent new stones',
+      'Care for linked urinary infections',
+    ],
+    when: 'Severe loin pain, fever with urinary symptoms, blood in urine, vomiting or reduced urine need prompt medical assessment. For recurrent stones, a prevention review is worthwhile.',
+    related: [['Kidney Stone Treatment', 'kidney-stone-treatment'], ['Laser Kidney Stone Treatment', 'laser-kidney-stone-treatment'], ['UTI Treatment', 'uti-treatment']],
+  },
+  'uti-specialist': {
+    icon: 'shield-check', h1: 'UTI Specialist',
+    metaTitle: 'UTI Specialist — Urinary Infection Care | Dr. Abhishek Gupta, RIIMS',
+    crumb: 'Doctors · UTI Specialist',
+    intro: 'Burning urination and frequent infections are common — and treatable. Dr. Abhishek Gupta helps diagnose, treat and prevent urinary tract infections, and spot when they involve the kidneys.',
+    lead: 'Most UTIs are straightforward, but repeated infections — or infection reaching the kidney (pyelonephritis) — need proper evaluation. Dr. Abhishek Gupta reviews your symptoms and reports (urine routine/culture), guides appropriate treatment, and looks for causes behind recurrent UTIs, such as stones, diabetes or incomplete bladder emptying, with prevention advice to break the cycle.',
+    helps: [
+      'Telling simple UTIs apart from recurrent or kidney-involving infection',
+      'Report-based guidance (urine routine and culture)',
+      'Finding causes of recurrent UTIs — stones, diabetes and more',
+      'Prevention advice: hydration, hygiene and habits',
+      'Coordination for any specialist treatment needed',
+    ],
+    when: 'Fever with back/flank pain, vomiting, blood in urine, or symptoms during pregnancy or diabetes need prompt medical care, as the infection may involve the kidney.',
+    related: [['UTI Treatment', 'uti-treatment'], ['Kidney Stone Treatment', 'kidney-stone-treatment'], ['Kidney Swelling', 'kidney-swelling-treatment']],
+  },
+  'kidney-doctor-for-diabetic-patients': {
+    icon: 'gauge', h1: 'Kidney Doctor for Diabetic Patients',
+    metaTitle: 'Kidney Doctor for Diabetic Patients — Dr. Abhishek Gupta | RIIMS',
+    crumb: 'Doctors · Kidney Doctor for Diabetic Patients',
+    intro: 'Diabetes is a leading cause of kidney disease — but early, coordinated care can protect your kidneys. Dr. Abhishek Gupta helps diabetic patients screen for and slow diabetic kidney disease.',
+    lead: 'In diabetes, high sugar can quietly damage the kidney\'s filters over years, often showing first as protein in the urine before creatinine rises. Dr. Abhishek Gupta focuses on early screening (urine albumin, eGFR), tight coordination of sugar and blood-pressure control with your treating doctors, and a practical diabetic-kidney diet — to protect remaining function. Care is honest and integrated, alongside your medical treatment.',
+    helps: [
+      'Early screening for diabetic kidney disease (urine albumin, eGFR)',
+      'Coordinating sugar and blood-pressure control with your treating doctors',
+      'A practical diet for diabetes + kidney (portion- and potassium-aware)',
+      'Protecting remaining kidney function and slowing progression',
+      'Clear monitoring so changes are caught early',
+    ],
+    when: 'If you have diabetes — especially for several years, or with protein in urine, swelling or a rising creatinine — get your kidneys screened. Early care offers the most protection.',
+    related: [['Diabetic Kidney Disease', 'diabetic-kidney-disease'], ['Hypertensive Kidney Disease', 'hypertensive-kidney-disease'], ['High Creatinine', 'high-creatinine'], ['Protein in Urine', 'proteinuria']],
+  },
+};
+
+function doctorFeature(base) {
+  const D = SPECIALIST_DOCTOR;
+  return card(
+    `<div style="display:flex;gap:1rem;align-items:flex-start">`
+    + `<span style="flex:0 0 auto;display:inline-flex;width:68px;height:68px;border-radius:50%;background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:1.5rem">${D.init}</span>`
+    + `<div><h3 style="margin:0 0 .15rem;font-size:var(--fs-xl)">${D.name}</h3>`
+    + `<div style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:700;color:var(--text-accent);text-transform:uppercase;letter-spacing:.04em">${D.cred}</div>`
+    + `<div style="color:var(--text-muted);font-size:var(--fs-sm);margin-top:.15rem">${D.role}</div></div></div>`
+    + `<p style="margin:.9rem 0 0;color:var(--text-body);font-size:var(--fs-base)">${D.note}</p>`,
+    { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } });
+}
+
+export function specialistPage(base, slug) {
+  const sp = SPECIALISTS[slug] || SPECIALISTS['high-creatinine-specialist'];
+  const reviewedLine = `<p style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS kidney-care team · Last updated: ${REVIEW_DATE}</p>`;
+  const related = sp.related.map(([l, target]) =>
+    `<li><a href="${base}conditions/${target}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('arrow-right', { size: 15 })} ${l}</a></li>`).join('');
+
+  const main = `<div style="display:flex;flex-direction:column;gap:var(--space-8)">`
+    + reviewedLine
+    + doctorFeature(base)
+    + `<div><p style="color:var(--text-body);font-size:var(--fs-lg)">${sp.lead}</p></div>`
+    + card(
+      `<h3 style="font-size:var(--fs-xl);margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem">${icon('route', { size: 20, style: 'color:var(--icon-brand)' })} How Dr. Abhishek &amp; the RIIMS team help</h3>`
+      + infoList(sp.helps),
+      { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } })
+    + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">When to see a kidney doctor</h2><p style="color:var(--text-body)">${sp.when}</p></div>`
+    + disclaimer()
+    + `</div>`;
+
+  const aside = `<aside style="position:sticky;top:128px;display:flex;flex-direction:column;gap:var(--space-5)">`
+    + card(
+      `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Consult ${SPECIALIST_DOCTOR.name}</h3>`
+      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion — video, phone or in-clinic.</p>`
+      + `<div style="display:flex;flex-direction:column;gap:.6rem">`
+      + button('Book Consultation', { variant: 'primary', fullWidth: true, iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
+      + button('WhatsApp Now', { variant: 'whatsapp', fullWidth: true, iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
+      + button('Call Now', { variant: 'outline', fullWidth: true, iconLeft: icon('phone', { size: 18 }), href: `tel:${SITE.phoneTel}` })
+      + `</div>`,
+      { accent: true, pad: 'lg', style: { boxShadow: 'var(--shadow-lg)' } })
+    + card(
+      `<h4 style="font-family:var(--font-sans);margin:0 0 .7rem;font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-brand)">Related conditions</h4>`
+      + `<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem">${related}</ul>`,
+      { tone: 'blue', pad: 'lg' })
+    + `</aside>`;
+
+  return pageHero(base, { crumb: sp.crumb, icon: sp.icon, title: sp.h1, intro: sp.intro })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
+    + `<div class="riims-container condition-grid" style="display:grid;grid-template-columns:1.4fr .9fr;gap:var(--space-12);align-items:start">`
+    + main + aside + `</div></section>`
+    + S.ctaBand();
+}
+
 export function doctorsPage(base) {
-  return pageHero(base, { crumb: 'Doctors', icon: 'stethoscope', title: 'Our doctors & care team', intro: 'A kidney-focused team combining nephrology with safe, evidence-aware lifestyle support.' })
+  const specialistCards = Object.entries(SPECIALISTS).map(([slug, sp]) =>
+    `<a href="${base}doctors/${slug}.html" class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.4rem;text-decoration:none;color:inherit">`
+    + `<span style="display:inline-flex;width:44px;height:44px;border-radius:var(--radius-md);background:var(--surface-blue-soft);color:var(--icon-brand);align-items:center;justify-content:center">${icon(sp.icon, { size: 20 })}</span>`
+    + `<h3 style="font-size:var(--fs-lg);margin:.2rem 0 0">${sp.h1}</h3>`
+    + `<span style="margin-top:.1rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-link);font-weight:700;font-family:var(--font-sans);font-size:var(--fs-sm)">Learn more ${icon('arrow-right', { size: 15 })}</span></a>`).join('');
+
+  return pageHero(base, { crumb: 'Doctors', icon: 'stethoscope', title: 'Our doctors & care team', intro: 'A kidney-focused team led by Dr. Abhishek Gupta, combining integrated kidney care with safe, evidence-aware lifestyle support.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container"><div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
     + DOCTORS_FULL.map((d) => S.doctorCard(base, d)).join('')
     + `</div></div></section>`
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-subtle)"><div class="riims-container">`
+    + eyebrow('Specialist kidney care')
+    + `<h2 style="font-size:var(--fs-2xl);margin:.3rem 0 .3rem">Care for your specific concern</h2>`
+    + `<p style="max-width:60ch;color:var(--text-muted);margin:0 0 var(--space-6)">Led by Dr. Abhishek Gupta — choose the area closest to your need.</p>`
+    + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${specialistCards}</div>`
+    + `</div></section>`
     + S.ctaBand();
 }
 

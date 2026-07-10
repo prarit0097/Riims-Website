@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS } from './pages.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage } from './pages.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
 import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS } from './data.mjs';
@@ -360,6 +360,36 @@ for (const slug of Object.keys(CONDITIONS)) {
   });
 }
 
+/* Doctor / specialist landing pages (one per SEO keyword; all feature Dr. Abhishek Gupta) */
+for (const slug of Object.keys(SPECIALISTS)) {
+  const sp = SPECIALISTS[slug];
+  const path = `/doctors/${slug}.html`;
+  pages.push({
+    out: `doctors/${slug}.html`, base: '../', path, nav: 'doctors.html', mobile: '',
+    title: sp.metaTitle,
+    desc: sp.intro,
+    body: specialistPage('../', slug),
+    ld: [{
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+        { '@type': 'ListItem', position: 2, name: 'Doctors', item: `${SITE.origin}/doctors.html` },
+        { '@type': 'ListItem', position: 3, name: sp.h1, item: `${SITE.origin}${path}` },
+      ],
+    }, {
+      '@type': 'MedicalWebPage', name: sp.h1, description: sp.intro, url: `${SITE.origin}${path}`,
+      inLanguage: 'en-IN', isPartOf: { '@id': `${SITE.origin}/#website` },
+    }, {
+      '@type': 'Physician', name: 'Dr. Abhishek Gupta',
+      description: 'B.A.M.S. (Ayurvedacharya) — Founder & Senior Kidney-Care Physician at RIIMS; creator of the DNA Kayakalp Protocol and author of the patient book Kidney Kavach. Integrated kidney care alongside medical treatment.',
+      worksFor: { '@id': `${SITE.origin}/#clinic` },
+      knowsAbout: sp.related.map(([l]) => l),
+      address: { '@type': 'PostalAddress', addressLocality: 'Baraut', addressRegion: 'Uttar Pradesh', addressCountry: 'IN' },
+      url: `${SITE.origin}${path}`,
+    }],
+  });
+}
+
 /* Blog article pages (one per post) */
 for (const p of POSTS) {
   const path = `/blog/${p.slug}.html`;
@@ -448,6 +478,7 @@ pages.push({
 /* ---------- Write ---------- */
 mkdirSync(join(OUT, 'conditions'), { recursive: true });
 mkdirSync(join(OUT, 'blog'), { recursive: true });
+mkdirSync(join(OUT, 'doctors'), { recursive: true });
 for (const p of pages) {
   writeFileSync(join(OUT, p.out), render(p), 'utf8');
 }
