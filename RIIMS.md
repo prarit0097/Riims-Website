@@ -312,7 +312,10 @@ Reusable content sections (composed into pages): `searchBanner` (the **full-widt
 admin `BANNER_SPEED` (via `data-interval`), cross-fade + prev/next arrows + dots (arrows/dots only with >1
 slide), driven by `site.js`; first slide is LCP-priority, rest lazy; any image size cover-fills the fixed 1920×400
 frame — followed by the search box + Popular chips from admin `SEARCH`),
-`healthReels` (horizontal video-thumbnail cards, each links to Instagram), `problemsSection`
+`healthReels` (header is a single enlarged green **"🎬 Health Reels"** heading — clapperboard icon +
+`--text-accent`, `--fs-3xl`; the earlier "Short videos…/Top Reels" subheading was removed — plus a
+"View all reels" link and a `--space-8` gap down to the horizontal video-thumbnail cards, each linking
+to Instagram), `problemsSection`
 (8 condition cards), `statsStrip` (Google rating + 4 count-up stats, admin `STATS`), `completeCare` (11
 services, admin `SERVICES`), `whyRiims` (admin `WHY`), `howItWorks` (admin `STEPS`), `doctorsSection`
 + `doctorCard`, `meetExperts` + `expertCard` (horizontal), `educationSection` + `blogCard` (cards link
@@ -610,8 +613,9 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - **Edit copy that has an admin tab** (doctors, blogs, reels, testimonials, FAQs, services, why, steps,
   about, legal, protocol FAQs, search) → **use `/admin/`** (see §23) — it rebuilds automatically.
   Code defaults live in `build/data.mjs` / `build/pages.mjs`.
-- **Edit code-only copy** (the 8 condition pages `CONDITIONS`, the 7 guides, `NAV`, footer columns,
-  disclaimers) → `build/data.mjs` / `build/guides/*` → `npm test` → push.
+- **Edit code-only copy** (the 15 condition pages `CONDITIONS`, the 6 specialist pages `SPECIALISTS`,
+  the 7 guides, `NAV`, footer columns, disclaimers) → `build/data.mjs` / `build/pages.mjs` /
+  `build/guides/*` → `npm test` → push.
 - **Add a condition page** → add an entry to `CONDITIONS` (and to `PROBLEMS` for the home grid).
   The generator auto-creates the page, sitemap entry, and JSON-LD.
 - **Add a blog post** → add an entry to `POSTS` (with `slug` + `related`). The article page,
@@ -745,7 +749,8 @@ What was integrated (all via the generator + `data/content.json`, then `npm test
   `data/content.json` (high creatinine; reduce creatinine safely; CKD Indian-veg diet chart;
   dialysis myths vs facts; protein in urine; diabetes & kidney; swelling; stones/UTI; integrated
   Ayurveda). Rendered by `renderBody`, which now also turns a block of `- ` lines into a `<ul>`.
-- **8 condition pages enriched** (`CONDITIONS` in `build/data.mjs`) — book-accurate `about`,
+- **Condition pages enriched** (`CONDITIONS` in `build/data.mjs`; originally 8, later restructured to
+  **15** for SEO — see §14) — book-accurate `about`,
   `symptoms`, `approach`, `when` (creatinine-as-marker, eGFR/CKD staging, Kidney Alert System red
   flags, Kidney Mapping / Root Cause / RiiMS Renal Plate woven into the approach).
 - **FAQs expanded** — 15 new book-grounded Q&As (`f6`–`f20`) in `data/content.json` `faqs`
