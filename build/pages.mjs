@@ -168,6 +168,7 @@ export const SPECIALIST_DOCTOR = {
   name: 'Dr. Abhishek Gupta',
   cred: 'B.A.M.S. · Ayurvedacharya',
   role: 'Founder & Senior Kidney-Care Physician, RIIMS',
+  reg: 'DBCP A/7368',
   note: 'Creator of the DNA Kayakalp Protocol™ and author of the patient book <em>Kidney Kavach</em> — an integrated, report-based approach that brings modern medical understanding together with Ayurveda and lifestyle care. Always alongside your medical treatment, never instead of it.',
   init: 'AG',
 };
@@ -278,7 +279,9 @@ function doctorFeature(base) {
     + `<span style="flex:0 0 auto;display:inline-flex;width:68px;height:68px;border-radius:50%;background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:1.5rem">${D.init}</span>`
     + `<div><h3 style="margin:0 0 .15rem;font-size:var(--fs-xl)">${D.name}</h3>`
     + `<div style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:700;color:var(--text-accent);text-transform:uppercase;letter-spacing:.04em">${D.cred}</div>`
-    + `<div style="color:var(--text-muted);font-size:var(--fs-sm);margin-top:.15rem">${D.role}</div></div></div>`
+    + `<div style="color:var(--text-muted);font-size:var(--fs-sm);margin-top:.15rem">${D.role}</div>`
+    + (D.reg ? `<div style="margin-top:.3rem;display:inline-flex;align-items:center;gap:.35rem;color:var(--text-accent);font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:700">${icon('badge-check', { size: 14 })} Reg. No.: ${D.reg}</div>` : '')
+    + `</div></div>`
     + `<p style="margin:.9rem 0 0;color:var(--text-body);font-size:var(--fs-base)">${D.note}</p>`,
     { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } });
 }

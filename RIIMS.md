@@ -340,9 +340,10 @@ Each function returns a full page body:
   `kidney-stone-specialist`, `uti-specialist`, `kidney-doctor-for-diabetic-patients`. **Compliance:**
   Dr. Abhishek is presented honestly as a **B.A.M.S. (Ayurvedacharya) kidney-care physician** — never
   an MD/DM nephrologist — with RIIMS coordinating with nephrologists for medical/dialysis needs; no
-  "best"/cure/guarantee claims. Each page emits BreadcrumbList + MedicalWebPage + **Physician**
-  JSON-LD. Registered in `generate.mjs` (needs `mkdirSync(site/doctors)`); linked from `doctorsPage`
-  + the footer Institute column.
+  "best"/cure/guarantee claims. His registration number (**DBCP A/7368**, from `SPECIALIST_DOCTOR`)
+  shows on the feature card and as a `Physician.identifier`. Each page emits BreadcrumbList +
+  MedicalWebPage + **Physician** JSON-LD. Registered in `generate.mjs` (needs `mkdirSync(site/doctors)`);
+  linked from `doctorsPage` + the footer Institute column.
 - **`blogPage`** — hero + category filter + featured post + 9 cards (filtered client-side) +
   popular-topic chips + newsletter + CTA.
 - **`blogPostPage(base, p)`** — one per post: hero, article meta, lead, then the **full article body**
@@ -676,7 +677,7 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
 | Tab | What you can do |
 |-----|-----------------|
 | **Leads** | Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
-| **Doctors** | Add/remove/edit doctors — name, title, qualifications, specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
+| **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |

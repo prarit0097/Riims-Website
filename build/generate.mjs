@@ -142,6 +142,7 @@ function physiciansGraph() {
     medicalSpecialty: 'Nephrology',
     worksFor: { '@id': `${SITE.origin}/#clinic` },
     ...(d.quals ? { description: String(d.quals).trim() } : {}),
+    ...(d.reg ? { identifier: { '@type': 'PropertyValue', name: 'Medical registration number', value: String(d.reg).trim() } } : {}),
     ...(d.photo ? { image: `${SITE.origin}/${String(d.photo).replace(/^\//, '')}` } : {}),
     address: { '@type': 'PostalAddress', addressLocality: 'Baraut', addressRegion: 'Uttar Pradesh', addressCountry: 'IN' },
   }));
@@ -382,6 +383,7 @@ for (const slug of Object.keys(SPECIALISTS)) {
     }, {
       '@type': 'Physician', name: 'Dr. Abhishek Gupta',
       description: 'B.A.M.S. (Ayurvedacharya) — Founder & Senior Kidney-Care Physician at RIIMS; creator of the DNA Kayakalp Protocol and author of the patient book Kidney Kavach. Integrated kidney care alongside medical treatment.',
+      identifier: { '@type': 'PropertyValue', name: 'Medical registration number', value: 'DBCP A/7368' },
       worksFor: { '@id': `${SITE.origin}/#clinic` },
       knowsAbout: sp.related.map(([l]) => l),
       address: { '@type': 'PostalAddress', addressLocality: 'Baraut', addressRegion: 'Uttar Pradesh', addressCountry: 'IN' },

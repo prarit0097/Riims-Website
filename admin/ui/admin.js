@@ -187,6 +187,7 @@
             <label class="f">Name<input data-bind="${i}|name" value="${esc(d.name)}"></label>
             <label class="f">Title<input data-bind="${i}|title" value="${esc(d.title)}"></label>
             <label class="f">Qualifications<input data-bind="${i}|quals" value="${esc(d.quals)}"></label>
+            <label class="f">Registration No.<input data-bind="${i}|reg" value="${esc(d.reg || '')}" placeholder="e.g. DBCP A/7368"></label>
             <label class="f">Specialties (comma separated)<input data-bind="${i}|specialties" value="${esc((d.specialties || []).join(', '))}"></label>
             <label class="f">Languages<input data-bind="${i}|languages" value="${esc(d.languages || 'Hindi, English')}"></label>
           </div>
@@ -194,7 +195,7 @@
     bindFields(v, list); wireReorder(v, list);
     v.querySelectorAll('[data-img]').forEach((b) => b.onclick = () => pickImage(list[Number(b.dataset.img)], 'photo'));
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this doctor?')) { list.splice(Number(b.dataset.del), 1); render(); } });
-    $('#add').onclick = () => { list.push({ id: newId(), name: 'Dr. ', title: '', quals: '', specialties: [], languages: 'Hindi, English', photo: '' }); render(); };
+    $('#add').onclick = () => { list.push({ id: newId(), name: 'Dr. ', title: '', quals: '', reg: '', specialties: [], languages: 'Hindi, English', photo: '' }); render(); };
     $('#save').onclick = () => saveSection('doctors', list, 'Doctors');
   }
 

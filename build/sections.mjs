@@ -194,6 +194,7 @@ export function doctorCard(base, d) {
     + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
     + `<div><h3 style="font-size:var(--fs-xl);margin:0">${d.name}</h3><p style="margin:.15rem 0 0;color:var(--text-accent);font-weight:600;font-size:var(--fs-sm)">${d.title}</p></div>`
     + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${d.quals}</p>`
+    + (d.reg ? `<p style="margin:0;display:inline-flex;align-items:center;gap:.35rem;color:var(--text-accent);font-size:var(--fs-xs);font-weight:700;font-family:var(--font-sans)">${icon('badge-check', { size: 14 })} Reg. No.: ${esc(d.reg)}</p>` : '')
     + `<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.2rem">${specs}</div>`
     + button('Book consultation', { variant: 'outline', size: 'sm', style: { marginTop: '.6rem' }, iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
     + `</div></div>`;
