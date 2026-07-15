@@ -137,7 +137,7 @@ RiimS/
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
     ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
-    ├── sitemap.xml           # all 49 indexable URLs with lastmod/priority (404 excluded)
+    ├── sitemap.xml           # all 55 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -168,16 +168,19 @@ RiimS/
    - 9 blog-article pages (looped over `POSTS`)
    - **7 patient-guide pages** (looped over `GUIDE_ORDER` in `build/guides.mjs`)
    - 3 legal pages (privacy, terms, disclaimer)
-   → **49 indexable pages** (+ a branded 404 = **50 files written**).
-   - Plus a loop over `CONDITION_SETS['liver'|'heart'|'general']` (see §26) that writes
-     `conditions/<dir>/<slug>.html` pages — **currently 0 pages** because those condition maps
-     are empty; the loop exists so later tasks only need to add data, not wiring.
+   → **55 indexable pages** (+ a branded 404 = **56 files written**).
+   - Plus a loop over `['liver', 'heart', 'general']` that writes one **category hub**
+     (`conditions/<dir>/index.html`, via `categoryHubPage(base, cat)` in `pages.mjs`) per
+     category, and a second loop over `CONDITION_SETS['liver'|'heart'|'general']` (see §26)
+     that writes `conditions/<dir>/<slug>.html` pages. As of Task 2, **liver has 3 real
+     condition pages + its hub**; heart and general still have an empty hub (0 cards, 0
+     condition pages) until their tasks land.
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`. It also emits **`site/js/search-data.js`**
    (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
    the home disease-search results (see §8) — and `js/gtag.js` if a Google Tag ID is set.
 
-Run it: `npm run build`. It logs `Generated 50 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 56 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -261,9 +264,11 @@ site, or via `data/content.json` in the repo.
   `high-creatinine, ckd, kidney-failure, dialysis, proteinuria, swelling, diabetes-bp, stone-uti`.
 - **`CATEGORIES`, `LIVER`, `HEART`, `GENERAL`, `CONDITION_SETS`** — the 4-category model (see §26
   for the full architecture). `LIVER`/`HEART`/`GENERAL` are condition maps in the same shape as
-  `CONDITIONS`, currently **empty** (no content yet — filled by later tasks). `CONDITION_SETS`
-  maps a category key to its condition map (`{kidney: CONDITIONS, liver: LIVER, heart: HEART,
-  general: GENERAL}`) and is what `conditionPage()`/`generate.mjs` resolve a slug through.
+  `CONDITIONS`. As of Task 2, **`LIVER` has 3 real conditions** (`raised-sgpt-sgot`, `fatty-liver`,
+  `drug-herb-induced-liver-injury`) — the site's first non-kidney content; `HEART`/`GENERAL` remain
+  **empty** (filled by later tasks). `CONDITION_SETS` maps a category key to its condition map
+  (`{kidney: CONDITIONS, liver: LIVER, heart: HEART, general: GENERAL}`) and is what
+  `conditionPage()`/`generate.mjs` resolve a slug through.
 - **`PROBLEMS`** — the home "conditions we help with" grid (links to the main condition pages).
 - **`WHY`, `STEPS`** — "Why RIIMS" cards + "How consultation works" steps. **Admin-editable**
   (Admin → Why RIIMS / How it works; `content.json → why` / `steps`; empty = code defaults; `STEPS`
@@ -351,6 +356,11 @@ Each function returns a full page body:
   stay flat `conditions/<slug>.html`; other categories link `conditions/<dir>/<slug>.html`). The
   when-to-consult heading stays "When to consult a kidney doctor" for kidney (the existing,
   already-ranking string) and "When to consult a doctor" for every other category.
+- **`categoryHubPage(base, cat)`** — the disease-category hub (`/conditions/<dir>/`, see §26):
+  page hero (from `CATEGORIES[cat]`) + a 3-column grid of cards (one per entry in
+  `CONDITION_SETS[cat]`, linking to `conditions/<dir>/<slug>.html`) + disclaimer + CTA band. An
+  empty condition map (heart/general, until their tasks land) renders the hero and an empty grid,
+  never an error.
 - **`aboutPage`** — hero + story + values + doctors section + CTA. **Admin-editable** (Admin → About;
   `DEFAULT_ABOUT` in `pages.mjs` merged with `content.json → about`).
 - **`doctorsPage`** — hero + 6 doctor cards + a **"Specialist kidney care"** grid linking the 6
@@ -450,7 +460,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (49 indexable URLs + a 404)
+## 14. Page inventory (55 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
@@ -468,6 +478,9 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 | `/privacy.html` `/terms.html` `/disclaimer.html` | Legal | real content pages |
 | `/conditions/{15 slugs}.html` | Conditions / SEO landing pages | breadcrumb + MedicalWebPage + per-condition FAQPage JSON-LD. Incl. high-creatinine(+without-dialysis), ckd(+stage-3/4), kidney-failure, kidney-disease-treatment, dialysis, proteinuria, kidney-swelling-treatment, diabetic-/hypertensive-kidney-disease, kidney-stone-/uti-/laser-kidney-stone-treatment. **3 old slugs 301-redirect** to new ones (diabetes-bp→diabetic-kidney-disease, stone-uti→kidney-stone-treatment, swelling→kidney-swelling-treatment) via `deploy/nginx-riims-bootstrap.conf`. |
 | `/blog/{9 slugs}.html` | Blog articles | breadcrumb + Article JSON-LD |
+| `/conditions/liver/` | Liver Diseases hub | 3 condition cards via `categoryHubPage` + disclaimer + CTA; breadcrumb + CollectionPage schema (see §26) |
+| `/conditions/liver/{3 slugs}.html` | Liver condition pages | raised-sgpt-sgot, fatty-liver, drug-herb-induced-liver-injury — each breadcrumb + MedicalWebPage + FAQPage JSON-LD (see §26) |
+| `/conditions/heart/` `/conditions/general/` | Heart / General hubs | registered and live, but render **0 cards** — `HEART`/`GENERAL` are still empty maps, populated by later tasks |
 
 ## 15. SEO implementation
 
@@ -829,10 +842,12 @@ main educational depth and a major SEO asset — each guide is a full, original,
 
 The site is expanding from kidney-only to **4 disease categories** — Kidney, Liver, Heart,
 General — across 6 planned tasks (see `docs/superpowers/plans/2026-07-15-multi-disease-expansion.md`
-and `docs/superpowers/specs/2026-07-15-multi-disease-expansion-design.md`). **Task 1 (this one)
-is pure plumbing: the generator now understands categories, but no liver/heart/general content
-exists yet.** The build still emits exactly **50 files**, and every existing kidney page is
-byte-identical (content-wise) to before.
+and `docs/superpowers/specs/2026-07-15-multi-disease-expansion-design.md`). **Task 1 was pure
+plumbing** (the generator learned about categories, no content). **Task 2 (this one) shipped the
+first real content: the liver silo** — a category hub (`/conditions/liver/`) and its 3 flagship
+condition pages. The build now emits **56 files** (50 from before Task 1/2 + 3 category hubs +
+3 liver conditions); every existing kidney page stays byte-identical (content-wise) to before, and
+the heart/general hubs still render with 0 cards until their tasks land.
 
 ### The model
 - **`CATEGORIES`** (`build/data.mjs`, after the `CONDITIONS` map) — one entry per category key
@@ -841,7 +856,9 @@ byte-identical (content-wise) to before.
   `'heart'`/`'general'` for the others).
 - **`CONDITION_SETS`** (`build/data.mjs`) — `{kidney: CONDITIONS, liver: LIVER, heart: HEART,
   general: GENERAL}`. `LIVER`, `HEART`, `GENERAL` are condition maps in the exact same shape as
-  `CONDITIONS` (see §8) and are **currently empty `{}`** — later tasks populate them.
+  `CONDITIONS` (see §8). `LIVER` now holds 3 conditions (Task 2, banner-commented as its own block
+  in `data.mjs` right after `CATEGORIES`); `HEART`/`GENERAL` are still empty `{}` — later tasks
+  populate them.
 - **URL rule — kidney deliberately stays flat, new categories nest one level deeper.** Kidney
   keeps `/conditions/<slug>.html` (it already ranks on Google for these URLs — moving them would
   be real business risk). Liver/Heart/General use `/conditions/<dir>/<slug>.html` (e.g.
@@ -851,8 +868,9 @@ byte-identical (content-wise) to before.
   `CONDITION_SETS[cat]`, builds the category's URL prefix from `CATEGORIES[cat].dir`, and scopes
   the "Related topics" links to the same category. Defaulting `cat` to `'kidney'` means every
   existing call site (which doesn't pass `cat`) is unaffected.
-- **Optional condition fields** (`redFlags`, `sources`) — added to the condition shape but not yet
-  used by any kidney entry:
+- **Optional condition fields** (`redFlags`, `sources`) — added to the condition shape in Task 1;
+  no kidney entry uses them (kidney pages render both blocks empty, unchanged from before). All
+  3 Task-2 liver conditions set both fields:
   - `redFlags?: { emergency: string[], soon?: string[] }` → renders `.riims-redflags`, a loud
     "Go to hospital now" box (via `redFlagBox()` in `pages.mjs`), placed **immediately after the
     reviewed-by line and before the "about" section** — a patient must not have to scroll past it.
@@ -866,18 +884,59 @@ byte-identical (content-wise) to before.
 - **Heading wording:** the when-to-consult heading reads **"When to consult a kidney doctor"**
   for `cat === 'kidney'` (preserving the exact string the live kidney pages already rank with) and
   the generic **"When to consult a doctor"** for every other category.
-- **`generate.mjs`** — after the existing kidney `CONDITIONS` loop, a second loop walks
-  `['liver', 'heart', 'general']` × `Object.keys(CONDITION_SETS[cat])` and pushes a page per
-  condition (breadcrumb + `MedicalWebPage` JSON-LD, same pattern as kidney). Because the three
-  maps are empty, this loop currently pushes **zero** pages. `mkdirSync` pre-creates
-  `site/conditions/{liver,heart,general}/` (harmless empty directories; git doesn't track them).
+- **`generate.mjs`** — after the existing kidney `CONDITIONS` loop, two more loops run:
+  1. A **category-hub loop** over `['liver', 'heart', 'general']` that pushes one
+     `conditions/<dir>/index.html` per category (`body: categoryHubPage('../../', cat)`;
+     `BreadcrumbList` + `CollectionPage` JSON-LD). Runs even for empty categories, so
+     heart/general already have a live (if card-less) hub.
+  2. The **condition loop** over `['liver', 'heart', 'general']` × `Object.keys(CONDITION_SETS[cat])`,
+     pushing a page per condition: `BreadcrumbList` + `MedicalWebPage` + **`FAQPage`** JSON-LD (the
+     `FAQPage` block was added in Task 2 — it mirrors kidney's own condition-loop FAQPage exactly,
+     built from `c.aboutTitle`/`c.about`, a "When should I consult a doctor about …" question from
+     `c.when`, and a "How does RIIMS approach …" question from `c.approach`; kidney's loop keeps its
+     own near-identical block with kidney-specific wording, so the two are not shared code, by
+     design, to keep the kidney string frozen). Because `HEART`/`GENERAL` are still empty, only the
+     3 liver conditions produce pages so far.
+
+  `mkdirSync` pre-creates `site/conditions/{liver,heart,general}/` for all three categories
+  regardless of content (harmless empty directories for heart/general; git doesn't track them).
 - **CSS** (`site/css/site.css`) — `.riims-redflags` (danger-toned card, `var(--danger)`/
   `var(--danger-soft)` tokens, which already existed in `colors.css`) and `.riims-sources`
   (a plain top-border list block), added near the other component blocks (after
   `.services-grid`, before the responsive breakpoints).
 
+### Task 2 content (shipped)
+The liver silo's first 3 pages, chosen as the beachhead because `raised-sgpt-sgot` is the liver
+equivalent of "high creatinine" (a scared patient holding a lab report — a query hospital sites
+do not otherwise serve):
+- **`raised-sgpt-sgot`** — reading SGPT/SGOT together (not in isolation), common Indian causes,
+  reference ranges, FIB-4 as a next step.
+- **`fatty-liver`** — the two facts patients get wrong most often: ultrasound grades measure fat,
+  not scarring, and lean/thin-fat NAFLD means a normal BMI does not rule it out in the Indian
+  population (waist matters more than weight). States the weight-loss reversibility figure
+  precisely (NASH resolved in 90% but fibrosis regressed in only 45%, and only ~10% of patients
+  achieved that much loss) and that cirrhosis itself is not reversed by weight loss; also flags
+  that cardiovascular disease, not liver disease, is the leading cause of death in these patients.
+- **`drug-herb-induced-liver-injury`** — the site's honesty play: names anti-TB drugs as India's
+  commonest DILI cause (46%, INDILI network) and giloy (*Tinospora cordifolia*) as the top
+  herb-induced cause (a 43-patient multicentre study found no contamination — the herb itself, not
+  an adulterant), while distinguishing concentrated turmeric extracts from turmeric as a cooking
+  spice so it does not needlessly frighten people. Explicitly warns never to stop anti-TB
+  treatment unsupervised, and asks patients to disclose every product they take, including RIIMS's.
+
+All 3 carry `redFlags` (emergency jaundice/bleeding/confusion signs) and `sources` (2–3 real,
+linked citations each — Cleveland Clinic, AAFP, NIDDK, PubMed, PMC, LiverTox). Because only 3 of
+the eventual ~10 liver conditions exist so far, each page's `related` list links only to the
+other 2 (a link to a not-yet-built slug like `fatty-liver-grade-2` would be a dead link and fail
+`npm test`) — Task 3 should widen these once more liver pages land.
+
 ### What later tasks do
-Populate `LIVER`, `HEART`, `GENERAL` with real conditions (content only — no further plumbing
-changes expected), and update `PROBLEMS`/nav/hub pages to surface the new categories. Each of
-those tasks should update this section and §8/§11/§14 with the real page counts once content
-lands.
+- **Task 3** — the remaining 9 liver conditions (widen `raised-sgpt-sgot`/`fatty-liver`/
+  `drug-herb-induced-liver-injury`'s `related` lists once they exist).
+- **Task 4** — General/Metabolic: 12 conditions + hub (`GENERAL`).
+- **Task 5** — Heart: 8 conditions + hub (`HEART`).
+- **Task 6** — wires all 4 categories into the rest of the site (nav, `PROBLEMS`, cross-links) and
+  fixes a referral contradiction noted in the design spec.
+
+Each of those tasks should update this section and §8/§11/§14 with the real page counts once
+content lands.

@@ -326,8 +326,87 @@ export const CATEGORIES = {
 };
 
 /* Liver / Heart / General conditions. Same shape as CONDITIONS, plus optional
-   `redFlags` (emergency box) and `sources` (citations). Populated in later tasks. */
-export const LIVER = {};
+   `redFlags` (emergency box) and `sources` (citations). HEART/GENERAL are
+   populated in later tasks. */
+
+/* ---------------- Liver conditions (3 flagship pages, Task 2) ----------------
+   Only these 3 slugs exist so far, so `related` links only point at each other
+   (linking to a not-yet-built liver slug would be a dead link and fail npm test). */
+export const LIVER = {
+  'raised-sgpt-sgot': {
+    icon: 'beaker', title: 'Raised SGPT / SGOT', crumb: 'Liver · Raised SGPT / SGOT',
+    intro: 'A raised SGPT on a health check is a clue, not a diagnosis. It means the liver is irritated, and the next step is finding out why.',
+    aboutTitle: 'What does a raised SGPT or SGOT mean?',
+    about: 'SGPT (ALT) and SGOT (AST) are enzymes that leak into the blood when liver cells are irritated or damaged. A mildly raised value is common, and on its own it says nothing about which problem caused it. In India the usual reasons are fatty liver, alcohol, certain medicines, herbal or Ayurvedic products, and viral hepatitis. SGPT sits mostly inside the liver, so it is the more specific of the two markers; SGOT also comes from muscle and can rise after hard exercise or a fall. A doctor reads the pattern between the two values, the ratio, and your history, not the number alone. Typical reference ranges are roughly 7–55 U/L for SGPT and 8–48 U/L for SGOT, but every laboratory prints its own range, so check your report against that.',
+    symptoms: ['Often none at all', 'Tiredness', 'A dull ache under the right ribs', 'Nausea or poor appetite', 'Found by chance on a routine health check', 'Dark urine, if jaundice is developing'],
+    approach: [
+      'Repeat the test and read SGPT alongside SGOT, GGT, bilirubin and albumin, not one value on its own',
+      'Look for the cause: an ultrasound, hepatitis B and C markers, sugar and lipid tests, and a frank alcohol history',
+      'Go through every medicine, supplement and herbal product you take, with dates. This is a common cause that gets missed',
+      'A FIB-4 score, calculated from your age, AST, ALT and platelet count, to check whether scarring needs a closer look',
+      'Treat what is found, then recheck. A falling SGPT is the goal, not a tonic to bring it down',
+    ],
+    when: 'See a doctor soon if the value stays raised on a repeat test, or is more than five times the upper limit of normal. Yellow eyes, confusion or bleeding need same-day care.',
+    redFlags: {
+      emergency: ['Yellow eyes or skin with confusion, drowsiness or a disturbed sleep pattern', 'Vomiting blood, or black tarry stools', 'Jaundice during pregnancy'],
+      soon: ['SGPT more than five times the upper limit of normal', 'A raised value that has not settled on repeat testing', 'Any jaundice, even if you feel well'],
+    },
+    sources: [
+      ['Liver function tests (Cleveland Clinic)', 'https://my.clevelandclinic.org/health/diagnostics/17662-liver-function-tests'],
+      ['Interpreting liver function tests (AAFP)', 'https://www.aafp.org/afp/1999/0415/p2223'],
+    ],
+    related: [['Fatty liver', 'fatty-liver'], ['Drug & herb-induced liver injury', 'drug-herb-induced-liver-injury']],
+  },
+  'fatty-liver': {
+    icon: 'gauge', title: 'Fatty Liver', crumb: 'Liver · Fatty Liver',
+    intro: 'Fatty liver is common and usually silent. Your report needs two questions answered, not one: how much fat, and how much scarring, because they are not the same thing.',
+    aboutTitle: 'What does a fatty liver report actually mean?',
+    about: 'Fatty liver means fat has built up inside liver cells, and it is very common: a 2022 systematic review pooled data across India and estimated that 38.6% of Indian adults have some degree of it. An ultrasound report grades the fat as mild, moderate or severe, Grade 1 to Grade 3, but that grade measures fat only, not scarring. A Grade 3 report with no fibrosis is actually less worrying than a Grade 1 report with significant fibrosis, so the grade by itself does not tell you how serious things are; your doctor needs a separate look at fibrosis risk. Many Indians develop fatty liver well below a BMI of 25, because fat stored around the internal organs matters more here than total body weight. If someone has told you "you are not fat, so it cannot be your liver," that reasoning does not hold in the Indian population; your waist size is usually a better clue than the number on the scale. There is one more nuance that matters. In one landmark study, patients who lost 10% or more of their body weight saw NASH, the inflamed form of fatty liver, resolve completely in 90% of cases. But the underlying scarring, fibrosis, regressed in only 45% of them, and only about 10% of patients in the study managed to lose that much weight in the first place. Once fibrosis has progressed to cirrhosis, weight loss does not reverse it. What surprises most patients is that fatty liver is, above all, a marker of metabolic risk: the leading cause of death in people with fatty liver is heart disease, not liver disease.',
+    symptoms: ['Often no symptoms at all', 'Mild tiredness or a dull ache under the right ribs', 'Found incidentally on a routine ultrasound', 'A normal weight does not rule it out, especially with a large waist', 'Raised SGPT or SGOT on a blood report', 'Symptoms usually appear only once cirrhosis has developed'],
+    approach: [
+      'Waist circumference and metabolic screening. BMI alone is not enough for the Indian body type',
+      'A fibrosis risk score, such as FIB-4, rather than the ultrasound grade alone, to judge how serious the liver picture really is',
+      'Sugar, lipid and blood pressure screening, because fatty liver usually travels with these and drives heart risk',
+      'A realistic, gradual weight-loss target guided by your reports, generally 7 to 10%, with diet and activity support',
+      'Regular re-testing to track fibrosis risk over time, not a one-off ultrasound',
+    ],
+    when: 'See a doctor if fatty liver is found on a scan, even if you feel completely well, so your fibrosis risk can be checked properly. Do not wait for symptoms; by the time they appear, the liver may already be more affected.',
+    redFlags: {
+      emergency: ['Yellow eyes or skin (jaundice)', 'Swelling in the abdomen or legs', 'Vomiting blood, or black tarry stools', 'Confusion or unusual drowsiness'],
+    },
+    sources: [
+      ['Definition & facts of NAFLD/NASH (NIDDK)', 'https://www.niddk.nih.gov/health-information/liver-disease/nafld-nash/definition-facts'],
+      ['NAFLD prevalence in India: a systematic review, J Clin Exp Hepatol 2022 (PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/35677499/'],
+      ['Weight loss and histologic outcomes in NASH, Vilar-Gomez et al. (PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/25865049/'],
+    ],
+    related: [['Raised SGPT / SGOT', 'raised-sgpt-sgot'], ['Drug & herb-induced liver injury', 'drug-herb-induced-liver-injury']],
+  },
+  'drug-herb-induced-liver-injury': {
+    icon: 'shield-check', title: 'Drug & Herb-Induced Liver Injury', crumb: 'Liver · Drug & Herb-Induced Liver Injury',
+    intro: 'Herbs and supplements are not automatically safe for the liver, and pretending otherwise would not serve you. If you take any product, including one of ours, your liver doctor needs to know.',
+    aboutTitle: 'What is drug and herb induced liver injury?',
+    about: 'Drug and herb induced liver injury, sometimes shortened to DILI, happens when a medicine, herb or supplement damages the liver, usually without warning. In India, the single biggest cause is anti-tuberculosis medication, responsible for 46% of cases in the INDILI network study of 1,288 patients. Traditional and alternative medicines are second, at 14%, ahead of most other drug classes. Giloy (Tinospora cordifolia) is the most frequently reported herbal cause of liver injury in the country. A multicentre study of 43 patients found no contamination in the giloy products tested; the injury came from the herb itself, not an adulterant. In one smaller series, 4 of the 6 patients who developed giloy-related liver injury turned out to have a silent autoimmune liver disease that the herb brought to the surface. Other products linked to liver injury include ashwagandha, which can cause a form of cholestatic hepatitis, concentrated turmeric extracts taken as capsules or supplements, and bakuchi. This is specifically about concentrated extracts, not turmeric used as a cooking spice in ordinary food quantities, which has not shown this risk. Most people recover fully once the product responsible is stopped. The real danger is not the herb itself so much as continuing to take it without realising it is the cause, because the injury is silent in its early stages.',
+    symptoms: ['Often none in the early stages', 'Yellowing of the eyes or skin', 'Dark urine or pale stools', 'Loss of appetite or nausea', 'Unusual tiredness', 'Itching without a rash'],
+    approach: [
+      'A full medicine, supplement and herbal product history, with dates, brands and how long each was taken, including anything prescribed by us',
+      'Blood tests to confirm the pattern of injury and rule out viral or other causes',
+      'Stopping the product responsible, under medical guidance, while continuing every other treatment you actually need',
+      'If autoimmune liver disease is suspected, the right blood tests and, if needed, a specialist referral',
+      'Re-testing after the product is stopped to confirm the liver is recovering as expected',
+    ],
+    when: 'If you are on anti-TB treatment and notice yellow eyes, dark urine, nausea or unusual tiredness, contact your doctor the same day. Do not stop anti-TB treatment on your own, even if you suspect it is the cause; stopping it early carries its own serious risks, and your doctor needs to manage the change safely. For any other medicine, herb or supplement, tell your doctor about everything you are taking, at every visit, including products from us.',
+    redFlags: {
+      emergency: ['Yellow eyes or skin with confusion or unusual drowsiness', 'Vomiting blood, or black tarry stools', 'Severe abdominal pain or swelling together with yellowing of the eyes'],
+      soon: ['Yellow eyes, dark urine or pale stools after starting any new medicine, herb or supplement', 'Unusual tiredness or loss of appetite that does not improve within a few days of stopping a suspected product'],
+    },
+    sources: [
+      ['Drug-induced liver injury in India (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8518348/'],
+      ['Giloy (Tinospora cordifolia) induced liver injury: a multicentre study (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9134809/'],
+      ['LiverTox: Tinospora cordifolia (NIH)', 'https://www.ncbi.nlm.nih.gov/books/NBK608429/'],
+    ],
+    related: [['Raised SGPT / SGOT', 'raised-sgpt-sgot'], ['Fatty liver', 'fatty-liver']],
+  },
+};
 export const HEART = {};
 export const GENERAL = {};
 

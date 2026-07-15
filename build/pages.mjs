@@ -622,6 +622,24 @@ export function conditionsHubPage(base) {
     + S.ctaBand();
 }
 
+/* ---------- Disease-category hub (/conditions/<dir>/index.html) ---------- */
+export function categoryHubPage(base, cat) {
+  const C = CATEGORIES[cat];
+  const set = CONDITION_SETS[cat] || {};
+  const cards = Object.entries(set).map(([slug, c]) =>
+    `<a href="${base}conditions/${C.dir}/${slug}.html" class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.4rem;text-decoration:none;color:inherit">`
+    + `<span style="display:inline-flex;width:44px;height:44px;border-radius:var(--radius-md);background:var(--surface-blue-soft);color:var(--icon-brand);align-items:center;justify-content:center">${icon(c.icon, { size: 20 })}</span>`
+    + `<h2 style="font-size:var(--fs-lg);margin:.2rem 0 0;font-family:var(--font-display)">${c.title}</h2>`
+    + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${esc(c.intro).slice(0, 110)}…</p>`
+    + `<span style="margin-top:.1rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-link);font-weight:700;font-family:var(--font-sans);font-size:var(--fs-sm)">Read more ${icon('arrow-right', { size: 15 })}</span></a>`).join('');
+  return pageHero(base, { crumb: `Diseases · ${C.label}`, icon: C.icon, title: C.hubTitle, intro: C.hubIntro })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container">`
+    + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${cards}</div>`
+    + `</div></section>`
+    + disclaimer()
+    + S.ctaBand();
+}
+
 /* ---------- Treatments & Services hub (/services.html) ---------- */
 export function servicesPage(base) {
   const tiles = SERVICES.map((sv) =>

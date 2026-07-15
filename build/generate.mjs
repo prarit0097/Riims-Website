@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage } from './pages.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage, categoryHubPage } from './pages.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
 import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS, CATEGORIES, CONDITION_SETS } from './data.mjs';
@@ -361,6 +361,28 @@ for (const slug of Object.keys(CONDITIONS)) {
   });
 }
 
+/* Category hubs (liver/heart/general) */
+for (const cat of ['liver', 'heart', 'general']) {
+  const dir = CATEGORIES[cat].dir;
+  const path = `/conditions/${dir}/`;
+  pages.push({
+    out: `conditions/${dir}/index.html`, base: '../../', path, nav: 'conditions/index.html', mobile: '',
+    title: `${CATEGORIES[cat].hubTitle} | RIIMS Baraut`,
+    desc: CATEGORIES[cat].hubIntro,
+    body: categoryHubPage('../../', cat),
+    ld: [{
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+        { '@type': 'ListItem', position: 2, name: CATEGORIES[cat].hubTitle, item: `${SITE.origin}${path}` },
+      ],
+    }, {
+      '@type': 'CollectionPage', name: CATEGORIES[cat].hubTitle, description: CATEGORIES[cat].hubIntro,
+      url: `${SITE.origin}${path}`, inLanguage: 'en-IN', isPartOf: { '@id': `${SITE.origin}/#website` },
+    }],
+  });
+}
+
 /* Liver / Heart / General condition pages (nested one level; kidney stays flat) */
 for (const cat of ['liver', 'heart', 'general']) {
   const dir = CATEGORIES[cat].dir;
@@ -383,6 +405,14 @@ for (const cat of ['liver', 'heart', 'general']) {
         '@type': 'MedicalWebPage', name: c.title, description: c.intro, url: `${SITE.origin}${path}`,
         about: { '@type': 'MedicalCondition', name: c.title }, inLanguage: 'en-IN',
         isPartOf: { '@id': `${SITE.origin}/#website` },
+      }, {
+        // FAQ rich-result eligibility: mirrors the Q&A-style content visible on the page.
+        '@type': 'FAQPage',
+        mainEntity: [
+          { '@type': 'Question', name: c.aboutTitle, acceptedAnswer: { '@type': 'Answer', text: c.about } },
+          { '@type': 'Question', name: `When should I consult a doctor about ${c.title.toLowerCase()}?`, acceptedAnswer: { '@type': 'Answer', text: c.when } },
+          { '@type': 'Question', name: `How does RIIMS approach ${c.title.toLowerCase()}?`, acceptedAnswer: { '@type': 'Answer', text: c.approach.join('. ') + '.' } },
+        ],
       }],
     });
   }
