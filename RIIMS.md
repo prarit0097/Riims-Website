@@ -169,6 +169,9 @@ RiimS/
    - **7 patient-guide pages** (looped over `GUIDE_ORDER` in `build/guides.mjs`)
    - 3 legal pages (privacy, terms, disclaimer)
    → **49 indexable pages** (+ a branded 404 = **50 files written**).
+   - Plus a loop over `CONDITION_SETS['liver'|'heart'|'general']` (see §26) that writes
+     `conditions/<dir>/<slug>.html` pages — **currently 0 pages** because those condition maps
+     are empty; the loop exists so later tasks only need to add data, not wiring.
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`. It also emits **`site/js/search-data.js`**
    (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
@@ -182,7 +185,9 @@ subfolder (`conditions/`, `blog/`) use `../css/styles.css`, `../assets/...`,
 `../conditions/ckd.html`. The generator threads a `base` string (`''` or `'../'`) into every
 component that emits a link or asset reference, so the same code produces correct paths at any
 depth. The single `site.css` references images as `url('../assets/...')` (relative to
-`site/css/`), which resolves correctly for every page regardless of depth.
+`site/css/`), which resolves correctly for every page regardless of depth. Non-kidney condition
+pages sit **two** levels deep (`conditions/<dir>/<slug>.html`), so they use `base = '../../'`
+(see §26).
 
 ## 7. The component layer (`build/components.mjs`)
 
@@ -248,9 +253,17 @@ site, or via `data/content.json` in the repo.
   `content.json → protocol.faqs`, Admin → Protocol FAQs) — the DNA Kayakalp Protocol page FAQs
   (`[{q,a}]`; empty = built-in defaults), driving both the visible block and the FAQPage schema.
 - **`NAV`** — the 7 header links (About, Kidney Diseases, Treatments, Guides, Doctors, Blog, Contact).
-- **`CONDITIONS`** — the 15 condition pages, each with: `icon`, `title`, `crumb`, `intro`,
-  `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`. Slugs:
+- **`CONDITIONS`** — the 15 kidney condition pages, each with: `icon`, `title`, `crumb`, `intro`,
+  `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`, plus two **optional**
+  fields shared with the other categories: `redFlags: {emergency: string[], soon?: string[]}`
+  (renders an emergency red-flag box) and `sources: [label, url][]` (renders a citations block).
+  Kidney conditions currently define neither, so both blocks render empty on kidney pages. Slugs:
   `high-creatinine, ckd, kidney-failure, dialysis, proteinuria, swelling, diabetes-bp, stone-uti`.
+- **`CATEGORIES`, `LIVER`, `HEART`, `GENERAL`, `CONDITION_SETS`** — the 4-category model (see §26
+  for the full architecture). `LIVER`/`HEART`/`GENERAL` are condition maps in the same shape as
+  `CONDITIONS`, currently **empty** (no content yet — filled by later tasks). `CONDITION_SETS`
+  maps a category key to its condition map (`{kidney: CONDITIONS, liver: LIVER, heart: HEART,
+  general: GENERAL}`) and is what `conditionPage()`/`generate.mjs` resolve a slug through.
 - **`PROBLEMS`** — the home "conditions we help with" grid (links to the main condition pages).
 - **`WHY`, `STEPS`** — "Why RIIMS" cards + "How consultation works" steps. **Admin-editable**
   (Admin → Why RIIMS / How it works; `content.json → why` / `steps`; empty = code defaults; `STEPS`
@@ -329,9 +342,15 @@ Each function returns a full page body:
 - **`homePage`** — order: Search → Health Reels → Conditions grid → Stats strip → Complete Care
   → Why RIIMS → How it works → Meet Experts → Education (blog preview) → Testimonials → FAQ →
   CTA band → Contact → floating contact. (This exact order is the owner's approved final layout.)
-- **`conditionPage(base, slug)`** — page hero + two-column layout: main (about, symptoms split
-  into two lists, "How RIIMS approaches it" card, when-to-consult, disclaimer) + sticky aside
-  (Book/WhatsApp/Upload card + Related topics) + CTA band.
+- **`conditionPage(base, slug, cat = 'kidney')`** — page hero + two-column layout: main
+  (reviewed line, optional **red-flag box** (`redFlagBox`, only if `c.redFlags` is set), about,
+  symptoms split into two lists, "How RIIMS approaches it" card, when-to-consult, optional
+  **sources block** (`sourcesBlock`, only if `c.sources` is set), disclaimer) + sticky aside
+  (Book/WhatsApp/Upload card + Related topics). `cat` selects the condition map via
+  `CONDITION_SETS[cat]` (see §26) and scopes `related` links to the same category (kidney links
+  stay flat `conditions/<slug>.html`; other categories link `conditions/<dir>/<slug>.html`). The
+  when-to-consult heading stays "When to consult a kidney doctor" for kidney (the existing,
+  already-ranking string) and "When to consult a doctor" for every other category.
 - **`aboutPage`** — hero + story + values + doctors section + CTA. **Admin-editable** (Admin → About;
   `DEFAULT_ABOUT` in `pages.mjs` merged with `content.json → about`).
 - **`doctorsPage`** — hero + 6 doctor cards + a **"Specialist kidney care"** grid linking the 6
@@ -395,7 +414,8 @@ Loaded per page as two stylesheets: `css/styles.css` then `css/site.css`.
   correctly), `.riims-btn--white:hover`, booking-modal `.is-open`, the `.riims-logo-mark`
   logo background + `.img-cover` helper (content images — reels, doctor portraits, hospital,
   video, blog covers — are now real `<img>` tags with `alt`/`loading="lazy"`), reel hover animation,
-  the **responsive breakpoints** (≤1024 tablet: collapse grids + switch to mobile nav; ≤760
+  `.riims-redflags` / `.riims-sources` (condition-page emergency red-flag box + citations block,
+  see §26), the **responsive breakpoints** (≤1024 tablet: collapse grids + switch to mobile nav; ≤760
   phone: single column, show bottom bar, hide FAB; ≤480 small phone: tighter rhythm).
 
 Styling approach: components emit inline styles (ported faithfully from the prototype via
@@ -804,3 +824,60 @@ main educational depth and a major SEO asset — each guide is a full, original,
 - **To add a guide:** create `build/guides/<slug>.md`, add an entry to `GUIDES` + `GUIDE_ORDER` (and
   optionally `CONDITION_GUIDES`); the generator auto-creates the page, sitemap entry and JSON-LD. Then
   `npm test` and update this file.
+
+## 26. Multi-disease category expansion (Kidney / Liver / Heart / General)
+
+The site is expanding from kidney-only to **4 disease categories** — Kidney, Liver, Heart,
+General — across 6 planned tasks (see `docs/superpowers/plans/2026-07-15-multi-disease-expansion.md`
+and `docs/superpowers/specs/2026-07-15-multi-disease-expansion-design.md`). **Task 1 (this one)
+is pure plumbing: the generator now understands categories, but no liver/heart/general content
+exists yet.** The build still emits exactly **50 files**, and every existing kidney page is
+byte-identical (content-wise) to before.
+
+### The model
+- **`CATEGORIES`** (`build/data.mjs`, after the `CONDITIONS` map) — one entry per category key
+  (`kidney`, `liver`, `heart`, `general`), each `{label, icon, blurb, hubTitle, hubIntro, dir}`.
+  `dir` is the URL path segment for that category's condition pages (`''` for kidney, `'liver'`/
+  `'heart'`/`'general'` for the others).
+- **`CONDITION_SETS`** (`build/data.mjs`) — `{kidney: CONDITIONS, liver: LIVER, heart: HEART,
+  general: GENERAL}`. `LIVER`, `HEART`, `GENERAL` are condition maps in the exact same shape as
+  `CONDITIONS` (see §8) and are **currently empty `{}`** — later tasks populate them.
+- **URL rule — kidney deliberately stays flat, new categories nest one level deeper.** Kidney
+  keeps `/conditions/<slug>.html` (it already ranks on Google for these URLs — moving them would
+  be real business risk). Liver/Heart/General use `/conditions/<dir>/<slug>.html` (e.g.
+  `/conditions/liver/fatty-liver.html`). This is why liver/heart/general pages need `base =
+  '../../'` (two levels deep) versus kidney's `'../'` (see the `base` prefix system above).
+- **`conditionPage(base, slug, cat = 'kidney')`** (`build/pages.mjs`) — looks the condition up via
+  `CONDITION_SETS[cat]`, builds the category's URL prefix from `CATEGORIES[cat].dir`, and scopes
+  the "Related topics" links to the same category. Defaulting `cat` to `'kidney'` means every
+  existing call site (which doesn't pass `cat`) is unaffected.
+- **Optional condition fields** (`redFlags`, `sources`) — added to the condition shape but not yet
+  used by any kidney entry:
+  - `redFlags?: { emergency: string[], soon?: string[] }` → renders `.riims-redflags`, a loud
+    "Go to hospital now" box (via `redFlagBox()` in `pages.mjs`), placed **immediately after the
+    reviewed-by line and before the "about" section** — a patient must not have to scroll past it.
+    This matters most for heart/liver pages, where an emergency sign (e.g. chest pain) needs to
+    outrank "book a consultation."
+  - `sources?: [label, url][]` → renders `.riims-sources`, a citations list (via
+    `sourcesBlock()`), placed after "when to consult" and before the disclaimer. Supports E-E-A-T
+    and the spec's "bona fide scientific standpoint" argument for medical claims.
+  - Both helpers return `''` when the field is absent, so kidney pages (which set neither) render
+    identically to before.
+- **Heading wording:** the when-to-consult heading reads **"When to consult a kidney doctor"**
+  for `cat === 'kidney'` (preserving the exact string the live kidney pages already rank with) and
+  the generic **"When to consult a doctor"** for every other category.
+- **`generate.mjs`** — after the existing kidney `CONDITIONS` loop, a second loop walks
+  `['liver', 'heart', 'general']` × `Object.keys(CONDITION_SETS[cat])` and pushes a page per
+  condition (breadcrumb + `MedicalWebPage` JSON-LD, same pattern as kidney). Because the three
+  maps are empty, this loop currently pushes **zero** pages. `mkdirSync` pre-creates
+  `site/conditions/{liver,heart,general}/` (harmless empty directories; git doesn't track them).
+- **CSS** (`site/css/site.css`) — `.riims-redflags` (danger-toned card, `var(--danger)`/
+  `var(--danger-soft)` tokens, which already existed in `colors.css`) and `.riims-sources`
+  (a plain top-border list block), added near the other component blocks (after
+  `.services-grid`, before the responsive breakpoints).
+
+### What later tasks do
+Populate `LIVER`, `HEART`, `GENERAL` with real conditions (content only — no further plumbing
+changes expected), and update `PROBLEMS`/nav/hub pages to surface the new categories. Each of
+those tasks should update this section and §8/§11/§14 with the real page counts once content
+lands.

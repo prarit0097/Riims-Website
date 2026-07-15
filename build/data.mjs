@@ -295,6 +295,45 @@ export const CONDITIONS = {
   },
 };
 
+/* ---------------- Disease categories (4) ----------------
+   Kidney keeps the flat /conditions/<slug>.html URLs it already ranks for.
+   New categories nest one level deeper: /conditions/<dir>/<slug>.html.
+   Do not move kidney. See docs/superpowers/specs/2026-07-15-multi-disease-expansion-design.md §5. */
+export const CATEGORIES = {
+  kidney: {
+    label: 'Kidney', icon: 'droplet', dir: '',
+    blurb: 'High creatinine, CKD, kidney failure, dialysis guidance, stones and protein in urine.',
+    hubTitle: 'Kidney Diseases', hubIntro: '',
+  },
+  liver: {
+    label: 'Liver', icon: 'activity', dir: 'liver',
+    blurb: 'Fatty liver, raised SGPT/SGOT, jaundice, hepatitis and cirrhosis — explained from your reports.',
+    hubTitle: 'Liver Diseases & Treatment',
+    hubIntro: 'Fatty liver, a raised SGPT on a health check, jaundice, hepatitis — most liver problems are found on a report long before they are felt. These pages explain what those reports mean and what to do next.',
+  },
+  heart: {
+    label: 'Heart', icon: 'heart-pulse', dir: 'heart',
+    blurb: 'Blood pressure, cholesterol and heart risk — plus the warning signs that need a hospital, not a clinic.',
+    hubTitle: 'Heart & Blood Pressure Care',
+    hubIntro: 'Blood pressure and cholesterol damage the heart and the kidneys together, usually without symptoms. These pages cover what the numbers mean, how risk is managed, and the warning signs that need emergency care immediately.',
+  },
+  general: {
+    label: 'General Diseases', icon: 'stethoscope', dir: 'general',
+    blurb: 'Diabetes, thyroid, obesity, uric acid and vitamin deficiencies — the conditions behind most kidney and liver disease.',
+    hubTitle: 'General & Lifestyle Diseases',
+    hubIntro: 'Diabetes, thyroid problems, obesity, high uric acid and vitamin deficiencies are common, treatable, and sit behind a large share of kidney and liver disease. These pages explain each one honestly.',
+  },
+};
+
+/* Liver / Heart / General conditions. Same shape as CONDITIONS, plus optional
+   `redFlags` (emergency box) and `sources` (citations). Populated in later tasks. */
+export const LIVER = {};
+export const HEART = {};
+export const GENERAL = {};
+
+/* Category key -> condition map. conditionPage()/generate.mjs resolve through this. */
+export const CONDITION_SETS = { kidney: CONDITIONS, liver: LIVER, heart: HEART, general: GENERAL };
+
 /* ---------------- Home: conditions grid ---------------- */
 export const PROBLEMS = [
   { icon: 'droplet', title: 'High Creatinine', tone: 'blue', slug: 'high-creatinine', desc: 'Understand what raised creatinine means and the safe next steps.' },

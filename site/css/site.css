@@ -95,6 +95,10 @@ html, body { overflow-x: clip; }
 /* Home extras grids */
 .services-grid { grid-template-columns: repeat(4, 1fr); }
 
+/* Emergency red-flag box (condition pages) — deliberately loud. */
+.riims-redflags { background: var(--danger-soft); border: 1px solid var(--danger); border-left-width: 5px; border-radius: var(--radius-lg); padding: var(--space-5); }
+.riims-sources { border-top: 1px solid var(--border-subtle); padding-top: var(--space-4); }
+
 /* Tablets & below: collapse grids, switch to mobile nav so the bar never overflows */
 @media (max-width: 1024px) {
   .grid-auto { grid-template-columns: repeat(2, 1fr) !important; }

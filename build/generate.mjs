@@ -12,7 +12,7 @@ import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
 import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage } from './pages.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
-import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS } from './data.mjs';
+import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS, CATEGORIES, CONDITION_SETS } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
@@ -361,6 +361,33 @@ for (const slug of Object.keys(CONDITIONS)) {
   });
 }
 
+/* Liver / Heart / General condition pages (nested one level; kidney stays flat) */
+for (const cat of ['liver', 'heart', 'general']) {
+  const dir = CATEGORIES[cat].dir;
+  for (const slug of Object.keys(CONDITION_SETS[cat])) {
+    const c = CONDITION_SETS[cat][slug];
+    const path = `/conditions/${dir}/${slug}.html`;
+    pages.push({
+      out: `conditions/${dir}/${slug}.html`, base: '../../', path, nav: 'conditions/index.html', mobile: '',
+      title: `${c.title} — Symptoms, Tests & Care | RIIMS`,
+      desc: `${c.intro} Doctor-led, report-based care at RIIMS, Baraut, UP.`,
+      body: conditionPage('../../', slug, cat),
+      ld: [{
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` },
+          { '@type': 'ListItem', position: 2, name: CATEGORIES[cat].hubTitle, item: `${SITE.origin}/conditions/${dir}/` },
+          { '@type': 'ListItem', position: 3, name: c.title, item: `${SITE.origin}${path}` },
+        ],
+      }, {
+        '@type': 'MedicalWebPage', name: c.title, description: c.intro, url: `${SITE.origin}${path}`,
+        about: { '@type': 'MedicalCondition', name: c.title }, inLanguage: 'en-IN',
+        isPartOf: { '@id': `${SITE.origin}/#website` },
+      }],
+    });
+  }
+}
+
 /* Doctor / specialist landing pages (one per SEO keyword; all feature Dr. Abhishek Gupta) */
 for (const slug of Object.keys(SPECIALISTS)) {
   const sp = SPECIALISTS[slug];
@@ -481,6 +508,7 @@ pages.push({
 mkdirSync(join(OUT, 'conditions'), { recursive: true });
 mkdirSync(join(OUT, 'blog'), { recursive: true });
 mkdirSync(join(OUT, 'doctors'), { recursive: true });
+for (const d of ['liver', 'heart', 'general']) mkdirSync(join(OUT, 'conditions', d), { recursive: true });
 for (const p of pages) {
   writeFileSync(join(OUT, p.out), render(p), 'utf8');
 }

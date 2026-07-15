@@ -6,7 +6,7 @@ import { pageHero, floatingContact } from './chrome.mjs';
 import * as S from './sections.mjs';
 import {
   SITE, CONDITIONS, DOCTORS_FULL, POSTS, POPULAR_TOPICS, SERVICES, REVIEW_DATE, PROTOCOL,
-  ABOUT_ADMIN, LEGAL_ADMIN,
+  ABOUT_ADMIN, LEGAL_ADMIN, CATEGORIES, CONDITION_SETS,
 } from './data.mjs';
 import { GUIDES, GUIDE_ORDER, CONDITION_GUIDES } from './guides.mjs';
 
@@ -49,23 +49,56 @@ export function homePage(base) {
     + floatingContact();
 }
 
+/* Emergency red-flag box. Rendered only when a condition defines `redFlags`.
+   This is the highest-stakes block on the site — on heart and liver pages it is
+   what tells a patient to go to hospital instead of booking an OPD slot. */
+function redFlagBox(rf) {
+  if (!rf || !Array.isArray(rf.emergency) || !rf.emergency.length) return '';
+  const li = (items, color) => items.map((t) =>
+    `<li style="display:flex;gap:.5rem;align-items:flex-start;margin:0 0 .35rem"><span style="flex:0 0 auto;margin-top:.35rem;width:6px;height:6px;border-radius:50%;background:${color}"></span><span>${t}</span></li>`).join('');
+  const soon = (Array.isArray(rf.soon) && rf.soon.length)
+    ? `<p style="margin:.9rem 0 .35rem;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);color:var(--text-body)">See a doctor soon (not an emergency)</p>`
+      + `<ul style="list-style:none;margin:0;padding:0;color:var(--text-body);font-size:var(--fs-sm)">${li(rf.soon, 'var(--text-faint)')}</ul>`
+    : '';
+  return `<div class="riims-redflags">`
+    + `<h3 style="display:flex;align-items:center;gap:.5rem;margin:0 0 .6rem;font-size:var(--fs-lg);color:var(--danger)">${icon('triangle-alert', { size: 20 })} Go to hospital now</h3>`
+    + `<ul style="list-style:none;margin:0;padding:0;color:var(--text-body);font-size:var(--fs-sm)">${li(rf.emergency, 'var(--danger)')}</ul>`
+    + soon
+    + `</div>`;
+}
+
+/* Citations. Serve E-E-A-T and the s.14(b) "bona fide scientific standpoint"
+   argument (spec §3.2) — both need the sources to be real and visible. */
+function sourcesBlock(sources) {
+  if (!Array.isArray(sources) || !sources.length) return '';
+  const items = sources.map(([label, url]) =>
+    `<li style="margin:0 0 .3rem"><a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--text-link);text-decoration:none;font-size:var(--fs-sm)">${esc(label)}</a></li>`).join('');
+  return `<div class="riims-sources"><h4 style="font-family:var(--font-sans);margin:0 0 .5rem;font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-brand)">Sources</h4>`
+    + `<ul style="list-style:none;margin:0;padding:0">${items}</ul></div>`;
+}
+
 /* ---------- Condition (per-slug) ---------- */
-export function conditionPage(base, slug) {
-  const c = CONDITIONS[slug] || CONDITIONS['high-creatinine'];
+export function conditionPage(base, slug, cat = 'kidney') {
+  const set = CONDITION_SETS[cat] || CONDITIONS;
+  const c = set[slug] || CONDITIONS['high-creatinine'];
+  const dir = (CATEGORIES[cat] && CATEGORIES[cat].dir) ? `${CATEGORIES[cat].dir}/` : '';
   const half = Math.ceil(c.symptoms.length / 2);
   // Cross-link the blog articles written for this condition (topical authority).
   const blogLinks = POSTS.filter((p) => p.related === slug).map((p) =>
     `<li><a href="${base}blog/${p.slug}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('book-open', { size: 15 })} ${p.title}</a></li>`
   ).join('');
   const related = c.related.map(([l, target]) => {
-    const href = target.startsWith('blog') ? `${base}blog.html` : `${base}conditions/${target}.html`;
+    const href = target.startsWith('blog') ? `${base}blog.html` : `${base}conditions/${dir}${target}.html`;
     return `<li><a href="${href}" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('arrow-right', { size: 15 })} ${l}</a></li>`;
   }).join('') + blogLinks;
 
   const reviewedLine = `<p style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS nephrology team · Last updated: ${REVIEW_DATE}</p>`;
 
+  const whenHeading = cat === 'kidney' ? 'When to consult a kidney doctor' : 'When to consult a doctor';
+
   const main = `<div style="display:flex;flex-direction:column;gap:var(--space-8)">`
     + reviewedLine
+    + redFlagBox(c.redFlags)
     + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">${c.aboutTitle}</h2><p style="color:var(--text-body)">${c.about}</p></div>`
     + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">Symptoms to watch for</h2>`
     + `<div class="g2" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem">`
@@ -76,7 +109,8 @@ export function conditionPage(base, slug) {
       `<h3 style="font-size:var(--fs-xl);margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem">${icon('route', { size: 20, style: 'color:var(--icon-brand)' })} How RIIMS approaches it</h3>`
       + infoList(c.approach),
       { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } })
-    + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">When to consult a kidney doctor</h2><p style="color:var(--text-body)">${c.when}</p></div>`
+    + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">${whenHeading}</h2><p style="color:var(--text-body)">${c.when}</p></div>`
+    + sourcesBlock(c.sources)
     + disclaimer()
     + `</div>`;
 
