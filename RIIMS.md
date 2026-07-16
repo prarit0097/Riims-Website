@@ -281,7 +281,12 @@ site, or via `data/content.json` in the repo.
   `heart-failure`, `atrial-fibrillation`, `rheumatic-heart-disease`. All 4 categories are now
   fully populated. `CONDITION_SETS` maps a category key
   to its condition map (`{kidney: CONDITIONS, liver: LIVER, heart: HEART, general: GENERAL}`) and
-  is what `conditionPage()`/`generate.mjs` resolve a slug through.
+  is what `conditionPage()`/`generate.mjs` resolve a slug through. `conditionPage()` is
+  **category-aware**: the "Medically reviewed by the RIIMS … team" line reads *nephrology* for
+  kidney and *medical* for liver/heart/general, and the booking-aside CTA says "Share your kidney
+  reports" only on kidney pages ("Share your reports" elsewhere) — so no kidney-specific wording
+  leaks onto the other silos. (The `breadcrumb()` helper's intermediate JSON-LD segment now points
+  at `/conditions/index.html`, not a hardcoded condition URL.)
 - **`PROBLEMS`** — the home "conditions we help with" grid (links to the main condition pages).
 - **`WHY`, `STEPS`** — "Why RIIMS" cards + "How consultation works" steps. **Admin-editable**
   (Admin → Why RIIMS / How it works; `content.json → why` / `steps`; empty = code defaults; `STEPS`

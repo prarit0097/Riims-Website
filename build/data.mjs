@@ -879,7 +879,7 @@ export const HEART = {
         'Severe breathlessness at rest',
         'Chest pain',
         'Fainting or a sudden loss of consciousness',
-        'A high fever with a new or worsening heart murmur, a possible infection on a damaged valve, needs same-day medical attention',
+        'A high fever with a new or worsening heart murmur can mean an infection settling on a damaged valve (infective endocarditis) and needs urgent hospital assessment',
       ],
       soon: [
         'A new heart murmur found on any examination',

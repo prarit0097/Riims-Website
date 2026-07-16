@@ -159,7 +159,7 @@ const FAQ_GRAPH = {
 function breadcrumb(crumb, url) {
   const parts = crumb.split(' · ');
   const items = [{ name: 'Home', url: `${SITE.origin}/` }];
-  parts.forEach((p, i) => items.push({ name: p, url: i === parts.length - 1 ? url : `${SITE.origin}/conditions/high-creatinine.html` }));
+  parts.forEach((p, i) => items.push({ name: p, url: i === parts.length - 1 ? url : `${SITE.origin}/conditions/index.html` }));
   return {
     '@type': 'BreadcrumbList',
     itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: it.url })),

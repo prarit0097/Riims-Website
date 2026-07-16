@@ -103,7 +103,8 @@ export function conditionPage(base, slug, cat = 'kidney') {
     return `<li><a href="${href}" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('arrow-right', { size: 15 })} ${l}</a></li>`;
   }).join('') + blogLinks;
 
-  const reviewedLine = `<p style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS nephrology team · Last updated: ${REVIEW_DATE}</p>`;
+  const reviewTeam = cat === 'kidney' ? 'nephrology team' : 'medical team';
+  const reviewedLine = `<p style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS ${reviewTeam} · Last updated: ${REVIEW_DATE}</p>`;
 
   const whenHeading = cat === 'kidney' ? 'When to consult a kidney doctor' : 'When to consult a doctor';
 
@@ -128,7 +129,7 @@ export function conditionPage(base, slug, cat = 'kidney') {
   const aside = `<aside style="position:sticky;top:128px;display:flex;flex-direction:column;gap:var(--space-5)">`
     + card(
       `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Get your reports reviewed</h3>`
-      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion.</p>`
+      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your ${cat === 'kidney' ? 'kidney ' : ''}reports for a doctor-guided opinion.</p>`
       + `<div style="display:flex;flex-direction:column;gap:.6rem">`
       + button('Book Consultation', { variant: 'primary', fullWidth: true, iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
       + button('WhatsApp Now', { variant: 'whatsapp', fullWidth: true, iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
