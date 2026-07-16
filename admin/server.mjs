@@ -19,6 +19,7 @@ import { spawn } from 'node:child_process';
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname, normalize } from 'node:path';
+import { checkPayload } from '../build/compliance.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -29,10 +30,12 @@ const LEADS_PATH = join(DATA, 'leads.json');
 const CONTENT_PATH = join(DATA, 'content.json');
 const LOCAL_PATH = join(DATA, 'content.local.json');
 const CONFIG_PATH = join(DATA, 'admin-config.json');
+const MANIFEST_PATH = join(DATA, 'pages-manifest.json');
 const PORT = process.env.PORT || 5500;
 
-const SECTIONS = ['site', 'tracking', 'stats', 'storyVideo', 'doctors', 'reels', 'testimonials', 'faqs', 'posts', 'search', 'cta', 'protocol', 'services', 'why', 'steps', 'about', 'legal', 'banners'];
+const SECTIONS = ['site', 'tracking', 'stats', 'storyVideo', 'doctors', 'reels', 'testimonials', 'faqs', 'posts', 'search', 'cta', 'protocol', 'services', 'why', 'steps', 'about', 'legal', 'banners', 'pagesSeo', 'conditionEdits'];
 const LEAD_STATUSES = ['new', 'contacted', 'booked', 'closed'];
+const ROLES = ['owner', 'seo'];
 const MAX_BODY = 8 * 1024 * 1024; // 8MB (base64 image uploads)
 
 /* ---------------- tiny helpers ---------------- */
@@ -77,31 +80,42 @@ function isRealImage(buf) {
   return false;
 }
 
-/* ---------------- auth ---------------- */
+/* ---------------- auth (two roles: owner | seo) ----------------
+   owner = the hospital owner: full panel, including patient Leads.
+   seo   = the SEO contractor: everything EXCEPT Leads (patient data).
+   The role is signed into the session token, so it cannot be forged client-side,
+   and Leads are refused server-side (403) — never merely hidden in the UI. */
 function getConfig() { return readJson(CONFIG_PATH, null); }
-function verifyPassword(cfg, password) {
-  const hash = scryptSync(String(password), Buffer.from(cfg.salt, 'hex'), 32);
-  const stored = Buffer.from(cfg.passHash, 'hex');
+function verifyHash(password, saltHex, hashHex) {
+  if (!saltHex || !hashHex) return false; // role not configured (e.g. no SEO password set yet)
+  const hash = scryptSync(String(password), Buffer.from(saltHex, 'hex'), 32);
+  const stored = Buffer.from(hashHex, 'hex');
   return hash.length === stored.length && timingSafeEqual(hash, stored);
 }
-function makeToken(cfg) {
-  const exp = Date.now() + 7 * 24 * 3600 * 1000; // 7 days
-  const sig = createHmac('sha256', cfg.secret).update(String(exp)).digest('hex');
-  return `${exp}.${sig}`;
+function loginRole(cfg, password) {
+  if (verifyHash(password, cfg.salt, cfg.passHash)) return 'owner';
+  if (verifyHash(password, cfg.seoSalt, cfg.seoPassHash)) return 'seo';
+  return null;
 }
-function checkToken(cfg, token) {
-  if (!cfg || !token) return false;
-  const [exp, sig] = String(token).split('.');
-  const expNum = Number(exp);
-  if (!exp || !sig || !Number.isFinite(expNum) || expNum < Date.now()) return false;
-  const want = createHmac('sha256', cfg.secret).update(exp).digest('hex');
-  return sig.length === want.length && timingSafeEqual(Buffer.from(sig), Buffer.from(want));
+function makeToken(cfg, role) {
+  const exp = Date.now() + 7 * 24 * 3600 * 1000; // 7 days
+  const sig = createHmac('sha256', cfg.secret).update(`${exp}.${role}`).digest('hex');
+  return `${exp}.${role}.${sig}`;
 }
 function getCookie(req, name) {
   const m = (req.headers.cookie || '').match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
   return m ? m[1] : null;
 }
-function isAuthed(req) { return checkToken(getConfig(), getCookie(req, 'riims_admin')); }
+function getRole(req) { // -> 'owner' | 'seo' | null
+  const cfg = getConfig();
+  const token = getCookie(req, 'riims_admin');
+  if (!cfg || !token) return null;
+  const [exp, role, sig] = String(token).split('.');
+  const expNum = Number(exp);
+  if (!exp || !sig || !ROLES.includes(role) || !Number.isFinite(expNum) || expNum < Date.now()) return null;
+  const want = createHmac('sha256', cfg.secret).update(`${exp}.${role}`).digest('hex');
+  return (sig.length === want.length && timingSafeEqual(Buffer.from(sig), Buffer.from(want))) ? role : null;
+}
 
 /* ---------------- rate limit (public lead endpoint) ---------------- */
 const hits = new Map();
@@ -139,6 +153,52 @@ function saveSection(section, value) {
   local[section] = value;
   writeJson(LOCAL_PATH, local);
   rebuild();
+}
+
+/* ---------------- section shape validation (the two SEO-editable sections) ----
+   pagesSeo:        { "<page path>": {title?, desc?, h1?, noindex?} }
+   conditionEdits:  { "<cat>/<slug>": {intro?, aboutTitle?, about?, when?, symptoms?[], approach?[]} }
+   Condition fields are injected into HTML unescaped (build/pages.mjs), so "<" is
+   refused. redFlags/sources stay code-only: emergency advice and citations must not
+   be editable from a browser. Returns an error string, or null when the shape is ok. */
+const SEO_FIELDS = ['title', 'desc', 'h1'];
+const COND_STR_FIELDS = ['intro', 'aboutTitle', 'about', 'when'];
+const COND_ARR_FIELDS = ['symptoms', 'approach'];
+const LOCKED_FIELDS = ['redFlags', 'sources'];
+
+function validateSection(section, b) {
+  if (section !== 'pagesSeo' && section !== 'conditionEdits') return null;
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return `${section} must be an object`;
+
+  for (const [key, v] of Object.entries(b)) {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return `${key}: must be an object`;
+    const locked = LOCKED_FIELDS.find((f) => f in v);
+    if (locked) return `${key}: "${locked}" is locked for medical safety and can only be changed in code`;
+
+    if (section === 'pagesSeo') {
+      if (!/^\/[a-z0-9./-]*$/i.test(key)) return `${key}: not a valid page path`;
+      for (const [f, val] of Object.entries(v)) {
+        if (f === 'noindex') { if (typeof val !== 'boolean') return `${key}: noindex must be true/false`; continue; }
+        if (!SEO_FIELDS.includes(f)) return `${key}: unknown field "${f}"`;
+        if (typeof val !== 'string') return `${key}.${f}: must be text`;
+        if (val.length > 300) return `${key}.${f}: too long (max 300 characters)`;
+        if (val.includes('<')) return `${key}.${f}: HTML tags are not allowed`;
+      }
+    } else {
+      if (!/^(kidney|liver|heart|general)\/[a-z0-9-]+$/.test(key)) return `${key}: not a valid condition key`;
+      for (const [f, val] of Object.entries(v)) {
+        if (COND_STR_FIELDS.includes(f)) {
+          if (typeof val !== 'string') return `${key}.${f}: must be text`;
+          if (val.includes('<')) return `${key}.${f}: HTML tags are not allowed`;
+        } else if (COND_ARR_FIELDS.includes(f)) {
+          if (!Array.isArray(val)) return `${key}.${f}: must be a list`;
+          if (val.some((s) => typeof s !== 'string')) return `${key}.${f}: list items must be text`;
+          if (val.some((s) => s.includes('<'))) return `${key}.${f}: HTML tags are not allowed`;
+        } else return `${key}: unknown field "${f}"`;
+      }
+    }
+  }
+  return null;
 }
 
 /* ---------------- leads ---------------- */
@@ -191,15 +251,17 @@ createServer(async (req, res) => {
       const cfg = getConfig();
       if (!cfg) return send(res, 500, { error: 'Admin not set up. Run: node admin/set-password.mjs <password>' });
       const b = await readJsonBody(req);
-      if (!b || !verifyPassword(cfg, b.password || '')) return send(res, 401, { error: 'Wrong password' });
+      const role = b ? loginRole(cfg, b.password || '') : null;
+      if (!role) return send(res, 401, { error: 'Wrong password' });
       const secure = (req.headers['x-forwarded-proto'] === 'https') ? '; Secure' : '';
-      return send(res, 200, { ok: true }, { 'Set-Cookie': `riims_admin=${makeToken(cfg)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${7 * 24 * 3600}${secure}` });
+      return send(res, 200, { ok: true, role }, { 'Set-Cookie': `riims_admin=${makeToken(cfg, role)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${7 * 24 * 3600}${secure}` });
     }
     if (p === '/api/admin/logout' && req.method === 'POST') {
       return send(res, 200, { ok: true }, { 'Set-Cookie': 'riims_admin=; HttpOnly; Path=/; Max-Age=0' });
     }
     if (p === '/api/admin/me') {
-      return send(res, isAuthed(req) ? 200 : 401, { authed: isAuthed(req) });
+      const role = getRole(req);
+      return send(res, role ? 200 : 401, { authed: !!role, role });
     }
 
     /* ---- ADMIN UI (static; data behind auth) ---- */
@@ -208,7 +270,10 @@ createServer(async (req, res) => {
 
     /* ---- Everything below requires auth ---- */
     if (p.startsWith('/api/admin/')) {
-      if (!isAuthed(req)) return send(res, 401, { error: 'unauthorized' });
+      const role = getRole(req);
+      if (!role) return send(res, 401, { error: 'unauthorized' });
+      // Patient data is owner-only. Prefix match covers /leads, /leads/:id and any future subroute.
+      if (p.startsWith('/api/admin/leads') && role !== 'owner') return send(res, 403, { error: 'Leads are owner-only' });
 
       if (p === '/api/admin/content' && req.method === 'GET') {
         return send(res, 200, mergedContent());
@@ -219,8 +284,22 @@ createServer(async (req, res) => {
         if (!SECTIONS.includes(section)) return send(res, 400, { error: 'unknown section' });
         const b = await readJsonBody(req);
         if (b === null) return send(res, 400, { error: 'bad json' });
+        const shapeErr = validateSection(section, b);
+        if (shapeErr) return send(res, 400, { error: shapeErr });
+        // 'tracking' holds raw meta/verification tags, not prose — nothing to claim there.
+        if (section !== 'tracking') {
+          const hit = checkPayload(b);
+          if (hit) return send(res, 400, { error: `Blocked: "${hit.phrase}" (${hit.label}) cannot go on a medical site. Rephrase honestly — say what RIIMS does NOT promise. Field: ${hit.path || section}` });
+        }
         saveSection(section, b);
         return send(res, 200, { ok: true, rebuilding: true });
+      }
+
+      /* Page list for the "Pages / SEO" tab — regenerated by every build, so new
+         pages appear without any wiring. Absent only before the first build. */
+      if (p === '/api/admin/pages' && req.method === 'GET') {
+        const manifest = readJson(MANIFEST_PATH, null);
+        return send(res, 200, manifest ? { pages: manifest } : { pages: [], needsBuild: true });
       }
 
       if (p === '/api/admin/leads' && req.method === 'GET') {

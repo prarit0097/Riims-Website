@@ -12,7 +12,7 @@ import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
 import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage, categoryHubPage } from './pages.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
-import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS, CATEGORIES, CONDITION_SETS } from './data.mjs';
+import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS, CATEGORIES, CONDITION_SETS, PAGES_SEO, CONDITION_DEFAULTS } from './data.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
@@ -533,6 +533,58 @@ pages.push({
   desc: 'The page could not be found. Browse kidney conditions, the blog, or contact RIIMS, Baraut.',
   body: notFoundPage('/'),
 });
+
+/* ---------- Admin page manifest (data/pages-manifest.json) ----------
+   The "Pages / SEO" tab lists pages from this file, so ANY page added later shows
+   up there automatically — nothing to register by hand. Written before overrides
+   are applied, so `title`/`desc`/`h1` here are always the built-in defaults the
+   panel shows as placeholders. Gitignored build artifact; every build rewrites it. */
+const H1_RE = /<h1\b[^>]*>([\s\S]*?)<\/h1>/;
+function classify(p) {
+  if (p.noindex) return { type: 'system' };
+  if (p.path === '/conditions/') return { type: 'hub', cat: 'all' };
+  let m = p.path.match(/^\/conditions\/([a-z0-9-]+)\.html$/);
+  if (m) return { type: 'condition', cat: 'kidney', slug: m[1] };
+  m = p.path.match(/^\/conditions\/([a-z0-9-]+)\/$/);
+  if (m) return { type: 'hub', cat: CAT_BY_DIR[m[1]] || m[1] };
+  m = p.path.match(/^\/conditions\/([a-z0-9-]+)\/([a-z0-9-]+)\.html$/);
+  if (m) return { type: 'condition', cat: CAT_BY_DIR[m[1]] || m[1], slug: m[2] };
+  if (p.path.startsWith('/doctors/')) return { type: 'specialist' };
+  if (p.path.startsWith('/blog/')) return { type: 'blog' };
+  if (GUIDE_ORDER.some((k) => p.path === `/${k}.html`)) return { type: 'guide' };
+  if (LEGAL_KEYS.some((k) => p.path === `/${k}.html`)) return { type: 'legal' };
+  return { type: 'static' };
+}
+const CAT_BY_DIR = Object.fromEntries(Object.entries(CATEGORIES).map(([k, v]) => [v.dir, k]));
+const manifest = pages.map((p) => {
+  const cls = classify(p);
+  const entry = {
+    path: p.path, out: p.out, ...cls,
+    title: p.title, desc: p.desc,
+    h1: (p.body.match(H1_RE) || [])[1] || '',
+    noindex: !!p.noindex,
+  };
+  const defaults = cls.type === 'condition' && CONDITION_DEFAULTS[`${cls.cat}/${cls.slug}`];
+  if (defaults) entry.fields = defaults;
+  return entry;
+});
+writeFileSync(join(__dirname, '..', 'data', 'pages-manifest.json'), JSON.stringify(manifest, null, 2), 'utf8');
+
+/* ---------- Apply admin SEO overrides (Pages / SEO tab) ----------
+   Only non-empty values win, so a cleared field falls back to the built-in default
+   and check.mjs can never meet an empty <title>/description/<h1>. */
+for (const p of pages) {
+  const o = PAGES_SEO[p.path];
+  if (!o || typeof o !== 'object') continue;
+  const title = String(o.title || '').trim();
+  const desc = String(o.desc || '').trim();
+  const h1 = String(o.h1 || '').trim();
+  if (title) p.title = title;
+  if (desc) p.desc = desc; // still clamped to 155 chars by head()
+  // Function-form replace: a $-sign in the H1 text must stay literal, not become a backreference.
+  if (h1) p.body = p.body.replace(H1_RE, (m, _inner) => m.slice(0, m.indexOf('>') + 1) + esc(h1) + '</h1>');
+  if (o.noindex === true) p.noindex = true; // also drops the page from sitemap.xml
+}
 
 /* ---------- Write ---------- */
 mkdirSync(join(OUT, 'conditions'), { recursive: true });

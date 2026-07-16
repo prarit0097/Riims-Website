@@ -115,6 +115,11 @@ export const PROTOCOL = {
 export const ABOUT_ADMIN = (CONTENT.about && typeof CONTENT.about === 'object') ? CONTENT.about : {};
 export const LEGAL_ADMIN = (CONTENT.legal && typeof CONTENT.legal === 'object') ? CONTENT.legal : {};
 
+/* Admin "Pages / SEO" tab (see §23). Both default to {} — with no overrides saved,
+   every page renders exactly as it did before this feature existed. */
+export const PAGES_SEO = (CONTENT.pagesSeo && typeof CONTENT.pagesSeo === 'object') ? CONTENT.pagesSeo : {};
+export const CONDITION_EDITS = (CONTENT.conditionEdits && typeof CONTENT.conditionEdits === 'object') ? CONTENT.conditionEdits : {};
+
 /* Home hero banner slider (Admin → Banners). Each slide: img (path, incl. admin uploads),
    alt (SEO/accessibility), url (optional click link). Any image size is fine — the slider
    cover-fills a fixed frame, so add/remove never breaks the layout. Empty = defaults.
@@ -1203,6 +1208,38 @@ export const GENERAL = {
 
 /* Category key -> condition map. conditionPage()/generate.mjs resolve through this. */
 export const CONDITION_SETS = { kidney: CONDITIONS, liver: LIVER, heart: HEART, general: GENERAL };
+
+/* ---------------- Admin condition edits (Pages / SEO tab) ----------------
+   The six fields below are editable from /admin/; redFlags and sources are NOT —
+   emergency advice and medical citations stay code-only (the server refuses them
+   too, see validateSection in admin/server.mjs).
+   CONDITION_DEFAULTS is a snapshot taken BEFORE any edit is applied, so the panel
+   can always show the original text and "reset to default" stays truthful.
+   An absent/blank override changes nothing — that is what keeps every page
+   byte-identical until someone deliberately edits it. */
+export const CONDITION_EDIT_FIELDS = { str: ['intro', 'aboutTitle', 'about', 'when'], arr: ['symptoms', 'approach'] };
+export const CONDITION_DEFAULTS = {};
+for (const [cat, set] of Object.entries(CONDITION_SETS)) {
+  for (const [slug, c] of Object.entries(set)) {
+    CONDITION_DEFAULTS[`${cat}/${slug}`] = {
+      intro: c.intro, aboutTitle: c.aboutTitle, about: c.about, when: c.when,
+      symptoms: [...(c.symptoms || [])], approach: [...(c.approach || [])],
+    };
+  }
+}
+for (const [key, edit] of Object.entries(CONDITION_EDITS)) {
+  const [cat, slug] = String(key).split('/');
+  const c = CONDITION_SETS[cat] && CONDITION_SETS[cat][slug];
+  if (!c || !edit || typeof edit !== 'object') continue;
+  for (const f of CONDITION_EDIT_FIELDS.str) {
+    if (typeof edit[f] === 'string' && edit[f].trim()) c[f] = edit[f].trim();
+  }
+  for (const f of CONDITION_EDIT_FIELDS.arr) {
+    if (!Array.isArray(edit[f])) continue;
+    const list = edit[f].map((s) => String(s).trim()).filter(Boolean);
+    if (list.length) c[f] = list; // an empty list means "no override", never an empty grid
+  }
+}
 
 /* ---------------- Home: conditions grid ---------------- */
 export const PROBLEMS = [

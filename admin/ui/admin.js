@@ -7,6 +7,8 @@
   let content = null;   // merged content (site, doctors, reels, testimonials, faqs, posts)
   let leads = [];
   let view = 'leads';
+  let role = null;      // 'owner' (full panel) | 'seo' (no Leads — patient data)
+  let pagesManifest = null;
 
   /* ---------------- api ---------------- */
   async function api(path, opts = {}) {
@@ -98,7 +100,9 @@
   /* ---------------- views ---------------- */
   function render() {
     const v = $('#view');
+    if (view === 'leads' && role !== 'owner') view = 'pages'; // patient data is owner-only
     if (view === 'leads') return renderLeads(v);
+    if (view === 'pages') return renderPages(v);
     if (view === 'doctors') return renderDoctors(v);
     if (view === 'reels') return renderReels(v);
     if (view === 'stories') return renderStories(v);
@@ -114,6 +118,155 @@
     if (view === 'legal') return renderLegal(v);
     if (view === 'tracking') return renderTracking(v);
     if (view === 'settings') return renderSettings(v);
+  }
+
+  /* ---- Pages / SEO ----
+     Lists every page from data/pages-manifest.json (rewritten by each build, so new
+     pages appear on their own) and edits title / meta description / H1 per page.
+     Condition pages also expose their six text fields. Empty input = use the built-in
+     default, so clearing a field always restores the original page. */
+  const PAGE_GROUPS = [
+    ['static', 'Main pages'], ['hub', 'Category hubs'],
+    ['condition:kidney', 'Kidney conditions'], ['condition:liver', 'Liver conditions'],
+    ['condition:heart', 'Heart conditions'], ['condition:general', 'General / metabolic'],
+    ['specialist', 'Doctor / specialist pages'], ['blog', 'Blog posts'],
+    ['guide', 'Guides'], ['legal', 'Legal pages'], ['system', 'System'],
+  ];
+  const groupOf = (e) => (e.type === 'condition' ? `condition:${e.cat}` : e.type);
+  const COND_STR = [['intro', 'Intro (also becomes the meta description)'], ['aboutTitle', 'About heading'], ['about', 'About text'], ['when', 'When to see a doctor']];
+  const COND_ARR = [['symptoms', 'Symptoms'], ['approach', 'RIIMS approach']];
+  let pageFilter = '';
+  let pageOpen = null;
+
+  function counterClass(len, max) { return len > max ? 'count over' : 'count'; }
+
+  function renderPages(v) {
+    if (!pagesManifest) {
+      v.innerHTML = '<h2>Pages / SEO</h2><p class="muted">Loading pages…</p>';
+      api('/api/admin/pages').then((d) => { pagesManifest = d; render(); })
+        .catch((e) => { v.innerHTML = `<h2>Pages / SEO</h2><p class="err">Could not load pages: ${esc(e.message)}</p>`; });
+      return;
+    }
+    if (pagesManifest.needsBuild || !pagesManifest.pages.length) {
+      v.innerHTML = '<h2>Pages / SEO</h2><div class="card"><p>The page list has not been built yet.</p><p class="muted">Click <strong>🔄 Rebuild site</strong> in the bottom-left, wait a few seconds, then open this tab again.</p></div>';
+      return;
+    }
+    const seo = content.pagesSeo || (content.pagesSeo = {});
+    const edits = content.conditionEdits || (content.conditionEdits = {});
+    const q = pageFilter.toLowerCase();
+    const all = pagesManifest.pages;
+    const shown = q ? all.filter((e) => (e.path + ' ' + e.title).toLowerCase().includes(q)) : all;
+    const editedCount = Object.keys(seo).length + Object.keys(edits).length;
+
+    let html = `<h2>Pages / SEO <span class="muted" style="font-weight:400;font-size:14px">${all.length} pages</span></h2>
+      <p class="muted">Every page on the website. Edit the Google title, meta description, H1 heading — and the full text of a disease page. Leave a box empty to keep the built-in default.${editedCount ? ` <strong>${editedCount} page(s) edited.</strong>` : ''}</p>
+      <div class="card"><label class="f">Find a page<input id="pg-filter" value="${esc(pageFilter)}" placeholder="Type a page name or URL, e.g. fatty liver"></label></div>`;
+
+    for (const [key, label] of PAGE_GROUPS) {
+      const rows = shown.filter((e) => groupOf(e) === key);
+      if (!rows.length) continue;
+      html += `<h3 class="grp">${label} <span class="muted">(${rows.length})</span></h3>`;
+      for (const e of rows) {
+        const ov = seo[e.path] || {};
+        const ce = e.type === 'condition' ? (edits[`${e.cat}/${e.slug}`] || {}) : {};
+        const isEdited = Object.keys(ov).length || Object.keys(ce).length;
+        const open = pageOpen === e.path;
+        html += `<div class="card pg${open ? ' open' : ''}">
+          <div class="pg-head" data-open="${esc(e.path)}">
+            <div><strong>${esc(ov.title || e.title)}</strong>${isEdited ? ' <span class="badge">edited</span>' : ''}${e.noindex || ov.noindex ? ' <span class="badge warn">noindex</span>' : ''}
+              <div class="muted small">${esc(e.path)}</div></div>
+            <button class="btn light small">${open ? 'Close' : 'Edit'}</button>
+          </div>
+          ${open ? pageEditor(e, ov, ce) : ''}
+        </div>`;
+      }
+    }
+    v.innerHTML = html;
+    wirePages(v, seo, edits);
+  }
+
+  function pageEditor(e, ov, ce) {
+    const t = ov.title ?? '', d = ov.desc ?? '', h = ov.h1 ?? '';
+    let html = `<div class="pg-body">
+      <label class="f">Google title <span class="${counterClass((t || e.title).length, 60)}">${(t || e.title).length}/60</span>
+        <input data-seo="title" value="${esc(t)}" placeholder="${esc(e.title)}"></label>
+      <label class="f">Meta description <span class="${counterClass((d || e.desc || '').length, 155)}">${(d || e.desc || '').length}/155</span>
+        <textarea data-seo="desc" rows="2" placeholder="${esc(e.desc || '')}">${esc(d)}</textarea></label>
+      <label class="f">H1 heading (the big heading on the page)
+        <input data-seo="h1" value="${esc(h)}" placeholder="${esc(e.h1)}"></label>
+      <label class="chk"><input type="checkbox" data-seo="noindex" ${ov.noindex ? 'checked' : ''}> Hide this page from Google (noindex)
+        <span class="muted small">Removes it from sitemap.xml too. Only for pages you do not want found.</span></label>`;
+
+    if (e.type === 'condition' && e.fields) {
+      html += `<hr><p class="muted"><strong>Page text</strong> — leave empty to keep the current text.</p>`;
+      for (const [f, label] of COND_STR) {
+        html += `<label class="f">${label}
+          <textarea data-cond="${f}" rows="${f === 'about' ? 4 : 2}" placeholder="${esc(e.fields[f] || '')}">${esc(ce[f] ?? '')}</textarea></label>`;
+      }
+      for (const [f, label] of COND_ARR) {
+        const val = Array.isArray(ce[f]) ? ce[f].join('\n') : '';
+        html += `<label class="f">${label} <span class="muted small">(one per line)</span>
+          <textarea data-cond="${f}" rows="4" placeholder="${esc((e.fields[f] || []).join('\n'))}">${esc(val)}</textarea></label>`;
+      }
+      html += `<p class="muted small">🔒 The emergency red-flag box and the medical sources are locked and can only be changed in the code — they are safety content.</p>`;
+    } else if (e.type === 'blog') {
+      html += `<p class="muted small">The article text is edited in the <strong>Blogs</strong> tab.</p>`;
+    } else if (e.type !== 'condition') {
+      html += `<p class="muted small">The page text is edited in its own tab (Services / Why RIIMS / How it works / About page / Legal pages / Home Banners).</p>`;
+    }
+    html += `<div class="row-btns"><button class="btn primary" data-save="${esc(e.path)}">Save</button>
+      <button class="btn light" data-reset="${esc(e.path)}">Reset to default</button></div></div>`;
+    return html;
+  }
+
+  function wirePages(v, seo, edits) {
+    const f = $('#pg-filter', v);
+    if (f) f.oninput = () => { pageFilter = f.value; const p = f.selectionStart; render(); const n = $('#pg-filter'); n.focus(); n.setSelectionRange(p, p); };
+    v.querySelectorAll('[data-open]').forEach((el) => el.onclick = () => { pageOpen = pageOpen === el.dataset.open ? null : el.dataset.open; render(); });
+    v.querySelectorAll('[data-save]').forEach((btn) => btn.onclick = async () => {
+      const path = btn.dataset.save;
+      const entry = pagesManifest.pages.find((e) => e.path === path);
+      const body = btn.closest('.pg-body');
+      // Only non-empty values are stored, so a cleared box means "use the default".
+      const ov = {};
+      body.querySelectorAll('[data-seo]').forEach((el) => {
+        if (el.dataset.seo === 'noindex') { if (el.checked) ov.noindex = true; return; }
+        const val = el.value.trim();
+        if (val) ov[el.dataset.seo] = val;
+      });
+      if (Object.keys(ov).length) seo[path] = ov; else delete seo[path];
+
+      let condOk = true;
+      if (entry.type === 'condition') {
+        const key = `${entry.cat}/${entry.slug}`;
+        const ce = {};
+        body.querySelectorAll('[data-cond]').forEach((el) => {
+          const f2 = el.dataset.cond;
+          if (COND_ARR.some(([k]) => k === f2)) {
+            const list = el.value.split('\n').map((s) => s.trim()).filter(Boolean);
+            if (list.length) ce[f2] = list;
+          } else if (el.value.trim()) ce[f2] = el.value.trim();
+        });
+        if (Object.keys(ce).length) edits[key] = ce; else delete edits[key];
+        condOk = await saveSectionOk('conditionEdits', edits, 'Page text');
+      }
+      // The section is replaced wholesale server-side, so the complete object goes every time.
+      if (condOk) { if (await saveSectionOk('pagesSeo', seo, 'Page SEO')) render(); }
+    });
+    v.querySelectorAll('[data-reset]').forEach((btn) => btn.onclick = async () => {
+      const path = btn.dataset.reset;
+      const entry = pagesManifest.pages.find((e) => e.path === path);
+      delete seo[path];
+      if (entry.type === 'condition') { delete edits[`${entry.cat}/${entry.slug}`]; await saveSectionOk('conditionEdits', edits, 'Page text'); }
+      if (await saveSectionOk('pagesSeo', seo, 'Page SEO')) render();
+    });
+  }
+
+  /* Like saveSection, but reports whether it actually saved (so a compliance
+     rejection does not silently look successful). */
+  async function saveSectionOk(section, value, label) {
+    try { await api(`/api/admin/content/${section}`, { method: 'PUT', body: JSON.stringify(value) }); toast(`${label} saved — site rebuilding…`); return true; }
+    catch (e) { toast(e.message, true); return false; }
   }
 
   /* ---- Leads ---- */
@@ -711,8 +864,20 @@
   /* ---------------- boot ---------------- */
   async function boot() {
     try {
-      await api('/api/admin/me');
-      [content, leads] = await Promise.all([api('/api/admin/content'), api('/api/admin/leads')]);
+      const me = await api('/api/admin/me');
+      role = me.role || 'owner';
+      // The SEO role never requests Leads: the server answers 403, which would
+      // reject the Promise.all and leave the panel blank. The 403 is the real
+      // guard; hiding the tab is only so the button isn't there to click.
+      const isOwner = role === 'owner';
+      [content, leads] = await Promise.all([api('/api/admin/content'), isOwner ? api('/api/admin/leads') : []]);
+      pagesManifest = null;
+      const badge = $('#role-badge');
+      badge.textContent = isOwner ? 'Owner' : 'SEO';
+      badge.classList.remove('hidden');
+      $('#nav [data-view="leads"]').classList.toggle('hidden', !isOwner);
+      if (!isOwner && view === 'leads') view = 'pages';
+      document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('active', b.dataset.view === view));
       showApp(); render();
     } catch { /* showLogin already called on 401 */ }
   }

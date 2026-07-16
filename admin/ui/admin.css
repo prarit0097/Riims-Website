@@ -68,6 +68,24 @@ td select, td input { padding: 6px 8px; border: 1px solid var(--line); border-ra
 .stat b { display: block; font-size: 24px; color: var(--teal); }
 .stat span { font-size: 12px; color: var(--muted); }
 
+/* Pages / SEO tab */
+.role-badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: #5fc492; color: #06301f; font-size: 10px; font-weight: 800; font-style: normal; letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
+.grp { margin: 22px 0 10px; font-size: 15px; }
+.card.pg { padding: 0; }
+.pg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; cursor: pointer; }
+.pg-head:hover { background: #f4f9fa; }
+.card.pg.open .pg-head { border-bottom: 1px solid var(--line); background: #f4f9fa; }
+.pg-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.pg-body hr { border: none; border-top: 1px solid var(--line); margin: 4px 0; }
+.small { font-size: 12px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e8f7ef; color: #14905b; font-size: 10.5px; font-weight: 700; }
+.badge.warn { background: #fbf2dd; color: #c98a14; }
+.count { float: right; font-weight: 600; color: var(--muted); }
+.count.over { color: #c98a14; }
+label.chk { display: block; font-size: 13px; }
+label.chk .small { display: block; margin-left: 22px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.row-btns { display: flex; gap: 8px; }
+
 /* Toast */
 .toast { position: fixed; top: 18px; right: 18px; background: var(--teal-deep); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); z-index: 50; }
 .toast.error { background: var(--danger); }

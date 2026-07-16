@@ -25,3 +25,6 @@ data/leads.json
 data/content.local.json
 data/admin-config.json
 site/assets/uploads/
+
+# Build artifact: page list for the admin "Pages / SEO" tab (rewritten by every build)
+data/pages-manifest.json

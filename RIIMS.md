@@ -89,17 +89,19 @@ RiimS/
 │   │                         #   contact, blog-article, legal)
 │   ├── serve.mjs             # zero-dependency local preview server (port 5173)
 │   ├── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors, stale domain
+│   ├── compliance.mjs        # banned medical claims guard — admin refuses any save that hits it (§23)
 │   └── optimize-images.mjs   # one-shot raster optimizer (WebP + shrunk logo/hero); needs dev-only `sharp`
 │
 ├── admin/                    # ── ADMIN PANEL (see §23) ──
-│   ├── server.mjs            # zero-dep Node server: leads API, content CRUD, uploads, rebuild
-│   ├── set-password.mjs      # one-time: set admin password (writes data/admin-config.json)
+│   ├── server.mjs            # zero-dep Node server: leads API, content CRUD, uploads, rebuild; owner/seo roles
+│   ├── set-password.mjs      # set owner password; --seo sets the SEO-role password (data/admin-config.json)
 │   └── ui/                   # the /admin/ panel (index.html + admin.js + admin.css)
 ├── data/                     # ── CONTENT + RUNTIME DATA ──
 │   ├── content.json          # admin-editable content defaults (in git)
 │   ├── content.local.json    # VPS admin edits — overrides content.json (GITIGNORED)
+│   ├── pages-manifest.json   # build artifact: page list for the Pages/SEO tab (GITIGNORED)
 │   ├── leads.json            # stored appointment leads (GITIGNORED)
-│   └── admin-config.json     # admin password hash + session secret (GITIGNORED)
+│   └── admin-config.json     # owner + SEO password hashes & session secret (GITIGNORED)
 ├── docker-compose.admin.yml  # runs the admin server in Docker on 127.0.0.1:5500
 ├── docker-compose.yml        # alt: site as a container behind Traefik (not used)
 ├── deploy/                   # ── DEPLOYMENT (see DEPLOY.md) ──
@@ -232,17 +234,25 @@ narrow exception:** for `posts`, an empty `body`/`faqs`/`refs`/`relatedPosts` is
 matching repo post, so repo-authored blog content is never wiped when the admin copy leaves those
 fields blank). `build/data.mjs` reads/merges both and derives the phone formats.
 
-The **17 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `site` (numbers + business
+The **20 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `site` (numbers + business
 info + social), `tracking`, `stats`, `storyVideo`, `doctors`, `reels`, `testimonials`, `faqs`, `posts`,
-`search`, `cta`, `protocol`, `services`, `why`, `steps`, `about`, `legal`. Each has a `/admin/` tab
-(see §23). For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
+`search`, `cta`, `protocol`, `services`, `why`, `steps`, `about`, `legal`, `banners`, `pagesSeo`,
+`conditionEdits`. Each has a `/admin/` tab (see §23) — the last two are both driven by the **Pages /
+SEO** tab. For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
 `legal`, `search`), an absent/empty value falls back to the default baked into `data.mjs`/`pages.mjs`,
 so the site always renders.
 
-**Still code-only** (owner chose to keep these in code for SEO/medical quality — see §19): the 8
-condition pages (`CONDITIONS`), the 7 patient guides (`build/guides.mjs` + `build/guides/*.md`), the
-`NAV` links, footer link columns, and the medical disclaimers. Edit content via `/admin/` on the live
-site, or via `data/content.json` in the repo.
+**Condition pages are partly admin-editable** (since the Pages / SEO tab): title, meta description, H1
+and the six text fields (`intro`, `aboutTitle`, `about`, `when`, `symptoms`, `approach`) of all 47
+conditions can be edited from `/admin/`, stored as `pagesSeo`/`conditionEdits` overrides. The condition
+copy itself still *lives* in `build/data.mjs` — the overrides layer on top, and an empty override means
+the code value wins.
+
+**Still code-only** (owner chose to keep these in code for SEO/medical quality — see §19): every
+condition's `redFlags` (emergency box) and `sources` (citations) — locked as safety content, refused by
+the admin server — plus the 7 patient guides (`build/guides.mjs` + `build/guides/*.md`), the `NAV`
+links, footer link columns, and the medical disclaimers. Edit content via `/admin/` on the live site,
+or via `data/content.json` / `build/data.mjs` in the repo.
 
 - **`SITE`** — name, fullName, `origin` (**`https://riimshospitals.com`** — the production
   domain; non-www is canonical, the server 301-redirects www → apex), `phone`
@@ -753,10 +763,34 @@ Docker container (`docker-compose.admin.yml`, Node 24 alpine, bound to `127.0.0.
 host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-dependency)
 + `admin/ui/` (vanilla JS SPA).
 
+### Two logins: owner and SEO
+
+| Role | Password | Sees |
+|------|----------|------|
+| **owner** | `node admin/set-password.mjs '<pass>'` | Everything, including **Leads** (patient names/phones) |
+| **seo** | `node admin/set-password.mjs --seo '<pass>'` | Everything **except Leads** — for an outside SEO contractor |
+
+Both hashes live in `data/admin-config.json` (gitignored): `{salt, passHash, secret, seoSalt?, seoPassHash?}`.
+Owner mode rewrites the file but preserves an existing SEO credential; `--seo` requires the
+owner password to exist first and never touches it.
+
+**The Leads block is server-side, not cosmetic.** The role is signed into the session token
+(`makeToken` → `<exp>.<role>.<hmac>`, verified by `getRole`), so it cannot be forged in the
+browser, and `admin/server.mjs` refuses `/api/admin/leads*` with **403** for the seo role
+before any handler runs. The UI also hides the Leads tab and boots the seo role straight to
+Pages / SEO — but that is only so the button isn't there to click; the 403 is the real guard.
+The seo role never *requests* leads on boot (a 403 inside the boot `Promise.all` would blank
+the panel).
+
+> **Token format changed** when this landed (`exp.sig` → `exp.role.sig`). Old cookies are
+> invalid, so everyone logs in once more after deploy. If `seoSalt`/`seoPassHash` are absent,
+> the SEO login simply fails with "Wrong password" — nothing crashes.
+
 ### What it controls
 | Tab | What you can do |
 |-----|-----------------|
-| **Leads** | Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
+| **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal) with a find-a-page filter. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the FAQPage/MedicalWebPage JSON-LD), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
+| **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
@@ -777,12 +811,53 @@ host nginx proxies `/admin/` and `/api/` to it. Code: `admin/server.mjs` (zero-d
   empty blog `body`/`faqs`/`refs` is filled from the repo post (see §8), then the server **auto-runs the
   generator** — the
   static site updates within seconds. Git pulls never clobber admin edits.
+- **Compliance guard (`build/compliance.mjs`).** Every content save except `tracking` (raw
+  meta tags) is scanned by `checkPayload()`; a hit is refused with **400** naming the phrase
+  and the field, and the panel shows it in a red toast. Blocks "100% cure", "guaranteed
+  cure/recovery", "permanent cure", "stop dialysis", "reverse kidney/liver failure",
+  "miracle cure", "पक्का इलाज", "गारंटी से इलाज". It deliberately does **not** fire on honest
+  copy that names a false claim to deny it ("No *100% cure* or *stop dialysis* promises,
+  ever."), on quoted mentions, or inside a question ("Can Ayurvedic herbs cure kidney
+  disease?" — an FAQ heading the site answers with "No.") — a match is exempt when negated
+  within the preceding 90 chars, quoted, or in a sentence ending in "?". Verified to flag
+  **zero** of the existing `content.json` / `CONDITION_SETS` / `GUIDES` copy. It is a guard
+  rail, not a lawyer: it catches the careless claim, not a determined author.
+- **Shape validation** (`validateSection`, owner and seo alike) for the two new sections:
+  page keys must look like paths, condition keys must be `<cat>/<slug>`, only the whitelisted
+  fields are accepted, `redFlags`/`sources` are refused, and **`<` is rejected** — condition
+  text is injected into HTML unescaped by `build/pages.mjs`, so no tags may enter through it.
 - Image uploads go to `site/assets/uploads/` (gitignored) via base64 JSON (10MB nginx cap).
 - The public form (`site/js/site.js`) POSTs to **`/api/lead`** on submit (single step:
   name/phone/problem). Honeypot field + 10/min/IP rate limit. Leads go ONLY to the admin
   panel (no WhatsApp redirect, per owner request).
-- Auth: scrypt password hash + HMAC-signed 7-day session cookie (`data/admin-config.json`,
-  created by `node admin/set-password.mjs '<password>'`). UI is `noindex`.
+- Auth: scrypt password hash(es) + HMAC-signed 7-day session cookie carrying the role
+  (`data/admin-config.json`, created by `node admin/set-password.mjs '<password>'`, plus
+  `--seo` for the SEO role). UI is `noindex`.
+
+### How Pages / SEO reaches the built site
+- **`data/pages-manifest.json`** — a gitignored **build artifact** rewritten by *every*
+  `node build/generate.mjs` (so also by `deploy/update.sh` and `npm test`; it self-heals and
+  can never go stale). It is the `pages` array reduced to data — `{path, out, type, cat?,
+  slug?, title, desc, h1, noindex, fields?}` — captured **before** overrides are applied, so
+  it always carries the built-in defaults the panel shows as placeholders. `type` is derived
+  from the URL shape by `classify()`, which is why **any page added later appears in the tab
+  on its own, with nothing to register**. Served by `GET /api/admin/pages`; before the very
+  first build the endpoint answers `{pages: [], needsBuild: true}` and the tab says so.
+- **`pagesSeo`** → applied in `generate.mjs` after the manifest write: non-empty `title`/`desc`
+  replace `p.title`/`p.desc`; a non-empty `h1` is swapped into the page body by regex
+  (`check.mjs` guarantees exactly one `<h1>`), escaped through `esc()` and replaced with a
+  **function-form** `.replace()` so a `$` in the heading stays literal; `noindex: true` adds the
+  robots meta and drops the page from `sitemap.xml`.
+- **`conditionEdits`** → applied in `data.mjs` right after `CONDITION_SETS`, mutating the
+  condition objects in place. Because `conditionPage()`, the derived meta description and the
+  JSON-LD all read those same objects, an edited `intro` updates the page, the `<meta>` and the
+  schema together. `CONDITION_DEFAULTS` snapshots the six fields **before** any edit, so the
+  panel's placeholders and "reset to default" stay truthful. Only non-empty values win — an
+  empty string or empty array means "no override" (this is what stops an empty `symptoms: []`
+  from rendering an empty grid).
+- **Both default to `{}`, so with nothing saved every page is byte-for-byte what it was before
+  this feature existed** — verified by diffing the whole `site/` tree. That is what protects
+  the kidney pages' rankings.
 
 ### VPS setup (one-time)
 ```bash
@@ -793,6 +868,16 @@ cp deploy/nginx-riims-bootstrap.conf /etc/nginx/sites-available/riimshospitals  
 certbot --nginx -d riimshospitals.com -d www.riimshospitals.com --redirect --non-interactive --reinstall
 nginx -t && systemctl reload nginx
 ```
+
+### Giving the SEO contractor access (on the VPS)
+```bash
+ssh root@187.127.132.106
+bash /opt/riims/deploy/update.sh                     # pull the code + rebuild
+docker run --rm -v /opt/riims:/app -w /app node:24-alpine node admin/set-password.mjs --seo 'STRONG-SEO-PASSWORD'
+docker compose -f /opt/riims/docker-compose.admin.yml restart   # server.mjs changed → restart needed
+```
+Hand over that password only — never the owner one. `update.sh` alone does **not** pick up
+`admin/server.mjs` changes: the container must restart.
 Update flow note: `deploy/update.sh` now rebuilds after `git reset` so admin content survives
 code updates (it uses host node, or the node:24-alpine image if node isn't installed).
 
