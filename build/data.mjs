@@ -657,6 +657,7 @@ export const HEART = {
     redFlags: {
       emergency: [
         'Chest discomfort lasting more than a few minutes, or that goes away and comes back: call your local emergency number (in most of India, 108 or 112) immediately',
+        'Call an ambulance and do not drive yourself or the patient. Minutes matter, and an ambulance crew can begin treatment on the way to hospital',
         'Discomfort spreading to one or both arms, the back, neck, jaw or stomach, with or without chest pain',
         'Shortness of breath, a cold sweat, nausea or lightheadedness, even without obvious chest pain',
         'Someone collapses and is unresponsive, not breathing normally, or only gasping: this is cardiac arrest. Start Hands-Only CPR immediately (push hard and fast in the centre of the chest) and do not stop until help arrives',
