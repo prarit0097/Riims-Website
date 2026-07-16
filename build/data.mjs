@@ -1217,7 +1217,7 @@ export const PROBLEMS = [
 ];
 
 const DEFAULT_WHY = [
-  { icon: 'target', title: 'Kidney-focused institute', desc: 'A team and process built specifically around nephrology and kidney health.' },
+  { icon: 'target', title: 'Kidney-led, integrated institute', desc: 'A team built around nephrology and kidney health, using the same doctor-led approach for liver, heart and metabolic care.' },
   { icon: 'git-merge', title: 'DNA Kayakalp Protocol care', desc: 'An integrated D-N-A approach: Diagnosis, Nutrition and Ayurveda-led activation.' },
   { icon: 'map', title: 'Kidney Mapping first', desc: 'We map your full kidney picture — function, markers, diet and lifestyle — before advising.' },
   { icon: 'salad', title: 'RiiMS Renal Plate & lifestyle', desc: 'Practical, region-aware kidney diet and daily-routine guidance you can follow.' },
@@ -1287,13 +1287,17 @@ const DEFAULT_SERVICES = [
 /* "Complete Care" service tiles (Admin → Services). Empty = defaults above. */
 export const SERVICES = (Array.isArray(CONTENT.services) && CONTENT.services.length) ? CONTENT.services : DEFAULT_SERVICES;
 
-/* Multi-disease search dataset (used by the home search banner + site.js). */
+/* Multi-disease search dataset — legacy fallback (the live search widget is now
+   admin-driven via SEARCH/search-data.js, see §8/§26 in RIIMS.md). Kept in sync
+   with reality regardless: RIIMS treats liver, heart and diabetes in-house, so
+   those three no longer read as referral-only. Cancer stays referral & support
+   — that is accurate and it is the legally safer position for an oncology claim. */
 export const HEALTH_DB = {
   Kidney: { tone: 'green', doctor: { name: 'Dr. Abhishek Gupta', title: 'Senior Nephrologist', init: 'AG' }, blogs: ['High creatinine: symptoms & causes', 'CKD diet chart (Indian, veg)', 'Dialysis myths vs facts'], video: '5 signs your creatinine is rising' },
-  Liver: { tone: 'cream', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['Fatty liver: causes & reversal', 'Foods that support liver health', 'When jaundice needs a doctor'], video: 'Understanding fatty liver in 3 minutes' },
-  Diabetes: { tone: 'blue', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['Protect your kidneys with diabetes', 'Diabetic diet basics', 'HbA1c explained simply'], video: 'Diabetes & kidney health: what to watch' },
+  Liver: { tone: 'cream', doctor: { name: 'RIIMS Care Team', title: 'Integrated care at RIIMS', init: 'RC' }, blogs: ['Fatty liver: causes & care', 'Foods that support liver health', 'When jaundice needs a doctor'], video: 'Understanding fatty liver in 3 minutes' },
+  Diabetes: { tone: 'blue', doctor: { name: 'RIIMS Care Team', title: 'Integrated care at RIIMS', init: 'RC' }, blogs: ['Protect your kidneys with diabetes', 'Diabetic diet basics', 'HbA1c explained simply'], video: 'Diabetes & kidney health: what to watch' },
   Cancer: { tone: 'cream', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['Early warning signs to discuss', 'Nutrition during treatment', 'Getting a second opinion'], video: 'Talking to your doctor about a diagnosis' },
-  Heart: { tone: 'blue', doctor: { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' }, blogs: ['BP control protects kidneys & heart', 'Heart-friendly Indian diet', 'When chest symptoms need care'], video: 'Blood pressure & your organs' },
+  Heart: { tone: 'blue', doctor: { name: 'RIIMS Care Team', title: 'Integrated care at RIIMS', init: 'RC' }, blogs: ['BP control protects kidneys & heart', 'Heart-friendly Indian diet', 'When chest symptoms need care'], video: 'Blood pressure & your organs' },
 };
 export const POPULAR = ['Kidney', 'High creatinine', 'CKD', 'Dialysis'];
 

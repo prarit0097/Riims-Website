@@ -11,10 +11,13 @@ If you are new here, read this top to bottom and you will understand the whole p
 
 ## 1. What is this project?
 
-A **website for RIIMS — Rashtriya Institute of Integrated Medical Sciences**, a kidney-focused
-medical institute in **Baraut, Uttar Pradesh, India**. RIIMS provides ethical, doctor-led,
-report-based kidney care: high creatinine, CKD (chronic kidney disease), kidney failure,
-dialysis guidance, kidney diet, and Ayurveda-supported integrated lifestyle care.
+A **website for RIIMS — Rashtriya Institute of Integrated Medical Sciences**, a kidney-led
+integrated medical institute in **Baraut, Uttar Pradesh, India**. RIIMS provides ethical,
+doctor-led, report-based kidney care: high creatinine, CKD (chronic kidney disease), kidney
+failure, dialysis guidance, kidney diet, and Ayurveda-supported integrated lifestyle care. As of
+the multi-disease expansion (see §26), RIIMS also treats **liver, heart and general/metabolic
+disease in-house** — kidney remains the site's SEO anchor (home `<title>`/`<h1>` unchanged), but
+the Treatments page, footer and condition silos now surface all 4 categories.
 
 The website is a **marketing + patient-education + lead-generation site**. Its jobs:
 1. Help patients/families understand kidney conditions in plain language.
@@ -283,6 +286,8 @@ site, or via `data/content.json` in the repo.
 - **`WHY`, `STEPS`** — "Why RIIMS" cards + "How consultation works" steps. **Admin-editable**
   (Admin → Why RIIMS / How it works; `content.json → why` / `steps`; empty = code defaults; `STEPS`
   numbering `n` is auto by order). **`SERVICES`** likewise (Admin → Services; `content.json → services`).
+  As of Task 6, the first `WHY` default card reads **"Kidney-led, integrated institute"** (was
+  "Kidney-focused institute") — same kidney-first framing, now honest about the other 3 categories.
 - **`DOCTORS`** (3), **`DOCTORS_FULL`** (6, doctors page), **`EXPERTS`** (5, home carousel).
 - **`POSTS`** — the 9 blog posts. Each has `slug` (→ `/blog/<slug>.html`), `related` (a
   condition slug used to build the article body), `cat`, `title`, `excerpt`, `time`, `tone`,
@@ -301,7 +306,12 @@ site, or via `data/content.json` in the repo.
   to a topic via its `keys` and shows that topic's blogs/specialist/video. So editing the Search tab —
   or adding/removing a doctor, blog or reel — flows into search on the next rebuild; removed items drop
   out. A tiny `FALLBACK_TOPICS` in `site.js` covers the case where `search-data.js` didn't load (HTML
-  opened from disk). *(The old `HEALTH_DB`/`POPULAR` in `data.mjs`/`site.js` are now legacy fallbacks.)*
+  opened from disk). *(The old `HEALTH_DB`/`POPULAR` in `data.mjs`/`site.js` are now legacy
+  fallbacks — unreachable from the generated site today, since the real `search.topics` in
+  `data/content.json` only defines kidney-labelled topics. Task 6 still corrected `HEALTH_DB`'s
+  Liver/Diabetes/Heart entries from `doctor.title: 'Guided referral & support'` to `'Integrated
+  care at RIIMS'`, since RIIMS treats those in-house; Cancer correctly stays "Guided referral &
+  support" — that condition is genuinely referral-only.)*
 
 ## 9. Chrome (`build/chrome.mjs`)
 
@@ -317,9 +327,11 @@ Global UI wrapped around every page by the generator:
   claude.ai "Mobile Homepage v2" design). On mobile the logo shrinks to 50px and the brand row
   (`.header-row`) to 60px. Active nav state via `aria-current`: the matching link (desktop) / chip
   (mobile) is highlighted; on any condition page the "Kidney Diseases" one is highlighted.
-- **`footer(base)`** — dark footer: brand + social, three link columns (Conditions = all 8,
-  Care, Institute), a medical disclaimer, copyright, and **Privacy / Terms / Disclaimer** links
-  (→ the real legal pages).
+- **`footer(base)`** — dark footer: brand + social, three link columns (Conditions = the 7 kidney
+  condition links **plus the 3 new disease-category hubs** — Liver Diseases & Treatment, Heart &
+  Blood Pressure Care, General & Lifestyle Diseases, from `CATEGORIES` — added in Task 6 so all 4
+  silos are reachable sitewide; Care, Institute), a medical disclaimer, copyright, and
+  **Privacy / Terms / Disclaimer** links (→ the real legal pages).
 - **`mobileBar(base, current)`** — fixed bottom nav on phones: Home · Doctors · (raised) Book ·
   WhatsApp · Call (Apollo-style).
 - **`floatingContact()`** — fixed WhatsApp + Call FAB (desktop/tablet; hidden on phones where
@@ -369,8 +381,15 @@ Each function returns a full page body:
 - **`categoryHubPage(base, cat)`** — the disease-category hub (`/conditions/<dir>/`, see §26):
   page hero (from `CATEGORIES[cat]`) + a 3-column grid of cards (one per entry in
   `CONDITION_SETS[cat]`, linking to `conditions/<dir>/<slug>.html`) + disclaimer + CTA band. An
-  empty condition map (heart/general, until their tasks land) renders the hero and an empty grid,
-  never an error.
+  empty condition map would render the hero and an empty grid rather than an error, but this is
+  moot now — all 4 categories are fully populated as of Task 5.
+- **`servicesPage(base)`** — the Treatments & Services hub (`/services.html`, nav "Treatments"). As
+  of Task 6: page hero + an `eyebrow('What we treat')` + h2 + intro paragraph + a **4-category
+  grid** (`categoryCard()`, one card per `CATEGORIES` entry — icon, label, blurb — linking to that
+  category's hub; kidney → `conditions/index.html`, liver/heart/general → `conditions/<dir>/
+  index.html`) + the original 11-tile `SERVICES` grid + DNA Kayakalp Protocol banner + how-it-works
+  + CTA band. This is the page that makes all 4 disease categories discoverable from the main nav —
+  the owner's original ask for this expansion.
 - **`aboutPage`** — hero + story + values + doctors section + CTA. **Admin-editable** (Admin → About;
   `DEFAULT_ABOUT` in `pages.mjs` merged with `content.json → about`).
 - **`doctorsPage`** — hero + 6 doctor cards + a **"Specialist kidney care"** grid linking the 6
@@ -476,7 +495,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 |-----|------|-------|
 | `/` | Home | search-first, FAQ + clinic JSON-LD |
 | `/conditions/` | Kidney Diseases hub | conditions grid + FAQ + breadcrumb schema (nav "Kidney Diseases") |
-| `/services.html` | Treatments & Services hub | 11 service tiles + how-it-works + DNA Kayakalp banner (nav "Treatments") |
+| `/services.html` | Treatments & Services hub | **4-category grid (Kidney/Liver/Heart/General, Task 6)** + 11 service tiles + how-it-works + DNA Kayakalp banner (nav "Treatments") |
 | `/dna-kayakalp-protocol.html` | DNA Kayakalp Protocol™ | Full D-N-A framework (Kidney Kavach book); breadcrumb + MedicalWebPage + FAQPage schema (nav "Treatments") |
 | `/guides.html` | Patient Guides hub | Cards linking the 7 guides + the protocol (nav "Guides") |
 | `/{7 guide slugs}.html` | Patient Guides | how-kidneys-work, understand-kidney-reports, kidney-diet-renal-plate, ayurvedic-kidney-herbs, kidney-myths-facts, everyday-symptom-care, 30-day-kidney-plan — each breadcrumb + MedicalWebPage + FAQPage schema (Kidney Kavach) |
@@ -510,7 +529,12 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 - **JSON-LD** (`<script type="application/ld+json">`): `["MedicalClinic","LocalBusiness"]` +
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
-  opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post; and a **`Physician`** node per doctor on the doctors page (`physiciansGraph()`, from the admin roster — for doctor rich results + E-E-A-T).
+  opening hours. `clinicGraph()`'s `description` (in `generate.mjs`) is **kidney-led but honest
+  about the other 3 categories** as of Task 6 ("...care for high creatinine, CKD, kidney failure
+  and dialysis guidance, plus in-house liver, heart and metabolic disease care, alongside
+  Ayurveda-supported lifestyle care"), and `medicalSpecialty` now lists `['Nephrology', 'Internal
+  Medicine', 'Hepatology', 'Cardiology', 'Endocrinology']` (was Nephrology + Internal Medicine
+  only). Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post; and a **`Physician`** node per doctor on the doctors page (`physiciansGraph()`, from the admin roster — for doctor rich results + E-E-A-T).
 - `sitemap.xml` (84 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
 - One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Delhi-NCR & Baraut — High
   Creatinine, CKD, Dialysis & Diet Guidance"; home `<title>` targets "Kidney Specialist in
@@ -853,19 +877,20 @@ main educational depth and a major SEO asset — each guide is a full, original,
 
 ## 26. Multi-disease category expansion (Kidney / Liver / Heart / General)
 
-The site is expanding from kidney-only to **4 disease categories** — Kidney, Liver, Heart,
-General — across 6 planned tasks (see `docs/superpowers/plans/2026-07-15-multi-disease-expansion.md`
-and `docs/superpowers/specs/2026-07-15-multi-disease-expansion-design.md`). **Task 1 was pure
-plumbing** (the generator learned about categories, no content). **Task 2 shipped the first real
-content: the liver silo's 3 flagship pages.** **Task 3 completed the liver silo** — all
-12 conditions live under `/conditions/liver/`, plus its category hub. **Task 4 completed the
-general/metabolic silo** — all 12 conditions live under `/conditions/general/`, plus its category
-hub. **Task 5 completed the heart silo** — the highest-stakes category on the site (education,
-risk management and emergency guidance, never treatment marketing) — all 8 conditions live under
-`/conditions/heart/`; its category hub already existed as an empty shell (from Task 1) and now
-renders 8 cards. The build now emits **85 files** (the prior 77, unchanged, plus the 8 new heart
-condition pages); every existing kidney page stays byte-identical (content-wise) to before. All 4
-disease categories (Kidney, Liver, Heart, General) are now fully populated.
+The site expanded from kidney-only to **4 disease categories** — Kidney, Liver, Heart,
+General — across 6 tasks (see `docs/superpowers/plans/2026-07-15-multi-disease-expansion.md`
+and `docs/superpowers/specs/2026-07-15-multi-disease-expansion-design.md`), **now complete**.
+**Task 1 was pure plumbing** (the generator learned about categories, no content). **Task 2
+shipped the first real content: the liver silo's 3 flagship pages.** **Task 3 completed the
+liver silo** — all 12 conditions live under `/conditions/liver/`, plus its category hub. **Task 4
+completed the general/metabolic silo** — all 12 conditions live under `/conditions/general/`, plus
+its category hub. **Task 5 completed the heart silo** — the highest-stakes category on the site
+(education, risk management and emergency guidance, never treatment marketing) — all 8 conditions
+live under `/conditions/heart/`; its category hub renders 8 cards. **Task 6 wired all 4 categories
+into site-wide discovery** (see below) and corrected the site's positioning, which still called
+itself kidney-only after the other 3 silos had shipped. The build emits **85 files** in total;
+every existing kidney page stays byte-identical (content-wise) to before. All 4 disease categories
+(Kidney, Liver, Heart, General) are fully populated **and discoverable** from the main nav.
 
 ### The model
 - **`CATEGORIES`** (`build/data.mjs`, after the `CONDITIONS` map) — one entry per category key
@@ -1125,9 +1150,50 @@ No dead links, no em dashes, no banned compliance words (`cure`, `guaranteed`, `
 `reverse`, `detox`, `cleanse`, `rejuvenate`, `miracle`, etc.); verified by `npm test` and a source
 grep on the `HEART` block.
 
-### What later tasks do
-- **Task 6** — wires all 4 categories into the rest of the site (nav, `PROBLEMS`, cross-links) and
-  fixes a referral contradiction noted in the design spec.
+### Task 6 — wiring the 4 categories into site-wide discovery (complete)
 
-Task 6 should update this section and §8/§11/§14 with the real page counts once
-content lands.
+By Task 5, all 4 category silos existed and were live, but nothing pointed a visitor at the 3 new
+ones — the Treatments page (the owner's original ask) still showed only the 11-tile services grid,
+the footer only linked kidney conditions, and the home search widget's legacy fallback data
+(`HEALTH_DB`) still labelled Liver/Heart/Diabetes "Guided referral & support" — true before the
+expansion, false after it (RIIMS treats those in-house now). Task 6 closed both gaps without
+touching kidney's SEO anchor (home `<title>`/`<h1>` untouched, kidney's URLs untouched):
+
+- **`servicesPage` (`build/pages.mjs`)** — added a 4-category grid (`categoryCard()`, new helper)
+  above the existing services tiles: an `eyebrow('What we treat')` + `<h2>` + intro paragraph +
+  one card per `CATEGORIES` entry (icon, label, blurb), linking to that category's hub. Kidney
+  links to its existing flat hub `conditions/index.html`; Liver/Heart/General link to their nested
+  hubs `conditions/<dir>/index.html`. This is the page that makes all 4 categories discoverable
+  from the main nav ("Treatments") — the deliverable the owner originally asked for.
+- **`footer(base)` (`build/chrome.mjs`)** — the "Conditions" footer column now appends the 3 new
+  category-hub links (from `CATEGORIES`, computed as `[hubTitle, 'conditions/<dir>/index.html']`)
+  after the 7 existing kidney condition links, so all 4 silos are one click away from every page.
+  Kidney's own hub isn't repeated in the footer since NAV's "Kidney Diseases" link already covers it.
+- **Mobile nav chips — deliberately unchanged.** `NAV` (`build/data.mjs`) still has 7 items; "Kidney
+  Diseases" points at the kidney hub and "Treatments" now surfaces all 4 categories via the grid
+  above. Adding category-specific chips would either bloat the always-visible chip bar or require
+  restructuring `NAV`'s shape — both unnecessary now that Treatments does the job. No `NAV` or
+  `CHIP_ICON` changes were made.
+- **`HEALTH_DB` (`build/data.mjs`)** — Liver/Diabetes/Heart entries changed `doctor.title` from
+  `'Guided referral & support'` to `'Integrated care at RIIMS'`. Cancer intentionally kept as
+  referral & support (accurate, and the legally safer position — RIIMS does not treat cancer).
+  Note: this dataset is legacy/unreachable code (see §8) — the live search widget is driven by
+  `SEARCH`/`search-data.js`, which currently only defines kidney-labelled topics, so this fix is a
+  data-hygiene correction rather than a change in live widget behavior. Adding real Liver/Heart/
+  General topics to `data/content.json → search.topics` (via Admin → Search widget) remains
+  available as a future follow-up, out of scope for this task's explicit interfaces.
+- **`WHY` (`build/data.mjs`)** — first default card retitled "Kidney-focused institute" →
+  "Kidney-led, integrated institute", description reworded to name liver/heart/metabolic care
+  explicitly rather than imply kidney-only.
+- **`clinicGraph()` (`build/generate.mjs`, Organization JSON-LD)** — `description` reworded to lead
+  with kidney and name liver/heart/metabolic care as in-house (was "Kidney-focused... kidney diet
+  and Ayurveda-supported lifestyle care", silent on the other 3 categories). `medicalSpecialty`
+  extended from `['Nephrology', 'Internal Medicine']` to add `'Hepatology'`, `'Cardiology'`,
+  `'Endocrinology'` — judged accurate given the owner's confirmation that RIIMS treats these
+  in-house.
+- **Not touched, by design:** home `<title>` ("Kidney Specialist in Delhi-NCR"), home `<h1>`
+  ("Kidney Care in Delhi-NCR & Baraut..."), kidney's flat URLs, and the Cancer entry in `HEALTH_DB`.
+
+Verification: `npm test` → 0 problems, 85 pages (unchanged — this task adds links/cards, not
+pages). All 4 category hub links resolve from `services.html` and sitewide from the footer.
+No `cure`/`guaranteed`/`reverse`/`permanent` language introduced in the new copy.

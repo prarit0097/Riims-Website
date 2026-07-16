@@ -3,7 +3,7 @@
    Ported from ui_kits/website sections-a/-d + pages.jsx. */
 
 import { icon, logo, button, iconButton, input, select, checkbox } from './components.mjs';
-import { NAV, SITE } from './data.mjs';
+import { NAV, SITE, CATEGORIES } from './data.mjs';
 
 /* attributes for off-site links (social, WhatsApp) */
 const OFFSITE = { target: '_blank', rel: 'noopener noreferrer' };
@@ -94,8 +94,15 @@ export function header(base, current) {
 
 /* ---------- Footer ---------- */
 export function footer(base) {
+  // The 3 new disease-category hubs (liver/heart/general), sitewide-reachable
+  // alongside the existing kidney condition links. Kidney's own hub already
+  // has a home in NAV ("Kidney Diseases"), so it is not repeated here.
+  const categoryLinks = ['liver', 'heart', 'general'].map((cat) => {
+    const C = CATEGORIES[cat];
+    return [C.hubTitle, `conditions/${C.dir}/index.html`];
+  });
   const cols = [
-    { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html'], ['Kidney Swelling', 'conditions/kidney-swelling-treatment.html'], ['Kidney Stone Treatment', 'conditions/kidney-stone-treatment.html']] },
+    { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html'], ['Kidney Swelling', 'conditions/kidney-swelling-treatment.html'], ['Kidney Stone Treatment', 'conditions/kidney-stone-treatment.html'], ...categoryLinks] },
     { h: 'Care', links: [['DNA Kayakalp Protocol', 'dna-kayakalp-protocol.html'], ['Patient Guides', 'guides.html'], ['Understand Your Reports', 'understand-kidney-reports.html'], ['Kidney Diet & Renal Plate', 'kidney-diet-renal-plate.html'], ['Treatments & Services', 'services.html']] },
     { h: 'Institute', links: [['About RIIMS', 'about.html'], ['Our Doctors', 'doctors.html'], ['Kidney Doctor (Delhi-NCR)', 'doctors/best-kidney-doctor-delhi-ncr.html'], ['High Creatinine Specialist', 'doctors/high-creatinine-specialist.html'], ['Blog', 'blog.html'], ['Contact', 'contact.html']] },
   ];

@@ -10,6 +10,17 @@ import {
 } from './data.mjs';
 import { GUIDES, GUIDE_ORDER, CONDITION_GUIDES } from './guides.mjs';
 
+/* A disease-category card (Treatments page — one per CATEGORIES entry). Kidney
+   links to its existing flat hub (conditions/index.html); the others to their
+   nested hub (conditions/<dir>/index.html). */
+function categoryCard(base, C) {
+  const href = `${base}conditions/${C.dir ? `${C.dir}/` : ''}index.html`;
+  return `<a href="${href}" class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-6);display:flex;flex-direction:column;gap:.5rem;text-decoration:none;color:inherit">`
+    + `<span style="display:inline-flex;width:52px;height:52px;border-radius:var(--radius-md);background:var(--surface-blue-soft);color:var(--icon-brand);align-items:center;justify-content:center">${icon(C.icon, { size: 24 })}</span>`
+    + `<h2 style="font-size:var(--fs-xl);margin:.2rem 0 0;font-family:var(--font-display)">${C.label}</h2>`
+    + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${C.blurb}</p></a>`;
+}
+
 /* A guide card (used on the home Patient Guides section and the guides hub). */
 function guideCard(base, k) {
   const g = GUIDES[k];
@@ -642,6 +653,7 @@ export function categoryHubPage(base, cat) {
 
 /* ---------- Treatments & Services hub (/services.html) ---------- */
 export function servicesPage(base) {
+  const catCards = Object.values(CATEGORIES).map((C) => categoryCard(base, C)).join('');
   const tiles = SERVICES.map((sv) =>
     `<div class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
     + `<span style="display:inline-flex;width:46px;height:46px;border-radius:var(--radius-md);background:var(--surface-green-soft);color:var(--icon-accent);align-items:center;justify-content:center">${icon(sv.icon, { size: 22 })}</span>`
@@ -650,6 +662,10 @@ export function servicesPage(base) {
   ).join('');
   return pageHero(base, { crumb: 'Treatments & Services', icon: 'stethoscope', title: 'Kidney Treatments & Services at RIIMS', intro: 'Integrated, doctor-led kidney care — consultations (clinic, video, phone), report review, dialysis guidance, personalized kidney diet, Ayurveda-supported lifestyle care, and long-term follow-up. Ethical, report-based, no false promises.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container">`
+    + eyebrow('What we treat')
+    + `<h2 style="font-size:var(--fs-2xl);margin:.3rem 0 1rem">One doctor-led approach, four areas of care</h2>`
+    + `<p style="max-width:70ch;color:var(--text-muted);margin:0 0 var(--space-6)">RIIMS is a kidney-focused institute that also treats liver, heart and general/metabolic conditions in-house, working alongside your medical treatment rather than replacing it. Pick an area below to see what we cover.</p>`
+    + `<div class="grid-4" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-4);margin-bottom:var(--space-10)">${catCards}</div>`
     + `<div class="services-grid" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-4)">${tiles}</div>`
     + `<p style="margin:var(--space-8) auto 0;max-width:70ch;text-align:center;color:var(--text-body)">Every service starts from your actual reports. Share your creatinine/eGFR reports for a doctor-guided opinion, get a clear plan in plain language, and follow up with diet and lifestyle support that fits Indian routines — at the clinic in Baraut or from home via video consultation.</p>`
     + `<div style="text-align:center;margin-top:var(--space-6)">${button('Book Consultation', { variant: 'primary', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })}</div>`
