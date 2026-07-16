@@ -625,7 +625,275 @@ export const LIVER = {
     related: [['Alcoholic liver disease', 'alcoholic-liver-disease'], ['Raised SGPT / SGOT', 'raised-sgpt-sgot'], ['Liver cirrhosis', 'liver-cirrhosis']],
   },
 };
-export const HEART = {};
+
+/* ---------------- Heart conditions (Task 5, 8 conditions) ----------------
+   The highest-stakes category on the site: education, risk management and
+   emergency guidance — never treatment marketing. RIIMS manages blood
+   pressure, cholesterol and cardiovascular risk and coordinates emergency /
+   specialist care; it does not claim to "reverse" a blockage or replace
+   emergency services. `heart-attack-warning-signs` is built as a pure
+   emergency page (AHA warning signs, heart attack vs cardiac arrest,
+   Hands-Only CPR, India bystander-CPR context) and is deliberately the first
+   entry below. `bp-and-kidney-disease` is the ⭐ bridge: it inline-links the
+   existing flat kidney page `../hypertensive-kidney-disease.html` inside
+   `about`, not via `related[]` (the related-link builder in pages.mjs only
+   ever targets the current category's own directory, so a kidney slug in
+   `related` here would render as conditions/heart/<kidney slug>.html and
+   404). All 8 carry redFlags + sources. */
+export const HEART = {
+  'heart-attack-warning-signs': {
+    icon: 'triangle-alert', title: 'Heart Attack Warning Signs', crumb: 'Heart · Heart Attack Warning Signs',
+    intro: 'Minutes matter with a heart attack. Know the warning signs, know how they differ from cardiac arrest, and know exactly what to do in the first few minutes.',
+    aboutTitle: 'What does a heart attack feel like, and how is it different from cardiac arrest?',
+    about: 'A heart attack happens when a blocked artery stops blood from reaching part of the heart muscle: a circulation problem, in the American Heart Association\'s own words. Warning signs include chest discomfort that lasts more than a few minutes or that goes away and comes back, discomfort or pain in one or both arms, the back, neck, jaw or stomach, shortness of breath with or without chest discomfort, and a cold sweat, nausea or lightheadedness. If you or someone with you has any of these, treat it as a heart attack until proven otherwise. Call an ambulance right away by dialling your local emergency number (in most of India, 108 or 112). Do not drive yourself. Minutes matter, and an ambulance crew can start treatment before you even reach a hospital. Cardiac arrest is a different, more sudden emergency: an electrical problem, where the heart\'s rhythm turns chaotic and stops pumping effectively. A heart attack is one of several things that can trigger it. Someone having a heart attack is usually awake, talking and able to describe what they feel; someone in cardiac arrest collapses, is unresponsive, and is not breathing normally, or is only gasping. That gasping, sometimes called agonal breathing, is mistaken for normal breathing more often than you would expect, and it is a major reason bystanders hesitate when they should be acting. If someone collapses and is unresponsive with no normal breathing, call for help and start chest compressions immediately: push hard and fast in the centre of the chest. This is Hands-Only CPR, and studies have found it can work as well as CPR with rescue breaths when performed by a bystander on an adult. This matters enormously in India, where published studies put bystander CPR rates at only 1.3 to 9.8%, with AED use around 1%. In most cardiac arrests outside a hospital, the person standing nearby is often the only realistic chance someone has before trained help arrives.',
+    symptoms: ['Chest discomfort that lasts more than a few minutes, or goes away and comes back', 'Discomfort or pain in one or both arms, the back, neck, jaw or stomach', 'Shortness of breath, with or without chest discomfort', 'A cold sweat', 'Nausea', 'Lightheadedness'],
+    approach: [
+      'Clear, repeatable teaching on the warning signs above, so you and your family can act in the first few minutes rather than lose them',
+      'Practical guidance on Hands-Only CPR, since most cardiac arrests happen outside a hospital and a bystander is often the only person who can start help',
+      'Honest advice to call your local emergency number and go to the nearest hospital equipped for a suspected heart attack, which is not always us; the nearest capable hospital is always the right choice in an emergency',
+      'Once the emergency has passed, ongoing risk management: blood pressure, cholesterol, diabetes and lifestyle factors that raise the chance of another event',
+    ],
+    when: 'Any of the warning signs above is a reason to act immediately. Do not wait for an opinion or a scheduled appointment. Once the emergency is over, arrange a follow-up with a cardiologist for tests and a risk-reduction plan, and consider learning Hands-Only CPR as a family so you are ready if it is ever needed.',
+    redFlags: {
+      emergency: [
+        'Chest discomfort lasting more than a few minutes, or that goes away and comes back: call your local emergency number (in most of India, 108 or 112) immediately',
+        'Discomfort spreading to one or both arms, the back, neck, jaw or stomach, with or without chest pain',
+        'Shortness of breath, a cold sweat, nausea or lightheadedness, even without obvious chest pain',
+        'Someone collapses and is unresponsive, not breathing normally, or only gasping: this is cardiac arrest. Start Hands-Only CPR immediately (push hard and fast in the centre of the chest) and do not stop until help arrives',
+      ],
+    },
+    sources: [
+      ['Warning signs of a heart attack (American Heart Association)', 'https://www.heart.org/en/health-topics/heart-attack/warning-signs-of-a-heart-attack'],
+      ['Heart attack or sudden cardiac arrest: how are they different (American Heart Association)', 'https://www.heart.org/en/health-topics/heart-attack/about-heart-attacks/heart-attack-or-sudden-cardiac-arrest-how-are-they-different'],
+      ['Hands-Only CPR (American Heart Association)', 'https://cpr.heart.org/en/cpr-courses-and-kits/hands-only-cpr'],
+      ['Outcomes of out-of-hospital sudden cardiac arrest in India: a review and proposed reforms (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10568059/'],
+    ],
+    related: [['High blood pressure', 'high-blood-pressure'], ['Heart failure', 'heart-failure'], ['Atrial fibrillation', 'atrial-fibrillation']],
+  },
+  'high-blood-pressure': {
+    icon: 'gauge', title: 'High Blood Pressure', crumb: 'Heart · High Blood Pressure',
+    intro: 'High blood pressure usually causes no symptoms at all, which is exactly why it can quietly strain the heart, brain and kidneys for years before anyone notices.',
+    aboutTitle: 'What does a high blood pressure reading actually mean?',
+    about: 'Blood pressure measures the force of blood against your artery walls, written as two numbers: systolic (the pressure when the heart beats) over diastolic (the pressure between beats). The ICMR-INDIAB study, a nationwide survey of over 113,000 adults, found that 35.5% of Indian adults have high blood pressure, more than one in three. Almost none of them feel it. High blood pressure has few or no symptoms for most people, which is exactly what makes it dangerous: the strain on the arteries, heart, brain and kidneys builds for years before anything feels wrong. Because a single reading can be raised by stress, a full bladder or simply the anxiety of being examined, a diagnosis is never made on one number. It needs repeated measurement, at rest, on more than one occasion, sometimes checked at home as well as in a clinic. Two situations turn a high reading into an emergency. A blood pressure of 180/120 mmHg or higher, together with chest pain, breathlessness, a severe headache, a change in vision, weakness or slurred speech, needs immediate emergency care, not a scheduled appointment. And any sudden weakness on one side of the face or body, arm weakness or slurred speech, whether or not blood pressure has been checked, could be a stroke: remember F.A.S.T. (Face, Arm, Speech, Time) and call emergency services even if the symptoms go away on their own.',
+    symptoms: ['Usually no symptoms at all', 'Found only through a blood pressure check', 'Occasional headache, in some people with very high readings', 'A reading of 130/80 mmHg or higher, repeated on more than one occasion', 'Often first noticed during a routine check-up or while investigating another condition', 'Vision change, severe headache, chest pain or breathlessness only at dangerously high levels, which is an emergency (see below)'],
+    approach: [
+      'Confirming the diagnosis with repeated, correctly measured readings, never treating a single number in isolation',
+      'Screening for the organs blood pressure affects silently: kidneys (urine ACR, creatinine), eyes and heart, alongside the readings themselves',
+      'Coordinating with your prescribed blood pressure medication and targets, and supporting adherence; never suggesting you stop or reduce it yourself',
+      'A lower-salt, practical Indian diet and lifestyle plan built around your reports, not a generic chart',
+      'Regular follow-up so trends, not one-off readings, guide your care',
+    ],
+    when: 'Get your blood pressure checked at least once a year, more often if it has ever been raised or you have diabetes or kidney disease. A confirmed high reading needs a doctor\'s review even without symptoms; do not wait for a headache or another sign, because for most people there is not one.',
+    redFlags: {
+      emergency: [
+        'Blood pressure 180/120 mmHg or higher, together with chest pain, breathlessness, a severe headache or a change in vision: call your local emergency number (in most of India, 108 or 112) immediately',
+        'Sudden weakness or numbness on one side of the face, arm or leg, slurred speech, or trouble understanding speech: remember F.A.S.T. (Face, Arm, Speech, Time) and call emergency services even if the symptoms go away',
+        'A sudden, severe headache unlike any before, with confusion or loss of consciousness',
+      ],
+      soon: [
+        'A blood pressure reading of 180/120 or higher without any of the symptoms above still needs same-day medical advice',
+        'Blood pressure that has stopped responding to your usual medicine',
+      ],
+    },
+    sources: [
+      ['Metabolic non-communicable disease health report of India, ICMR-INDIAB (Lancet Diabetes & Endocrinology)', 'https://www.thelancet.com/journals/landia/article/PIIS2213-8587(23)00119-5/fulltext'],
+      ['Hypertensive crisis (Cleveland Clinic)', 'https://my.clevelandclinic.org/health/diseases/24470-hypertensive-crisis'],
+      ['Stroke symptoms and warning signs, F.A.S.T. (American Stroke Association)', 'https://www.stroke.org/en/about-stroke/stroke-symptoms'],
+    ],
+    related: [['Blood pressure and kidney disease', 'bp-and-kidney-disease'], ['High cholesterol', 'high-cholesterol'], ['Heart attack warning signs', 'heart-attack-warning-signs'], ['Heart failure', 'heart-failure']],
+  },
+  'bp-and-kidney-disease': {
+    icon: 'heart-pulse', title: 'Blood Pressure and Kidney Disease', crumb: 'Heart · Blood Pressure & Kidney Disease',
+    intro: 'High blood pressure and kidney disease drive each other: high blood pressure damages the kidneys, and damaged kidneys make blood pressure harder to control. Breaking that cycle protects both.',
+    aboutTitle: 'How are blood pressure and kidney disease connected?',
+    about: 'High blood pressure and kidney disease feed each other in both directions. Persistently high pressure damages the small blood vessels and filtering units inside the kidney, usually silently, over years; this is covered in detail on our page on <a href="../hypertensive-kidney-disease.html">hypertensive kidney disease</a>. The relationship runs the other way too: when the kidneys are damaged, they lose some of their own ability to help regulate blood pressure, through fluid balance and a hormone system called the renin-angiotensin system, so blood pressure tends to climb further and becomes harder to control with the usual medicines. This is why a person with long-standing, poorly controlled blood pressure should have their kidneys checked, and why a person newly found to have kidney disease should have their blood pressure looked at carefully rather than treated as a separate problem. In India, high blood pressure is the second-biggest cause of kidney disease after diabetes. Because both conditions are largely silent until they are advanced, the same yearly tests, a blood pressure measurement and a kidney check with urine ACR and creatinine, tend to catch problems on either side while there is still the most to protect.',
+    symptoms: ['Usually no symptoms on either side for years', 'Blood pressure that is hard to control despite medication', 'Protein or foam in the urine', 'Gradually rising creatinine or falling eGFR on reports', 'Swelling in the feet, ankles or around the eyes as either condition advances', 'Headache, in some people, with very high readings'],
+    approach: [
+      'Kidney screening (urine ACR, creatinine, eGFR) for anyone with high blood pressure, and blood pressure checks for anyone with kidney disease, read together rather than apart',
+      'Coordination with your prescribed blood pressure medication and targets, supporting your treatment rather than replacing it',
+      'A lower-salt, kidney-aware diet that also supports blood pressure control',
+      'Regular monitoring so blood pressure and kidney trends are tracked as one picture, not two separate follow-ups',
+    ],
+    when: 'If your blood pressure has been high for a while, ask for a kidney check (urine ACR, creatinine, eGFR) at least once a year, even without symptoms. If you already have kidney disease, ask what your blood pressure target should be, since it is often set lower than the general target.',
+    redFlags: {
+      emergency: [
+        'Blood pressure 180/120 mmHg or higher with chest pain, breathlessness, a severe headache or a change in vision: call your local emergency number (in most of India, 108 or 112) immediately',
+        'Very little or no urine output',
+        'Breathlessness at rest or when lying flat',
+      ],
+      soon: [
+        'Blood pressure that has stopped responding to your usual medicine',
+        'New or worsening swelling in the feet or around the eyes',
+        'Protein or foam newly noticed in the urine',
+      ],
+    },
+    sources: [
+      ['High blood pressure and kidney disease (NIDDK)', 'https://www.niddk.nih.gov/health-information/kidney-disease/high-blood-pressure'],
+      ['Metabolic non-communicable disease health report of India, ICMR-INDIAB (Lancet Diabetes & Endocrinology)', 'https://www.thelancet.com/journals/landia/article/PIIS2213-8587(23)00119-5/fulltext'],
+    ],
+    related: [['High blood pressure', 'high-blood-pressure'], ['Heart failure', 'heart-failure'], ['High cholesterol', 'high-cholesterol']],
+  },
+  'high-cholesterol': {
+    icon: 'droplet', title: 'High Cholesterol', crumb: 'Heart · High Cholesterol',
+    intro: 'A high cholesterol report rarely causes any symptoms at all. The real question is not the number by itself, but your overall heart risk.',
+    aboutTitle: 'What does a high cholesterol report mean?',
+    about: 'Cholesterol travels in the blood packaged inside particles called lipoproteins. LDL, often called bad cholesterol, carries cholesterol toward the arteries, where it can build up in the artery wall over years. HDL, often called good cholesterol, carries cholesterol away, back to the liver. A high cholesterol reading causes no symptoms in almost all cases; it is found on a blood test, not felt. Indians tend to show a particular pattern: research comparing Asian Indians with other populations consistently finds higher triglycerides and lower HDL, with LDL only moderately raised, rather than the very high LDL pattern more common in the West. This matters for how a report should be read, because no single number, LDL included, tells the whole story on its own. What actually predicts your risk of a heart attack or stroke is your overall profile, taken together with your age, blood pressure, diabetes status, smoking and family history, not the LDL figure in isolation. One family history detail is worth asking about specifically: a parent or sibling who had a heart attack before 55 (men) or 65 (women) can point to familial hypercholesterolaemia, an inherited condition that raises cholesterol from a young age and is worth a dedicated blood test and discussion with a doctor, for you and for other family members.',
+    symptoms: ['No symptoms in almost all cases; found only on a blood test', 'Very rarely, small yellowish deposits around the eyelids or in the skin in long-standing, very high cholesterol', 'A family history of heart attack before 55 (men) or 65 (women)', 'Often found alongside high blood pressure, diabetes or a large waist', 'No warning even with significant artery involvement, until a heart attack or stroke occurs', 'Discovered incidentally during a routine health check'],
+    approach: [
+      'A full lipid profile, LDL, HDL, triglycerides and total cholesterol, read together with your overall risk rather than LDL alone',
+      'Screening for the pattern more common in Indians, high triglycerides and low HDL, rather than assuming a Western LDL-only pattern',
+      'A focused family history check for heart attacks before 55 (men) or 65 (women), with referral for further testing when it is present',
+      'Diet, activity and weight guidance suited to Indian meals, coordinated with any cholesterol medicine your doctor has prescribed',
+      'Reassessing risk periodically as your other numbers, blood pressure, sugar and weight, change, not from a one-off reading',
+    ],
+    when: 'Most adults should have a lipid profile checked periodically as part of general health screening, more often with diabetes, high blood pressure or a family history of early heart disease. Ask specifically about your triglycerides and HDL, not only LDL, and mention any early heart attacks in your family.',
+    redFlags: {
+      emergency: [
+        'Chest discomfort lasting more than a few minutes, or spreading to an arm, the back, neck, jaw or stomach: treat as a possible heart attack and call your local emergency number (in most of India, 108 or 112) immediately',
+        'Sudden weakness, slurred speech or facial drooping, which are possible stroke signs',
+      ],
+      soon: [
+        'A parent, sibling or child who had a heart attack before 55 (men) or 65 (women)',
+        'Very high triglycerides found alongside high cholesterol on the same report',
+      ],
+    },
+    sources: [
+      ['About familial hypercholesterolemia (CDC)', 'https://www.cdc.gov/heart-disease-family-history/about/about-familial-hypercholesterolemia.html'],
+      ['Lipids in South Asians: epidemiology and management (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8026164/'],
+    ],
+    related: [['Triglycerides', 'triglycerides'], ['High blood pressure', 'high-blood-pressure'], ['Heart attack warning signs', 'heart-attack-warning-signs']],
+  },
+  'triglycerides': {
+    icon: 'beaker', title: 'Triglycerides', crumb: 'Heart · Triglycerides',
+    intro: 'Raised triglycerides usually cause no symptoms, until they climb high enough to put the pancreas at risk, which is when they become an emergency.',
+    aboutTitle: 'What do raised triglycerides mean?',
+    about: 'Triglycerides are a type of fat carried in the blood, built mostly from the extra calories, sugar and alcohol the body does not use right away. Like cholesterol, a raised triglyceride level causes no symptoms in almost all cases and is found only on a blood test, usually taken after fasting. Indians as a population tend to run higher triglycerides and lower HDL than Western populations, even at a similar LDL cholesterol, so this marker deserves attention on its own rather than being read only alongside LDL. Moderately high triglycerides mainly add to overall cardiovascular risk, alongside blood pressure, LDL, HDL, diabetes and smoking. Very high triglycerides, generally above 500 mg/dL, are a different problem: at this level the risk of acute pancreatitis, sudden and severe inflammation of the pancreas, rises sharply, and medical guidelines recommend treatment specifically to bring the level down and protect the pancreas. Severe abdominal pain in someone known to have triglycerides this high is not something to wait out at home.',
+    symptoms: ['No symptoms in almost all cases; found only on a fasting blood test', 'Often found alongside high blood pressure, diabetes or a large waist', 'Low HDL cholesterol on the same report, a common pairing in Indians', 'No warning before a level high enough to affect the pancreas', 'Severe abdominal pain if triglycerides are very high, which is an emergency and not a routine symptom', 'Discovered incidentally during a routine health check'],
+    approach: [
+      'A fasting lipid profile to get an accurate triglyceride reading, since eating shortly before the test raises it artificially',
+      'Reading triglycerides alongside HDL and your overall risk, reflecting the Indian pattern of high triglycerides with low HDL',
+      'Diet and lifestyle guidance targeted at the biggest drivers, added sugar, refined carbohydrates and alcohol, alongside any medicine your doctor prescribes',
+      'Urgent same-day medical attention arranged if a report shows triglycerides above 500 mg/dL, given the pancreatitis risk',
+      'Coordination with your diabetes or thyroid treatment when either is contributing, rather than treating triglycerides in isolation',
+    ],
+    when: 'Get a fasting lipid profile as part of routine screening, especially with diabetes, a large waist or a family history of high triglycerides. A report showing triglycerides above 500 mg/dL needs prompt medical attention even without symptoms; with severe abdominal pain, it needs emergency care.',
+    redFlags: {
+      emergency: [
+        'Severe abdominal pain, especially if triglycerides are known to be above 500 mg/dL: possible acute pancreatitis, go to hospital immediately',
+        'Severe abdominal pain with vomiting and fever',
+      ],
+      soon: [
+        'A report showing triglycerides above 500 mg/dL, even without pain',
+        'Triglycerides that remain high despite diet changes and medication',
+      ],
+    },
+    sources: [
+      ['Evaluation and treatment of hypertriglyceridemia: an Endocrine Society clinical practice guideline (Oxford Academic)', 'https://academic.oup.com/jcem/article/97/9/2969/2536709'],
+      ['Lipids in South Asians: epidemiology and management (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8026164/'],
+    ],
+    related: [['High cholesterol', 'high-cholesterol'], ['High blood pressure', 'high-blood-pressure']],
+  },
+  'heart-failure': {
+    icon: 'activity', title: 'Heart Failure', crumb: 'Heart · Heart Failure',
+    intro: 'Heart failure means the heart is still beating but struggles to pump or fill well enough. It is a serious diagnosis that calls for careful, ongoing management, not a one-time fix.',
+    aboutTitle: 'What does a diagnosis of heart failure actually mean?',
+    about: 'Heart failure does not mean the heart has stopped. It means the heart muscle has become too weak, or too stiff, to pump or fill with blood as well as it should, so the body does not get enough blood flow and fluid backs up, usually into the lungs, legs and abdomen. It is a long-term condition to be managed with ongoing care, and good treatment lets many people live fuller, more active lives for years. India\'s heart failure picture looks different from the West in ways that matter. Data from the National Heart Failure Registry shows Indian patients are, on average, about a decade younger than heart failure patients in high-income countries, with most of the burden below 65 years of age. In the Trivandrum Heart Failure Registry, a blocked or narrowed artery, ischaemic heart disease, was the cause in 72% of patients, and only around 25% received the full guideline-recommended combination of medicines at discharge, a gap that reflects access and awareness as much as anything else. This is one of the clearest reasons early, consistent, doctor-led care matters: the medicines that make the biggest difference in heart failure are well established, but they only help if they are actually taken and adjusted over time by someone who knows your case.',
+    symptoms: ['Breathlessness on exertion, worse over days to weeks', 'Swelling in the feet, ankles or legs', 'Needing more pillows to breathe comfortably at night', 'Waking up breathless', 'Unexplained weight gain of a few kilograms over a few days, from fluid', 'Persistent tiredness and reduced ability to exercise'],
+    approach: [
+      'Confirming the diagnosis and type with the right tests, an echocardiogram and blood tests including BNP or NT-proBNP where relevant, not on symptoms alone',
+      'Coordinating with your cardiologist on guideline-recommended medicines, and supporting your adherence to them rather than replacing them',
+      'A practical, lower-salt diet and fluid guidance that fits Indian meals, plus daily weight tracking',
+      'Watching for early warning signs, a few kilograms of weight gain, new swelling, needing more pillows, so problems are caught before they become an emergency',
+      'Coordinated care for the conditions that commonly sit alongside heart failure: high blood pressure, diabetes and kidney function',
+    ],
+    when: 'See a doctor if you notice breathlessness on ordinary activity, new swelling in the legs, or unexplained weight gain over a few days. If you already have a heart failure diagnosis, weigh yourself regularly and contact your doctor early for any of these changes, before they become severe.',
+    redFlags: {
+      emergency: [
+        'Severe breathlessness at rest, or waking up gasping for air',
+        'Coughing up pink, frothy sputum',
+        'Chest pain',
+        'Fainting or a sudden loss of consciousness',
+      ],
+      soon: [
+        'Weight gain of a few kilograms over a few days',
+        'New or worsening swelling in the legs or abdomen',
+        'Needing more pillows than usual to sleep comfortably',
+      ],
+    },
+    sources: [
+      ['Congestive heart failure (Cleveland Clinic)', 'https://my.clevelandclinic.org/health/diseases/17069-heart-failure-understanding-heart-failure'],
+      ['Clinical profile and 90-day outcomes of 10,851 heart failure patients across India: National Heart Failure Registry (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9773752/'],
+      ['Clinical presentation, management, in-hospital and 90-day outcomes of heart failure patients in Trivandrum, Kerala, India (PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/26011246/'],
+    ],
+    related: [['High blood pressure', 'high-blood-pressure'], ['Atrial fibrillation', 'atrial-fibrillation'], ['Heart attack warning signs', 'heart-attack-warning-signs'], ['Rheumatic heart disease', 'rheumatic-heart-disease']],
+  },
+  'atrial-fibrillation': {
+    icon: 'stethoscope', title: 'Atrial Fibrillation', crumb: 'Heart · Atrial Fibrillation',
+    intro: 'Atrial fibrillation is an irregular heartbeat that often causes no symptoms at all, yet it is linked with roughly a fivefold increase in stroke risk, which is why finding it matters.',
+    aboutTitle: 'What is atrial fibrillation, and why does it matter?',
+    about: 'Atrial fibrillation, often shortened to AFib, is the most common irregular heart rhythm: the heart\'s upper chambers quiver instead of beating in a coordinated way, so blood does not move through them as smoothly as it should. Often there are no symptoms at all, and AFib is found only on an ECG done for another reason, or during a routine check. The reason AFib deserves attention even without symptoms is stroke risk: because blood can pool and clot in the quivering upper chambers, AFib is linked with roughly a fivefold increase in the risk of stroke compared with a normal heart rhythm. India\'s AFib picture differs from the West in an important way. Data from the Indian Heart Rhythm Society AFib registry shows Indian patients are more than a decade younger on average, and rheumatic valve disease, most often the result of rheumatic fever in childhood, is a major cause, present in close to half of registry patients. In the West, AFib is mostly a disease of older age with a different set of causes. A younger person here should never assume AFib is unlikely just because of their age, and an echocardiogram, not only an ECG, is often the test that actually finds the underlying valve problem driving it.',
+    symptoms: ['Often no symptoms at all; found only on an ECG or routine check', 'A fluttering, racing or irregular heartbeat, when noticed', 'Tiredness or reduced ability to exercise', 'Breathlessness on exertion', 'Lightheadedness', 'A pulse that feels irregular when checked manually'],
+    approach: [
+      'Confirming the diagnosis with an ECG, and looking specifically for rheumatic valve disease with an echocardiogram, given how common it is as a cause in India',
+      'A stroke-risk assessment and coordination with your cardiologist on blood-thinning treatment when it is advised, since this is what actually lowers stroke risk',
+      'Coordinated management of related conditions, blood pressure, thyroid function and heart failure, that commonly travel with AFib',
+      'Clear teaching on stroke warning signs, F.A.S.T., since AFib raises that risk directly',
+      'Regular follow-up, since AFib can be silent, occasional or persistent, and the right plan depends on which',
+    ],
+    when: 'If you notice an irregular or racing pulse, get it checked with an ECG. Because AFib is often silent, anyone with rheumatic heart disease, unexplained breathlessness, or a stroke at a young age in the family should ask specifically whether their heart rhythm has ever been checked.',
+    redFlags: {
+      emergency: [
+        'Chest pain',
+        'Severe shortness of breath',
+        'Fainting or a sudden loss of consciousness',
+        'Any stroke sign, facial drooping, arm weakness or slurred speech (F.A.S.T.): call emergency services even if it passes',
+      ],
+      soon: [
+        'A newly noticed irregular or racing pulse',
+        'Breathlessness or tiredness that is new or worsening',
+      ],
+    },
+    sources: [
+      ['About atrial fibrillation (CDC)', 'https://www.cdc.gov/heart-disease/about/atrial-fibrillation.html'],
+      ['Clinical presentation, management, and outcomes in the Indian Heart Rhythm Society-Atrial Fibrillation (IHRS-AF) registry (PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/28228305/'],
+    ],
+    related: [['Heart failure', 'heart-failure'], ['Rheumatic heart disease', 'rheumatic-heart-disease'], ['Heart attack warning signs', 'heart-attack-warning-signs'], ['High blood pressure', 'high-blood-pressure']],
+  },
+  'rheumatic-heart-disease': {
+    icon: 'shield-check', title: 'Rheumatic Heart Disease', crumb: 'Heart · Rheumatic Heart Disease',
+    intro: 'Rheumatic heart disease damages heart valves, often decades after a childhood strep throat was never fully treated. The one genuinely preventable step is treating that throat infection properly, the first time.',
+    aboutTitle: 'What is rheumatic heart disease, and can it be prevented?',
+    about: 'Rheumatic heart disease is damage to one or more heart valves that follows rheumatic fever, an inflammatory reaction the body can have after a throat infection with group A streptococcus bacteria, commonly called strep throat, that was not treated or not treated fully. The valve damage often shows up 20 to 30 years after the original throat infection, so the connection is easy to miss entirely. The World Health Organization estimates rheumatic heart disease affects 55 million people worldwide and causes around 360,000 deaths a year, most in low- and middle-income countries. In India, one widely used estimate, based on the 2011 census, puts the number of people affected at around 3.6 million, with about 44,000 new cases added every year, though the true figure may be higher since data from some large, underserved states is limited. The encouraging trend is that prevalence has fallen substantially, from an estimated 1 to 11 per 1,000 people in surveys from the 1970s to 1990s, to under 1 per 1,000 in studies after 2000. One number needs care in how it is read: a school screening study in Andhra Pradesh found rheumatic heart disease in 7.6 per 1,000 children using echocardiography, compared with only 0.7 per 1,000 using a stethoscope alone. That tenfold gap does not mean the disease became more common between the two studies; it means echocardiography finds early valve changes a stethoscope cannot hear, so the two numbers measure different things and should not be compared directly as if the disease rate itself changed. Here is the one genuinely preventable step, stated by the WHO itself: treating strep throat promptly with the appropriate antibiotic prevents rheumatic fever from developing in the first place. This is prevention of the fever that causes valve damage, not a treatment for valve damage that has already happened. Once a valve is damaged, ongoing antibiotic prophylaxis, injections of benzathine penicillin every few weeks, protects against further damage from repeat infections, though it does not undo scarring that has already occurred. In several Indian states, consistent access to benzathine penicillin for this long-term prevention is a genuine practical problem, not a matter of a patient\'s discipline alone.',
+    symptoms: ['Often no symptoms for years after the original throat infection', 'Breathlessness on exertion, as valve damage progresses', 'Tiredness and reduced ability to exercise', 'Swelling in the feet or legs', 'A fluttering or irregular heartbeat', 'A heart murmur found incidentally on examination'],
+    approach: [
+      'Prompt, complete antibiotic treatment of any confirmed strep throat, especially in children, to prevent rheumatic fever from developing at all',
+      'Echocardiogram-based assessment when rheumatic heart disease is suspected or a murmur is found, since it detects valve changes a stethoscope alone can miss',
+      'Coordination of long-term antibiotic prophylaxis (benzathine penicillin) for anyone already diagnosed, to protect against further valve damage from repeat infections',
+      'Referral to a cardiologist for valve assessment and, when advised, procedural or surgical options',
+      'Family screening and awareness, since the original throat infection is often forgotten by the time valve damage is found decades later',
+    ],
+    when: 'Get any sore throat with fever in a child properly assessed and treated, since this is the step that actually prevents rheumatic fever. If rheumatic heart disease has already been diagnosed, keep to the antibiotic prophylaxis schedule your doctor has set, and ask about it directly if access has been difficult.',
+    redFlags: {
+      emergency: [
+        'Severe breathlessness at rest',
+        'Chest pain',
+        'Fainting or a sudden loss of consciousness',
+        'A high fever with a new or worsening heart murmur, a possible infection on a damaged valve, needs same-day medical attention',
+      ],
+      soon: [
+        'A new heart murmur found on any examination',
+        'A childhood history of rheumatic fever without ongoing antibiotic follow-up',
+        'Breathlessness or tiredness that is new or worsening in someone with known valve disease',
+      ],
+    },
+    sources: [
+      ['Rheumatic heart disease (WHO fact sheet)', 'https://www.who.int/news-room/fact-sheets/detail/rheumatic-heart-disease'],
+      ['Current status of rheumatic heart disease in India (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6477130/'],
+      ['Prevalence of rheumatic and congenital heart disease in school children of Andhra Pradesh, South India (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3758100/'],
+    ],
+    related: [['Atrial fibrillation', 'atrial-fibrillation'], ['Heart failure', 'heart-failure']],
+  },
+};
 
 /* ---------------- General / Metabolic conditions (Task 4) ----------------
    Diabetes, thyroid, obesity, uric acid and vitamin deficiencies — the

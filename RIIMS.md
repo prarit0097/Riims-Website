@@ -137,7 +137,7 @@ RiimS/
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
     ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
-    ├── sitemap.xml           # all 55 indexable URLs with lastmod/priority (404 excluded)
+    ├── sitemap.xml           # all 84 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -172,15 +172,15 @@ RiimS/
    - Plus a loop over `['liver', 'heart', 'general']` that writes one **category hub**
      (`conditions/<dir>/index.html`, via `categoryHubPage(base, cat)` in `pages.mjs`) per
      category, and a second loop over `CONDITION_SETS['liver'|'heart'|'general']` (see §26)
-     that writes `conditions/<dir>/<slug>.html` pages. As of Task 4, **liver and general are
-     both complete 12-condition silos** (hub + all 12 condition pages each); heart still has an
-     empty hub (0 cards, 0 condition pages) until its task lands.
+     that writes `conditions/<dir>/<slug>.html` pages. As of Task 5, **all three categories are
+     complete silos**: liver and general at 12 conditions each, heart at 8 (hub + all condition
+     pages, every category).
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`. It also emits **`site/js/search-data.js`**
    (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
    the home disease-search results (see §8) — and `js/gtag.js` if a Google Tag ID is set.
 
-Run it: `npm run build`. It logs `Generated 77 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 85 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -271,8 +271,12 @@ site, or via `data/content.json` in the repo.
   As of Task 4, **`GENERAL` is also complete at 12 conditions**: `diabetes-and-kidney-disease` and
   `uric-acid-gout` (the two kidney-bridge pages), plus `type-2-diabetes`, `prediabetes`,
   `hypothyroidism`, `hyperthyroidism`, `obesity`, `metabolic-syndrome`, `insulin-resistance`,
-  `vitamin-d-deficiency`, `vitamin-b12-deficiency`, `thyroid-in-pregnancy`. `HEART` remains
-  **empty** (filled by Task 5). `CONDITION_SETS` maps a category key
+  `vitamin-d-deficiency`, `vitamin-b12-deficiency`, `thyroid-in-pregnancy`. As of Task 5,
+  **`HEART` is complete at 8 conditions** — the highest-stakes category on the site:
+  `heart-attack-warning-signs` (a pure emergency page, built first), `high-blood-pressure`,
+  `bp-and-kidney-disease` (the kidney-bridge page), `high-cholesterol`, `triglycerides`,
+  `heart-failure`, `atrial-fibrillation`, `rheumatic-heart-disease`. All 4 categories are now
+  fully populated. `CONDITION_SETS` maps a category key
   to its condition map (`{kidney: CONDITIONS, liver: LIVER, heart: HEART, general: GENERAL}`) and
   is what `conditionPage()`/`generate.mjs` resolve a slug through.
 - **`PROBLEMS`** — the home "conditions we help with" grid (links to the main condition pages).
@@ -466,7 +470,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (64 indexable URLs + a 404)
+## 14. Page inventory (84 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
@@ -488,7 +492,8 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 | `/conditions/liver/{12 slugs}.html` | Liver condition pages | raised-sgpt-sgot, fatty-liver, drug-herb-induced-liver-injury (Task 2); fatty-liver-grade-2, fatty-liver-diet, liver-function-test-report, jaundice, hepatitis-b, hepatitis-c, liver-cirrhosis, alcoholic-liver-disease, liver-abscess (Task 3) — each breadcrumb + MedicalWebPage + FAQPage JSON-LD (see §26). The liver silo is now complete (12/12). |
 | `/conditions/general/` | General & Lifestyle Diseases hub | 12 condition cards via `categoryHubPage` + disclaimer + CTA; breadcrumb + CollectionPage schema (see §26) |
 | `/conditions/general/{12 slugs}.html` | General condition pages | diabetes-and-kidney-disease, uric-acid-gout (kidney bridges), type-2-diabetes, prediabetes, hypothyroidism, hyperthyroidism, obesity, metabolic-syndrome, insulin-resistance, vitamin-d-deficiency, vitamin-b12-deficiency, thyroid-in-pregnancy — each breadcrumb + MedicalWebPage + FAQPage JSON-LD. The general silo is now complete (12/12). |
-| `/conditions/heart/` | Heart hub | registered and live, but renders **0 cards** — `HEART` is still an empty map, populated by Task 5 |
+| `/conditions/heart/` | Heart hub | 8 condition cards via `categoryHubPage` + disclaimer + CTA; breadcrumb + CollectionPage schema (see §26) |
+| `/conditions/heart/{8 slugs}.html` | Heart condition pages | heart-attack-warning-signs (pure emergency page, built first), high-blood-pressure, bp-and-kidney-disease (kidney bridge), high-cholesterol, triglycerides, heart-failure, atrial-fibrillation, rheumatic-heart-disease — each breadcrumb + MedicalWebPage + FAQPage JSON-LD (see §26). The heart silo is now complete (8/8); all 4 disease categories are fully populated. |
 
 ## 15. SEO implementation
 
@@ -506,7 +511,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
   opening hours. Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post; and a **`Physician`** node per doctor on the doctors page (`physiciansGraph()`, from the admin roster — for doctor rich results + E-E-A-T).
-- `sitemap.xml` (36 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
+- `sitemap.xml` (84 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
 - One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Delhi-NCR & Baraut — High
   Creatinine, CKD, Dialysis & Diet Guidance"; home `<title>` targets "Kidney Specialist in
   Delhi-NCR"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
@@ -855,9 +860,12 @@ plumbing** (the generator learned about categories, no content). **Task 2 shippe
 content: the liver silo's 3 flagship pages.** **Task 3 completed the liver silo** — all
 12 conditions live under `/conditions/liver/`, plus its category hub. **Task 4 completed the
 general/metabolic silo** — all 12 conditions live under `/conditions/general/`, plus its category
-hub. The build now emits **77 files** (50 from before Task 1/2 + 3 category hubs + 12 liver
-conditions + 12 general conditions); every existing kidney page stays byte-identical
-(content-wise) to before, and the heart hub still renders with 0 cards until its task lands.
+hub. **Task 5 completed the heart silo** — the highest-stakes category on the site (education,
+risk management and emergency guidance, never treatment marketing) — all 8 conditions live under
+`/conditions/heart/`; its category hub already existed as an empty shell (from Task 1) and now
+renders 8 cards. The build now emits **85 files** (the prior 77, unchanged, plus the 8 new heart
+condition pages); every existing kidney page stays byte-identical (content-wise) to before. All 4
+disease categories (Kidney, Liver, Heart, General) are now fully populated.
 
 ### The model
 - **`CATEGORIES`** (`build/data.mjs`, after the `CONDITIONS` map) — one entry per category key
@@ -868,9 +876,10 @@ conditions + 12 general conditions); every existing kidney page stays byte-ident
   general: GENERAL}`. `LIVER`, `HEART`, `GENERAL` are condition maps in the exact same shape as
   `CONDITIONS` (see §8). `LIVER` holds all **12** conditions (Task 2's 3 flagship pages +
   Task 3's remaining 9, two contiguous banner-commented blocks in `data.mjs` right after
-  `CATEGORIES`). `GENERAL` now also holds all **12** conditions (Task 4: the two kidney-bridge
-  pages + the remaining 10, two contiguous banner-commented blocks in `data.mjs` right after
-  `HEART`). `HEART` is still empty `{}` — Task 5 populates it.
+  `CATEGORIES`). `HEART` now holds all **8** conditions (Task 5, one banner-commented block in
+  `data.mjs` right after `LIVER`, before `GENERAL`). `GENERAL` holds all **12** conditions
+  (Task 4: the two kidney-bridge pages + the remaining 10, two contiguous banner-commented
+  blocks in `data.mjs` right after `HEART`).
 - **URL rule — kidney deliberately stays flat, new categories nest one level deeper.** Kidney
   keeps `/conditions/<slug>.html` (it already ranks on Google for these URLs — moving them would
   be real business risk). Liver/Heart/General use `/conditions/<dir>/<slug>.html` (e.g.
@@ -882,7 +891,8 @@ conditions + 12 general conditions); every existing kidney page stays byte-ident
   existing call site (which doesn't pass `cat`) is unaffected.
 - **Optional condition fields** (`redFlags`, `sources`) — added to the condition shape in Task 1;
   no kidney entry uses them (kidney pages render both blocks empty, unchanged from before). All
-  12 liver conditions (Task 2 + Task 3) and all 12 general conditions (Task 4) set both fields:
+  12 liver conditions (Task 2 + Task 3), all 8 heart conditions (Task 5) and all 12 general
+  conditions (Task 4) set both fields:
   - `redFlags?: { emergency: string[], soon?: string[] }` → renders `.riims-redflags`, a loud
     "Go to hospital now" box (via `redFlagBox()` in `pages.mjs`), placed **immediately after the
     reviewed-by line and before the "about" section** — a patient must not have to scroll past it.
@@ -899,20 +909,18 @@ conditions + 12 general conditions); every existing kidney page stays byte-ident
 - **`generate.mjs`** — after the existing kidney `CONDITIONS` loop, two more loops run:
   1. A **category-hub loop** over `['liver', 'heart', 'general']` that pushes one
      `conditions/<dir>/index.html` per category (`body: categoryHubPage('../../', cat)`;
-     `BreadcrumbList` + `CollectionPage` JSON-LD). Runs even for empty categories, so
-     heart already has a live (if card-less) hub.
+     `BreadcrumbList` + `CollectionPage` JSON-LD).
   2. The **condition loop** over `['liver', 'heart', 'general']` × `Object.keys(CONDITION_SETS[cat])`,
      pushing a page per condition: `BreadcrumbList` + `MedicalWebPage` + **`FAQPage`** JSON-LD (the
      `FAQPage` block was added in Task 2 — it mirrors kidney's own condition-loop FAQPage exactly,
      built from `c.aboutTitle`/`c.about`, a "When should I consult a doctor about …" question from
      `c.when`, and a "How does RIIMS approach …" question from `c.approach`; kidney's loop keeps its
      own near-identical block with kidney-specific wording, so the two are not shared code, by
-     design, to keep the kidney string frozen). Because `HEART` is still empty, only the
-     now-12 liver conditions and now-12 general conditions produce pages (24 condition pages total
-     across the two loops, plus 3 category-hub pages = 27 pages from this part of the generator).
+     design, to keep the kidney string frozen). As of Task 5, all three sets are populated: 12
+     liver + 8 heart + 12 general conditions produce 32 condition pages, plus 3 category-hub
+     pages = 35 pages from this part of the generator.
 
-  `mkdirSync` pre-creates `site/conditions/{liver,heart,general}/` for all three categories
-  regardless of content (a harmless empty directory for heart; git doesn't track it).
+  `mkdirSync` pre-creates `site/conditions/{liver,heart,general}/` for all three categories.
 - **CSS** (`site/css/site.css`) — `.riims-redflags` (danger-toned card, `var(--danger)`/
   `var(--danger-soft)` tokens, which already existed in `colors.css`) and `.riims-sources`
   (a plain top-border list block), added near the other component blocks (after
@@ -1048,10 +1056,78 @@ since the related-link builder only ever targets the current category's own dire
 links, no em dashes, no banned compliance words (`cure`, `guaranteed`, `permanent`, `reverse`, etc.);
 verified by `npm test` and a source grep on the `GENERAL` block.
 
+### Heart silo content (Task 5, complete at 8 conditions)
+The highest-stakes category on the site: a wrong move on a heart page can get someone killed, so
+these pages are framed strictly as education, risk management and emergency guidance, never
+treatment marketing. RIIMS manages blood pressure, cholesterol and cardiovascular risk and
+coordinates emergency/specialist care; it never claims to "reverse" a blockage or avoid
+bypass/angioplasty — the Drugs & Magic Remedies Act 1954 Schedule lists heart disease (#26),
+high/low blood pressure (#27) and arteriosclerosis (#2), and "reverse heart blockage without
+surgery" is exactly the claim behind the Patanjali Supreme Court proceedings. Built with the
+highest-risk page first:
+- **`heart-attack-warning-signs`** ⚑ — built first, as instructed, because it is the page most
+  likely to matter. A pure emergency page: the AHA warning signs verbatim (chest discomfort
+  lasting more than a few minutes or that comes and goes; discomfort in one or both arms, back,
+  neck, jaw or stomach; shortness of breath; cold sweat, nausea, lightheadedness), the exact
+  instruction "Call an ambulance ... Do not drive yourself. Minutes matter," and the heart attack
+  vs. cardiac arrest distinction in the AHA's own words — a circulation problem (person usually
+  awake and talking) vs. an electrical problem (unresponsive, not breathing normally, or only
+  gasping). States Hands-Only CPR can work as well as CPR with breaths, and gives India's
+  bystander-CPR context (1.3–9.8%, AED use ~1%, PMC review) without ever publishing an unverified
+  "10% per minute" survival figure. The local emergency number is hedged as "in most of India, 108
+  or 112" throughout, never stated as a single fixed number.
+- **`high-blood-pressure`** — Schedule #27. States plainly that it is usually symptomless and
+  diagnosed only by repeated measurement. Cites the same ICMR-INDIAB Lancet paper already used for
+  diabetes in `GENERAL` (35.5% prevalence, confirmed as the correct source for this exact figure).
+  🚨 BP ≥180/120 with chest pain, breathlessness, severe headache, vision change, weakness or
+  slurred speech; F.A.S.T. stroke guidance with "call emergency services even if the symptoms go
+  away" stated verbatim.
+- **`bp-and-kidney-disease`** ⭐ — the bridge. Cross-links the existing flat kidney page as a plain
+  inline `<a href="../hypertensive-kidney-disease.html">` inside `about` (not via `related[]`,
+  same pattern as the two `GENERAL` bridge pages), verified resolving by the check script and a
+  direct `path.resolve` test.
+- **`high-cholesterol` / `triglycerides`** — both state plainly that there are no symptoms in
+  almost all cases, and that Indians tend toward high triglycerides with low HDL rather than the
+  Western high-LDL pattern (cited to a PMC South Asian lipid review), so risk is read as a whole
+  profile rather than the LDL number alone. `triglycerides` states the >500 mg/dL pancreatitis
+  threshold from the Endocrine Society guideline. Family history of a heart attack before 55
+  (men)/65 (women) is flagged as a familial hypercholesterolaemia signal (CDC-sourced).
+- **`heart-failure`** — states plainly the heart is still beating but too weak or stiff to pump
+  well, and that it is managed with ongoing care, not a one-time fix (the word "cured" is never
+  used, even in negation). India context sourced to the National Heart Failure Registry (patients
+  ~10 years younger than high-income-country registries) and the Trivandrum Heart Failure Registry
+  (ischaemic cause 72%, only ~25% received guideline-directed therapy at discharge). Never
+  publishes the US-rate-extrapolated "22.7 million India prevalence" figure. 🚨 severe
+  breathlessness at rest or waking gasping, pink frothy sputum, chest pain, fainting.
+- **`atrial-fibrillation`** — states plainly it is often symptomless, linked with roughly a
+  fivefold stroke-risk increase (CDC-sourced). India's difference, sourced to the IHRS-AF
+  registry: patients more than a decade younger, with rheumatic valve disease present in close to
+  half of registry patients (vs. mostly older-age causes in the West) — echo, not just ECG, is
+  what finds it. Never publishes the 0.196% Nagpur pilot-study prevalence figure. 🚨 chest pain,
+  severe breathlessness, fainting, plus any stroke sign.
+- **`rheumatic-heart-disease`** — the one page allowed a prevention claim, and it is WHO's own:
+  treating strep throat with appropriate antibiotics prevents rheumatic fever — prevention of the
+  fever, explicitly never framed as reversing established valve damage. Valve damage stated as
+  following rheumatic fever 20–30 years later. India figures: ~3.6 million, explicitly sourced as
+  a 2011-census-based estimate, ~44,000 added yearly, prevalence fallen from 1–11/1000 (1970s–90s)
+  to <1/1000 after 2000 (all PMC-sourced). The Andhra Pradesh echo-vs-stethoscope figures (7.6/1000
+  vs. 0.7/1000) are stated together with the explanation that they measure different things (echo
+  detection vs. clinical detection), never left to imply the disease itself became ~10× more
+  common. WHO global figures (55 million affected, ~360,000 deaths) attributed to WHO by name. The
+  benzathine penicillin access gap in Indian states is named directly, not glossed over.
+
+All 8 carry `redFlags` and `sources` (2–4 real, linked citations each — American Heart Association,
+CDC, WHO, Cleveland Clinic, American Stroke Association, PMC, PubMed, Lancet Diabetes &
+Endocrinology, NIDDK, Endocrine Society/Oxford Academic). `related[]` forms a fully-connected web
+across all 8 heart slugs; the one kidney cross-link (`bp-and-kidney-disease` → the flat
+`hypertensive-kidney-disease` page) lives as inline `<a>` text inside `about`, verified resolving.
+No dead links, no em dashes, no banned compliance words (`cure`, `guaranteed`, `permanent`,
+`reverse`, `detox`, `cleanse`, `rejuvenate`, `miracle`, etc.); verified by `npm test` and a source
+grep on the `HEART` block.
+
 ### What later tasks do
-- **Task 5** — Heart: 8 conditions + hub (`HEART`).
 - **Task 6** — wires all 4 categories into the rest of the site (nav, `PROBLEMS`, cross-links) and
   fixes a referral contradiction noted in the design spec.
 
-Each of those tasks should update this section and §8/§11/§14 with the real page counts once
+Task 6 should update this section and §8/§11/§14 with the real page counts once
 content lands.
