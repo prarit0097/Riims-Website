@@ -626,7 +626,311 @@ export const LIVER = {
   },
 };
 export const HEART = {};
-export const GENERAL = {};
+
+/* ---------------- General / Metabolic conditions (Task 4) ----------------
+   Diabetes, thyroid, obesity, uric acid and vitamin deficiencies — the
+   conditions that sit behind most kidney and liver disease. The two starred
+   entries (diabetes-and-kidney-disease, uric-acid-gout) are the kidney
+   bridges: they link the existing flat kidney pages (diabetic-kidney-disease,
+   hypertensive-kidney-disease, ckd, kidney-stone-treatment) as plain inline
+   <a> tags inside `about`, not via `related[]` — the related-link builder in
+   pages.mjs only ever targets the current category's own directory, so a
+   kidney slug in `related` here would render as conditions/general/<kidney
+   slug>.html and 404. All 12 carry redFlags + sources. */
+export const GENERAL = {
+  'diabetes-and-kidney-disease': {
+    icon: 'droplet', title: 'Diabetes and Kidney Disease', crumb: 'General · Diabetes & Kidney Disease',
+    intro: 'Diabetes is the single biggest cause of kidney disease in India, and the damage builds silently for years before creatinine ever moves. Good control on the diabetes side protects the kidneys directly.',
+    aboutTitle: 'How does diabetes affect the kidneys?',
+    about: 'Diabetes damages the kidneys\' filtering units gradually over years of high blood sugar, and it is the leading cause of kidney disease in India today. High blood pressure often travels alongside diabetes and adds its own strain on the same filters, so the two are usually managed together rather than as separate problems. For the detailed picture of how each type of damage progresses, see our pages on <a href="../diabetic-kidney-disease.html">diabetic kidney disease</a> and <a href="../hypertensive-kidney-disease.html">hypertensive kidney disease</a>. The earliest sign in diabetes is not a rising creatinine but a small amount of protein leaking into the urine, called microalbuminuria, which a urine ACR test can pick up years before creatinine or eGFR move outside their normal range. This page focuses on what day-to-day diabetes control means for kidney protection: annual screening, a lower blood pressure target once the kidneys are involved, agreed with your treating doctor, and coordinating sugar and blood pressure treatment as one plan rather than two separate ones.',
+    symptoms: ['Usually no symptoms for years, screening is what catches it', 'Protein or foam in the urine (microalbuminuria)', 'Gradually rising creatinine or falling eGFR', 'Blood pressure becoming harder to control', 'Swelling in the feet as damage advances', 'Frequent urination at night'],
+    approach: [
+      'A yearly urine ACR and eGFR test for everyone with diabetes, whether or not any symptoms are present',
+      'A blood pressure target agreed with your treating doctor, usually lower once the kidneys are involved',
+      'Sugar control coordinated with your diabetes treatment, supporting it rather than replacing it',
+      'A kidney-appropriate diet that also respects your diabetes diet, planned as one plan rather than two',
+      'Structured follow-up so any change in your reports is caught early, not found by chance',
+    ],
+    when: 'Everyone with diabetes should have a urine ACR and eGFR test at least once a year, even without symptoms. If protein appears in the urine, blood pressure becomes hard to control, or creatinine starts rising, ask for a kidney-focused review without delay.',
+    redFlags: {
+      emergency: ['Very little or no urine output', 'Breathlessness at rest or when lying flat', 'Confusion together with a very high or very low blood sugar reading'],
+      soon: ['New or worsening swelling in the feet or around the eyes', 'Protein or foam newly noticed in the urine', 'Blood pressure that has stopped responding to your usual medicine'],
+    },
+    sources: [
+      ['Diabetic kidney disease (NIDDK)', 'https://www.niddk.nih.gov/health-information/diabetes/overview/preventing-problems/diabetic-kidney-disease'],
+      ['KDIGO 2022 diabetes management in CKD, synopsis (Annals of Internal Medicine)', 'https://www.acpjournals.org/doi/10.7326/M22-2904'],
+    ],
+    related: [['Type 2 diabetes', 'type-2-diabetes'], ['Metabolic syndrome', 'metabolic-syndrome'], ['Insulin resistance', 'insulin-resistance']],
+  },
+  'uric-acid-gout': {
+    icon: 'flask-conical', title: 'Uric Acid & Gout', crumb: 'General · Uric Acid & Gout',
+    intro: 'A high uric acid number on a health check is not automatically a disease, and gout, kidney stones and kidney disease are linked more closely than most people realise.',
+    aboutTitle: 'What does high uric acid actually mean?',
+    about: 'Uric acid is a waste product that forms when the body breaks down purines, found in certain foods and made naturally by the body itself. When levels stay high in the blood, a condition called hyperuricaemia, urate crystals can form in joints and cause gout, or settle in the kidneys and contribute to <a href="../kidney-stone-treatment.html">kidney stones</a> and, over time, <a href="../ckd.html">kidney disease</a>. A high uric acid number on a routine health check, without any joint pain or swelling, is not automatically a disease that needs treating. The American College of Rheumatology\'s 2020 guideline conditionally recommends against starting urate-lowering medicine for this kind of symptomless high reading, even in people who also have kidney disease, heart disease or kidney stones, because the medicine\'s downsides can outweigh a benefit that has not been shown for this group. Gout itself is different: once someone has had an actual attack, joint pain with swelling and redness, urate-lowering treatment is usually advised to prevent further attacks and joint damage. One further trap is worth knowing: uric acid levels often fall during an acute gout attack itself, because the inflammation temporarily increases how much is cleared through urine, so a normal reading during a flare does not rule gout out.',
+    symptoms: ['Sudden, severe pain in a single joint, often the big toe', 'Redness, warmth and swelling over the joint', 'A high uric acid number found on a routine blood test with no symptoms at all', 'Repeated joint attacks over months or years', 'A history of kidney stones', 'Small firm lumps (tophi) near joints in long-standing gout'],
+    approach: [
+      'A proper diagnosis first, since a high uric acid number alone does not confirm gout and a normal number during an attack does not rule it out',
+      'Prompt treatment of an acute attack to settle the pain and inflammation, guided by a doctor',
+      'A decision on long-term urate-lowering treatment based on actual attacks and risk, not a single high lab value',
+      'Screening for kidney stones and kidney function in anyone with recurrent gout',
+      'Honest diet and lifestyle guidance that fits your reports, without promising a number it cannot reliably deliver',
+    ],
+    when: 'A single high uric acid reading with no symptoms usually does not need medicine, though it is worth discussing with a doctor. A joint that is genuinely swollen, red and painful needs prompt evaluation, and if it comes with fever, treat it as an emergency, not ordinary gout.',
+    redFlags: {
+      emergency: ['A hot, swollen joint together with fever, which can mean a joint infection (septic arthritis) rather than gout, until proven otherwise', 'Severe joint pain with chills or feeling unwell overall', 'Sudden inability to move a joint at all'],
+      soon: ['A first attack of joint pain and swelling', 'Gout attacks becoming more frequent', 'A known history of kidney stones with a new high uric acid reading'],
+    },
+    sources: [
+      ['2020 ACR Guideline for the Management of Gout (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10563586/'],
+      ['Evaluation and management of septic arthritis and its mimics in the ED (West J Emerg Med, PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6404712/'],
+    ],
+    related: [['Metabolic syndrome', 'metabolic-syndrome'], ['Obesity', 'obesity'], ['Type 2 diabetes', 'type-2-diabetes']],
+  },
+
+  /* ---------------- General conditions (remaining 10) ---------------- */
+  'type-2-diabetes': {
+    icon: 'gauge', title: 'Type 2 Diabetes', crumb: 'General · Type 2 Diabetes',
+    intro: 'Type 2 diabetes is a lifelong condition to manage, and for some people intensive weight loss can bring blood sugar into a normal range without medication for a period of time. Doctors call this state remission: a deliberately careful word, not a sign that follow-up can stop.',
+    aboutTitle: 'What does a diagnosis of type 2 diabetes mean, and what is remission?',
+    about: 'Type 2 diabetes means the body does not use insulin effectively, or does not make enough of it, so blood sugar runs higher than it should. It typically develops over years and often has no early symptoms, which is why routine screening matters as much as symptoms do. In 2021 an international panel convened by the American Diabetes Association and the European Association for the Study of Diabetes agreed on a precise definition of remission: HbA1c below 6.5% sustained for at least three months after completely stopping all glucose-lowering medication. The panel deliberately chose remission over a more absolute-sounding term, because implying the condition was gone for good would wrongly suggest that follow-up is no longer needed. Even in remission, the same yearly checks continue: eye screening, kidney tests, foot checks and an annual HbA1c, because the underlying tendency towards high blood sugar does not disappear. The strongest evidence for remission comes from the DiRECT trial in Scotland, where a structured weight-management programme put 46% of participants into remission at one year, falling to 36% at two years and 13% by five years. DiRECT enrolled people who had lived with diabetes for six years or less, were not on insulin, and were of Scottish background; whether the same results apply to Asian Indians, who tend to develop diabetes at a lower body weight and after fewer years of excess weight, has not been established. What weight loss reliably improves, whether or not full remission is reached, is blood sugar control, blood pressure and the medicine burden.',
+    symptoms: ['Increased thirst and frequent urination', 'Unexplained tiredness', 'Slow-healing cuts or frequent infections', 'Blurred vision', 'Tingling or numbness in the feet', 'Often no symptoms at all in the early years'],
+    approach: [
+      'HbA1c at diagnosis, with eye, kidney, foot and cholesterol screening from the start, not after years of silence',
+      'A structured, doctor-guided weight-management plan for those who want to pursue remission, with honest odds rather than a promise',
+      'Yoga added to standard treatment modestly improved blood sugar in trials, about 0.4 to 0.6% off HbA1c: a useful addition, never a substitute for medication or monitoring',
+      'Continued eye, kidney and foot screening every year, even after remission is reached',
+      'Blood pressure, cholesterol and medicine management for heart protection on their own terms: the Look-AHEAD trial found that intensive diet and exercise alone did not reduce heart attacks or strokes once diabetes was established',
+    ],
+    when: 'A fasting sugar, HbA1c or random blood sugar test confirms the diagnosis. Do not wait for symptoms if you have risk factors such as family history, high BMI or a large waist. Contact your doctor promptly for very high or very low readings, or for the emergency signs below.',
+    redFlags: {
+      emergency: ['Confusion, drowsiness or difficulty waking someone with diabetes', 'Fruity-smelling breath with vomiting and rapid breathing (possible diabetic ketoacidosis)', 'A blood sugar reading below 70 mg/dL that does not improve after taking sugar', 'Chest pain or breathlessness'],
+      soon: ['Blood sugar consistently above your target range despite taking medicine as advised', 'A foot wound, numbness or a new ulcer', 'Blurred vision that is new or worsening'],
+    },
+    sources: [
+      ['Consensus Report: Definition and Interpretation of Remission in Type 2 Diabetes, ADA/EASD (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8929179/'],
+      ['5-year follow-up of the DiRECT trial (Lancet Diabetes & Endocrinology)', 'https://www.thelancet.com/journals/landia/article/PIIS2213-8587(23)00385-6/fulltext'],
+      ['Cardiovascular effects of intensive lifestyle intervention in type 2 diabetes, Look AHEAD (NEJM)', 'https://www.nejm.org/doi/full/10.1056/NEJMoa1212914'],
+    ],
+    related: [['Prediabetes', 'prediabetes'], ['Diabetes and kidney disease', 'diabetes-and-kidney-disease'], ['Insulin resistance', 'insulin-resistance'], ['Metabolic syndrome', 'metabolic-syndrome']],
+  },
+  'prediabetes': {
+    icon: 'trending-up', title: 'Prediabetes', crumb: 'General · Prediabetes',
+    intro: 'Prediabetes usually causes no symptoms at all, which is exactly why it matters: this is the stage where prevention still has the best odds of working.',
+    aboutTitle: 'What does a diagnosis of prediabetes mean?',
+    about: 'Prediabetes means blood sugar is higher than normal but not yet high enough to be called diabetes, and it typically causes no symptoms at all, which is exactly why routine screening matters. The ICMR-INDIAB national study found prediabetes in 15.3% of Indian adults. Uttar Pradesh has the lowest measured diabetes prevalence of any Indian state studied, at 4.8%, but this is not a reason for reassurance: the ratio of diabetes to prediabetes in UP is 1:2 or lower, meaning a large pool of people already have prediabetes and have simply not converted to diabetes yet. This is precisely where prevention has the most to offer. The Indian Diabetes Prevention Programme (IDPP-1), a trial conducted on Asian Indians with impaired glucose tolerance, found that over three years 55.0% of the untreated group went on to develop diabetes, compared with 39.3% of the group given a structured lifestyle programme. That is real and meaningful protection, and it is also an honest number: even in the best-performing group, roughly 4 in 10 people still went on to develop diabetes despite the lifestyle changes. Adding metformin to the lifestyle programme in the same trial added no extra benefit over lifestyle alone. Prediabetes is a genuine opportunity to change the odds, not a guarantee that diabetes can be avoided.',
+    symptoms: ['Usually no symptoms at all', 'Increased thirst, in some people', 'Patches of darkened skin at the neck or armpits (acanthosis nigricans)', 'Found only on a routine blood sugar or HbA1c test', 'A strong family history of diabetes', 'A large waist with little else noticeable'],
+    approach: [
+      'A fasting sugar, HbA1c or oral glucose tolerance test to confirm the diagnosis, not a single random reading',
+      'A structured, doctor-guided lifestyle programme, since the Indian trial evidence for prediabetes is strongest for lifestyle change rather than medicine',
+      'Realistic goal-setting: lifestyle change meaningfully lowers the odds of progressing to diabetes, it does not remove the risk',
+      'A yearly re-test, since prediabetes can move to diabetes, stay unchanged, or improve, and only testing tells you which',
+      'Screening for blood pressure and cholesterol alongside sugar, since they commonly travel together with prediabetes',
+    ],
+    when: 'Ask for a fasting sugar or HbA1c test if you have a family history of diabetes, a large waist, or are over 30. Prediabetes has no symptoms to wait for. If you already know you have prediabetes, a yearly re-check is the minimum, not a one-time test.',
+    redFlags: {
+      emergency: ['Symptoms of very high blood sugar developing quickly, such as excessive thirst, confusion, or fruity-smelling breath with vomiting, need same-day care as this may mean diabetes has already developed'],
+      soon: ['A repeat test showing HbA1c or fasting sugar has moved higher since the last check', 'New symptoms such as increased thirst or unexplained weight loss'],
+    },
+    sources: [
+      ['Metabolic non-communicable disease health report of India, ICMR-INDIAB (Lancet Diabetes & Endocrinology)', 'https://www.thelancet.com/journals/landia/article/PIIS2213-8587(23)00119-5/fulltext'],
+      ['The Indian Diabetes Prevention Programme, IDPP-1 (Diabetologia)', 'https://link.springer.com/article/10.1007/s00125-005-0097-z'],
+    ],
+    related: [['Type 2 diabetes', 'type-2-diabetes'], ['Insulin resistance', 'insulin-resistance'], ['Obesity', 'obesity'], ['Metabolic syndrome', 'metabolic-syndrome']],
+  },
+  'hypothyroidism': {
+    icon: 'thermometer', title: 'Hypothyroidism', crumb: 'General · Hypothyroidism',
+    intro: 'An underactive thyroid is common and treatable, but not every mildly raised TSH needs a tablet for life. The honest approach is to test properly, not to assume.',
+    aboutTitle: 'What does hypothyroidism mean, and does it always need lifelong treatment?',
+    about: 'Hypothyroidism means the thyroid gland is not making enough hormone, and the standard treatment, levothyroxine, replaces that hormone rather than repairing the gland itself; for most people who need it, treatment continues long-term. An eight-city Indian study found hypothyroidism in 10.95% of adults screened. But lifelong treatment for everyone is not accurate, and a milder form called subclinical hypothyroidism, a mildly raised TSH with a normal thyroxine level and often no clear symptoms, is treated far too often. A 2019 BMJ Rapid Recommendations panel issued a strong recommendation against giving thyroid hormone for subclinical hypothyroidism in most adults, based on a review of 21 trials covering 2,192 patients that found no meaningful improvement in quality of life, mood or energy from treatment. Treatment remains clearly appropriate in specific situations: pregnancy or planning a pregnancy, a TSH above 10, a positive anti-TPO antibody test together with symptoms, and in children. Outside these situations, the honest and useful step is not to stop a tablet abruptly on your own, but to have your TSH properly reviewed with your doctor to see whether the medicine is actually needed at your current dose, or at all.',
+    symptoms: ['Tiredness and low energy', 'Unexplained weight gain', 'Feeling cold when others do not', 'Dry skin and hair thinning', 'Constipation', 'Slowed thinking or low mood'],
+    approach: [
+      'TSH and free T4 together, not TSH alone, with a borderline result repeated before starting treatment',
+      'Treatment for the situations where it is clearly appropriate: overt hypothyroidism, pregnancy or planning pregnancy, a TSH above 10, or anti-TPO positive with symptoms',
+      'For milder, subclinical readings without a clear indication, an honest discussion of whether treatment actually helps you rather than automatic prescribing',
+      'A dose review through TSH testing at the right interval, rather than an old dose continued indefinitely without a recheck',
+      'Any dose change made only with your treating physician, never a decision to stop or reduce medicine on your own',
+    ],
+    when: 'Get tested if you have persistent tiredness, unexplained weight gain, or a family history of thyroid disease, or if you are pregnant or planning a pregnancy. If you are already on levothyroxine and unsure whether you still need it, ask for a TSH-based review rather than stopping it yourself.',
+    redFlags: {
+      emergency: ['Severe tiredness with confusion, slowed breathing or a very slow pulse (a rare emergency called myxoedema coma, more common in the elderly with untreated severe hypothyroidism)', 'Chest pain or fainting'],
+      soon: ['Symptoms not improving despite treatment', 'A new pregnancy while on or being evaluated for thyroid medicine', 'A TSH result far outside the expected range on a routine test'],
+    },
+    sources: [
+      ['Thyroid hormones treatment for subclinical hypothyroidism: a clinical practice guideline (BMJ, PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/31088853/'],
+      ['Prevalence of hypothyroidism in adults: an epidemiological study in eight cities of India (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3743364/'],
+    ],
+    related: [['Hyperthyroidism', 'hyperthyroidism'], ['Thyroid in pregnancy', 'thyroid-in-pregnancy'], ['Obesity', 'obesity']],
+  },
+  'hyperthyroidism': {
+    icon: 'flame', title: 'Hyperthyroidism', crumb: 'General · Hyperthyroidism',
+    intro: 'An overactive thyroid speeds up nearly every system in the body. Most cases are managed well, but two warning signs on treatment need same-day attention.',
+    aboutTitle: 'What is hyperthyroidism, and why does fever need urgent attention on treatment?',
+    about: 'Hyperthyroidism means the thyroid gland is making too much hormone, speeding up the body\'s metabolism. Graves\' disease, an autoimmune condition, is responsible for roughly 50 to 80% of cases and is the most common cause overall; other causes include toxic nodules and thyroiditis. Symptoms can be dramatic, a racing heart, weight loss despite a good appetite, tremor, heat intolerance, but they can also be mild, especially in older adults, where the main clue may simply be an irregular heartbeat or unexplained weight loss. Treatment usually starts with anti-thyroid medicine, and here one safety point matters more than any other: on these drugs, fever or a sore throat needs an urgent blood test to check the white cell count, not a wait-and-see approach. This is because anti-thyroid drugs carry a rare but serious risk called agranulocytosis, a sudden drop in the white blood cells that fight infection, occurring in roughly 0.2 to 0.5% of people who take them, and it can develop within days. The two most common symptoms of this complication are fever and a sore throat, and getting an urgent blood count checked and contacting your prescribing doctor immediately is the safe response, not waiting to see if it passes. At the far end of severity, poorly controlled hyperthyroidism can tip into thyroid storm, a medical emergency.',
+    symptoms: ['Rapid or irregular heartbeat', 'Unexplained weight loss despite normal or increased appetite', 'Tremor or shakiness in the hands', 'Heat intolerance and increased sweating', 'Anxiety, irritability or trouble sleeping', 'A visibly enlarged thyroid (goitre) or bulging eyes, in some cases'],
+    approach: [
+      'TSH and free T4/T3 to confirm the diagnosis, with the cause identified (Graves\' disease, a toxic nodule, or thyroiditis), since treatment differs by cause',
+      'Anti-thyroid medicine where appropriate, with clear safety counselling on the fever and sore-throat warning sign before the first dose',
+      'An urgent white blood cell count, the same day, for anyone on anti-thyroid medicine who develops fever or a sore throat',
+      'Beta-blockers for symptom control (heart rate, tremor) while the underlying cause is treated',
+      'Planned referral for definitive treatment (radioactive iodine or surgery) when appropriate, coordinated with your treating doctor',
+    ],
+    when: 'A racing heart, unexplained weight loss, tremor or heat intolerance deserve a thyroid blood test. If you are taking anti-thyroid medicine and develop fever or a sore throat, get an urgent blood count check the same day and contact your prescribing doctor immediately.',
+    redFlags: {
+      emergency: ['Fever or sore throat while taking anti-thyroid medicine (possible agranulocytosis), needing an urgent white blood cell count the same day', 'High fever, a racing heart and confusion or agitation together (possible thyroid storm)', 'Chest pain or severe breathlessness'],
+      soon: ['A new or worsening tremor, weight loss or heat intolerance', 'An irregular heartbeat noticed for the first time', 'Eye symptoms, such as bulging, redness or double vision, in someone with known thyroid disease'],
+    },
+    sources: [
+      ['Graves Disease (StatPearls, NCBI Bookshelf)', 'https://www.ncbi.nlm.nih.gov/books/NBK448195/'],
+      ['Antithyroid drug induced agranulocytosis: what still we need to learn? (PMC)', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4856502/'],
+    ],
+    related: [['Hypothyroidism', 'hypothyroidism'], ['Thyroid in pregnancy', 'thyroid-in-pregnancy'], ['Metabolic syndrome', 'metabolic-syndrome']],
+  },
+  'obesity': {
+    icon: 'ruler', title: 'Obesity', crumb: 'General · Obesity',
+    intro: 'Obesity in India is best measured at the waist, not on the bathroom scale. A simple tape measure catches risk that weight alone can miss.',
+    aboutTitle: 'How is obesity actually measured in India?',
+    about: 'The single most useful number for an Indian adult is not weight or BMI, it is waist circumference: 90 cm or more in men, 80 cm or more in women. This threshold is consistent across every major Indian clinical framework and needs nothing more than a measuring tape, unlike BMI, which has been redefined twice and is a less reliable single number for the Indian body type, where fat gathers around the organs even at a modest weight. The 2009 Indian consensus statement set the obesity threshold at a BMI of 25 or more; a 2025 revision lowered that threshold to above 23, reflecting evidence that Indians face metabolic risk at a lower BMI than Western populations. Because these two thresholds differ, it matters which one your report is using; this page uses the 2025 threshold of BMI above 23, paired with waist circumference, rather than BMI alone. What treatment can realistically achieve matters just as much as how obesity is defined. A weight loss of 3 to 5% of body weight produces a meaningful improvement in triglycerides and blood sugar; losing 5 to 10% adds a real improvement in blood pressure and cholesterol. No plan can promise an exact number of kilograms, results vary by person, but even a modest, sustained loss changes your numbers in ways that matter.',
+    symptoms: ['Waist circumference at or above 90 cm (men) or 80 cm (women)', 'BMI above 23 (using the 2025 Indian threshold)', 'Breathlessness on ordinary exertion', 'Joint pain, especially in the knees', 'Snoring or disturbed sleep', 'Often found alongside high blood sugar, blood pressure or cholesterol'],
+    approach: [
+      'Waist circumference and BMI measured together at every visit, not BMI alone',
+      'Screening for the conditions obesity commonly travels with: blood sugar, blood pressure, cholesterol and thyroid function',
+      'A staged weight-loss target, 3 to 5% first and more if tolerated, built around food, activity and sleep rather than a fixed number',
+      'Regular re-measurement against your own reports to track what is actually changing, not the scale alone',
+      'Coordination with your physician if medicine or a specific medical condition is contributing, rather than treating weight in isolation',
+    ],
+    when: 'If your waist measures 90 cm or more (men) or 80 cm or more (women), or your BMI is above 23, it is worth a conversation with a doctor, even if you feel well. Obesity-related risk often shows up in blood tests before it shows up in symptoms.',
+    redFlags: {
+      emergency: ['Sudden chest pain or breathlessness', 'Loud snoring with witnessed pauses in breathing and daytime collapse or extreme sleepiness (possible severe sleep apnoea)'],
+      soon: ['Waist circumference or BMI crossing into the at-risk range on a routine check', 'New joint pain limiting daily activity', 'Breathlessness on mild exertion that is new'],
+    },
+    sources: [
+      ['Revised definition of obesity in Asian Indians living in India (PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/39814628/'],
+      ['Consensus statement for diagnosis of obesity, abdominal obesity and the metabolic syndrome for Asian Indians, Misra et al 2009 (PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/19582986/'],
+      ['2013 AHA/ACC/TOS guideline for the management of overweight and obesity in adults (Circulation)', 'https://www.ahajournals.org/doi/10.1161/01.cir.0000437739.71477.ee'],
+    ],
+    related: [['Metabolic syndrome', 'metabolic-syndrome'], ['Insulin resistance', 'insulin-resistance'], ['Type 2 diabetes', 'type-2-diabetes']],
+  },
+  'metabolic-syndrome': {
+    icon: 'heart-pulse', title: 'Metabolic Syndrome', crumb: 'General · Metabolic Syndrome',
+    intro: 'Metabolic syndrome is a cluster of risk factors, not a single disease, and together they raise the risk of diabetes and heart disease more than any one of them alone.',
+    aboutTitle: 'What is metabolic syndrome?',
+    about: 'Metabolic syndrome is not one disease but a cluster of risk factors that, together, raise the risk of diabetes and heart disease more than any one of them alone. The International Diabetes Federation\'s definition, the one most used in India, makes waist circumference the mandatory starting point: 90 cm or more in men, or 80 cm or more in women. On top of that, a diagnosis needs at least two of four further findings: triglycerides of 150 mg/dL or more, HDL cholesterol below 40 mg/dL in men or below 50 mg/dL in women, blood pressure of 130/85 or higher, and fasting blood sugar of 100 mg/dL or more. A person can meet this definition without ever having been told they have diabetes, high blood pressure or high cholesterol individually, because the syndrome captures the combination itself, and the combination carries more risk than the sum of its parts. This is why a single waist measurement and a basic blood panel, not a single symptom, is what actually identifies it.',
+    symptoms: ['A large waist (90 cm or more in men, 80 cm or more in women)', 'Often no symptoms at all otherwise', 'Blood pressure at or above 130/85', 'Raised triglycerides or low HDL on a lipid profile', 'Fasting blood sugar at or above 100 mg/dL', 'Skin tags or darkened skin at the neck, in some people'],
+    approach: [
+      'Waist circumference, blood pressure, fasting sugar and a full lipid profile measured together, since the diagnosis rests on the combination',
+      'The component furthest out of range treated first, guided by your reports, rather than everything addressed at once',
+      'A structured diet and activity plan aimed at the waist measurement specifically, not weight alone',
+      'Blood pressure, sugar and cholesterol managed together with your treating physician where medicine is needed for any one component',
+      'Regular re-testing of all four components together, since improving one without the others still leaves meaningful risk',
+    ],
+    when: 'If you have a large waist and any one of high blood pressure, high triglycerides, low HDL or raised fasting sugar, ask for the full panel. The other components are often missed if only one is tested.',
+    redFlags: {
+      emergency: ['Chest pain, breathlessness or one-sided weakness (possible heart attack or stroke)', 'A blood pressure reading of 180/120 or higher with symptoms such as headache or chest pain'],
+      soon: ['A new component (sugar, BP, triglycerides or HDL) crossing into the abnormal range on a repeat test', 'Waist circumference increasing on successive checks despite effort'],
+    },
+    sources: [
+      ['The IDF consensus worldwide definition of the metabolic syndrome (IDF)', 'https://idf.org/news-and-resources/resources/idf-consensus-worldwide-definition-of-the-metabolic-syndrome/'],
+      ['Metabolic non-communicable disease health report of India, ICMR-INDIAB (Lancet Diabetes & Endocrinology)', 'https://www.thelancet.com/journals/landia/article/PIIS2213-8587(23)00119-5/fulltext'],
+    ],
+    related: [['Obesity', 'obesity'], ['Insulin resistance', 'insulin-resistance'], ['Uric acid & gout', 'uric-acid-gout']],
+  },
+  'insulin-resistance': {
+    icon: 'activity', title: 'Insulin Resistance', crumb: 'General · Insulin Resistance',
+    intro: 'Insulin resistance sits behind prediabetes, fatty liver and metabolic syndrome, and it is often marketed with an expensive blood test that adds little for most people.',
+    aboutTitle: 'What is insulin resistance, and should I get a HOMA-IR test?',
+    about: 'Insulin resistance means the body\'s cells respond less well to insulin, so the pancreas has to produce more of it to keep blood sugar normal, often years before blood sugar itself rises. It sits upstream of prediabetes, type 2 diabetes, metabolic syndrome and fatty liver, which is why it gets talked about often, sometimes with a specific blood test attached, HOMA-IR or a fasting insulin level. It is worth being clear about what these tests actually are: research tools, used to compare groups in studies, not routine diagnostic tests with an agreed cut-off for an individual Indian patient. No validated Indian cut-off for HOMA-IR exists, cut-offs used in published Indian studies vary depending on who was studied, and these tests are also marketed, sometimes as part of expensive health-check packages, in a way the evidence does not support. A more useful approach is to look at the consequences of insulin resistance directly: waist circumference, HbA1c, a lipid profile, blood pressure and liver enzymes or an ultrasound for fatty liver. These five together tell you more about your actual risk than a HOMA-IR number would, and they are all tests with established, useful reference ranges.',
+    symptoms: ['Often no symptoms at all', 'A large waist despite a near-normal weight', 'Darkened, velvety skin at the neck or armpits (acanthosis nigricans)', 'Fatigue after meals', 'Fatty liver found on an ultrasound', 'Skin tags, in some people'],
+    approach: [
+      'Consequences assessed directly, rather than HOMA-IR or fasting insulin ordered as a routine test: waist circumference, HbA1c, lipid profile, blood pressure and liver enzymes',
+      'An ultrasound for fatty liver where indicated, since insulin resistance and fatty liver commonly occur together',
+      'A weight and activity plan targeted at waist circumference, since this is what actually improves insulin sensitivity',
+      'Screening for prediabetes and metabolic syndrome, since insulin resistance often precedes both',
+      'Honest guidance on what commercial insulin-resistance test packages can and cannot tell you',
+    ],
+    when: 'If you have a large waist, fatty liver, or a family history of diabetes, ask for HbA1c, a lipid profile and blood pressure check rather than a HOMA-IR test. These tests tell your doctor more about what to do next.',
+    redFlags: {
+      emergency: ['Symptoms of very high blood sugar developing quickly, such as excessive thirst, confusion, or fruity-smelling breath with vomiting'],
+      soon: ['Fatty liver found on a scan with abnormal liver enzymes', 'A rising HbA1c or lipid profile on repeat testing', 'New skin darkening at the neck or armpits'],
+    },
+    sources: [
+      ['A study of insulin resistance by HOMA-IR and its cut-off value in urban Indian adolescents (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3890224/'],
+      ['NAFLD prevalence in India: a systematic review (PubMed)', 'https://pubmed.ncbi.nlm.nih.gov/35677499/'],
+    ],
+    related: [['Metabolic syndrome', 'metabolic-syndrome'], ['Prediabetes', 'prediabetes'], ['Obesity', 'obesity']],
+  },
+  'vitamin-d-deficiency': {
+    icon: 'sun', title: 'Vitamin D Deficiency', crumb: 'General · Vitamin D Deficiency',
+    intro: 'Vitamin D deficiency is one of the most over-tested and over-treated findings in Indian healthcare today. Most healthy adults do not need routine testing at all.',
+    aboutTitle: 'Does everyone need a vitamin D test?',
+    about: 'Vitamin D deficiency is one of the most over-tested and over-treated conditions in Indian healthcare today. The Endocrine Society\'s 2024 clinical guideline is direct about this: for healthy adults under 75 with no specific risk factor, routine screening of vitamin D levels is not recommended, and routine dosing decisions should not be based on a repeat blood level either. This does not mean vitamin D does not matter; people with osteoporosis, malabsorption, limited sun exposure, or those who are pregnant, elderly or on certain medicines are genuinely at higher risk, and testing them is appropriate. What is not appropriate is testing every asymptomatic adult who walks in for an unrelated complaint, or treating a borderline low level with a high-dose injection as a matter of routine. Mega-dose vitamin D shots, given without any follow-up monitoring, are not harmless: a prospective study from a Kashmir tertiary care centre found that every patient with vitamin D toxicity in the series had received multiple, unmonitored intramuscular injections, with severe cases taking months to resolve. Too much vitamin D raises blood calcium, and real toxicity, nausea, weakness, confusion and kidney strain, can follow. The safer path for most healthy adults is adequate sun exposure and diet, testing reserved for people with an actual risk factor or symptom, and any treatment given at a measured dose with a follow-up plan, not a one-time high-dose shot and no recheck.',
+    symptoms: ['Often no symptoms at all', 'Bone or muscle aches, in more significant deficiency', 'Muscle weakness', 'Tiredness', 'Frequent minor infections, in some studies', 'Found incidentally on a blood test done for another reason'],
+    approach: [
+      'Testing reserved for an actual risk factor (malabsorption, limited sun exposure, osteoporosis, pregnancy, or a relevant medicine), not added routinely to every blood panel',
+      'A genuinely low level treated with a measured, monitored dose, not a one-time high-dose injection with no follow-up',
+      'Re-testing at an appropriate interval after starting treatment, not repeated frequent testing without a reason',
+      'Calcium levels reviewed alongside vitamin D wherever a high dose or injection is being considered',
+      'Sun exposure and diet as the first, ordinary steps for most people, before any supplement is considered',
+    ],
+    when: 'Testing is worth doing if you have bone pain, a condition affecting absorption, very limited sun exposure, or are pregnant or elderly. For most other healthy adults, routine vitamin D testing is not necessary, and a doctor can advise on general sun and diet steps instead.',
+    redFlags: {
+      emergency: ['Severe nausea, vomiting, confusion or extreme thirst after a high-dose vitamin D injection (possible toxicity with high calcium)'],
+      soon: ['Bone pain or repeated fractures with a known low vitamin D level', 'Muscle weakness that is new and unexplained'],
+    },
+    sources: [
+      ['Vitamin D for the Prevention of Disease, 2024 Clinical Practice Guideline (Endocrine Society)', 'https://www.endocrine.org/clinical-practice-guidelines/vitamin-d-for-prevention-of-disease'],
+      ['Vitamin D toxicity: a prospective study from a tertiary care centre in Kashmir Valley (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6683682/'],
+    ],
+    related: [['Vitamin B12 deficiency', 'vitamin-b12-deficiency'], ['Obesity', 'obesity'], ['Metabolic syndrome', 'metabolic-syndrome']],
+  },
+  'vitamin-b12-deficiency': {
+    icon: 'syringe', title: 'Vitamin B12 Deficiency', crumb: 'General · Vitamin B12 Deficiency',
+    intro: 'Vitamin B12 deficiency causes two separate problems, anaemia and nerve damage, and they do not always show up together. Checking B12 before treating anaemia with folic acid matters more than most people realise.',
+    aboutTitle: 'What is vitamin B12 deficiency, and why does it need checking before folic acid?',
+    about: 'Vitamin B12 deficiency is common in India, more so in people who eat little or no animal protein, and it causes two separate problems that do not always appear together: anaemia, and damage to nerves. This is where a genuine safety trap lies. High-dose folic acid, often given for anaemia without checking which vitamin is actually low, can correct the blood picture of B12 deficiency, the anaemia looks better, while the nerve damage continues silently underneath, unrecognised because the blood test that prompted concern has normalised. For this reason, B12 should always be checked before folic acid is given for an unexplained anaemia, not assumed. Metformin, one of the most widely used diabetes medicines, is a separate and common cause: long-term use measurably lowers B12 levels, and anyone who has taken it for several years should have a B12 level checked periodically, whether or not they have symptoms. Caught early, B12 deficiency responds well to replacement. The nerve-related symptoms, numbness, tingling, unsteady walking, are the ones to take seriously, because once nerve damage has been present for a long time, it may not fully recover even with treatment, which is exactly why unexplained tingling or numbness deserves a B12 check rather than being dismissed.',
+    symptoms: ['Tiredness and weakness', 'Numbness or tingling in the hands or feet', 'Unsteady walking or poor balance', 'Pale skin or breathlessness (from anaemia)', 'Memory difficulty or low mood', 'A sore, smooth tongue'],
+    approach: [
+      'B12 checked directly before an unexplained anaemia is treated with folic acid, since folic acid can mask the anaemia of B12 deficiency while nerve damage continues',
+      'Periodic B12 screening for anyone on long-term metformin, a well-documented, common cause of low B12',
+      'Prompt replacement, usually with injections initially where levels are very low or symptoms are neurological, then tablets for maintenance',
+      'Numbness, tingling or an unsteady walk taken seriously as an early nerve symptom, not dismissed as age or diabetes',
+      'Dietary and supplement guidance for vegetarians and vegans, who are at higher risk, coordinated with your treating doctor',
+    ],
+    when: 'Get a B12 level checked if you have unexplained tiredness, tingling or numbness in the hands or feet, unsteady walking, or have been on metformin for more than a couple of years. Do not accept folic acid alone for an unexplained anaemia without a B12 check first.',
+    redFlags: {
+      emergency: ['Sudden weakness, difficulty walking, or loss of bladder or bowel control (needs urgent neurological assessment)', 'Severe breathlessness or chest pain with known significant anaemia'],
+      soon: ['New or worsening numbness, tingling or unsteady walking', 'Anaemia found on a blood test without a clear cause', 'Long-term metformin use with no B12 level ever checked'],
+    },
+    sources: [
+      ['Vitamin B12, Health Professional Fact Sheet (NIH Office of Dietary Supplements)', 'https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/'],
+      ['Study of Vitamin B12 deficiency and peripheral neuropathy in metformin-treated early Type 2 diabetes mellitus (PMC)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC5040042/'],
+    ],
+    related: [['Type 2 diabetes', 'type-2-diabetes'], ['Vitamin D deficiency', 'vitamin-d-deficiency'], ['Insulin resistance', 'insulin-resistance']],
+  },
+  'thyroid-in-pregnancy': {
+    icon: 'baby', title: 'Thyroid in Pregnancy', crumb: 'General · Thyroid in Pregnancy',
+    intro: 'Thyroid hormone needs change as soon as pregnancy begins. Any woman already on thyroid medication who becomes pregnant needs prompt testing and a dose review, not a wait-and-watch approach.',
+    aboutTitle: 'Why does pregnancy change thyroid treatment?',
+    about: 'Thyroid hormone needs change as soon as pregnancy begins, and this is one of the few places in medicine where waiting to see is the wrong instinct. Any woman already on thyroid medication who becomes pregnant needs a TSH test and a dose review as soon as the pregnancy is confirmed, because the usual, non-pregnant reference range for TSH is no longer the right yardstick. Thyroid hormone demand rises through pregnancy, especially in the first trimester, and current guidelines use separate, lower TSH reference ranges for each trimester rather than the standard adult range, precisely because a level that would look normal outside pregnancy can already mean under-treatment inside it. The baby\'s own brain development depends on adequate maternal thyroid hormone in early pregnancy, before the baby\'s own thyroid gland is fully functioning, which is why timely correction matters so much here. This is also the honest place to say plainly why stopping thyroid medication on the promise of a natural remedy during pregnancy is genuinely dangerous, not simply unwise: untreated hypothyroidism in pregnancy is linked to a higher risk of miscarriage, preterm birth and impaired childhood development, and no herbal or natural remedy has been shown to replace what the medication is doing. If a woman on thyroid medication wishes to explore Ayurveda or lifestyle support alongside her care, that conversation belongs with her treating doctor, planned together with regular TSH monitoring, never as a reason to stop the tablet first and ask later.',
+    symptoms: ['Extreme tiredness beyond normal pregnancy fatigue', 'Unusual weight change, gain or loss', 'A racing heart or, conversely, unusual sluggishness', 'A visibly enlarged thyroid (goitre)', 'Often no symptoms at all, found only on testing', 'A history of thyroid disease before this pregnancy'],
+    approach: [
+      'Immediate TSH testing as soon as pregnancy is confirmed, for anyone already on thyroid medication or with known thyroid disease',
+      'Dose review against trimester-specific reference ranges, not the standard non-pregnant range',
+      'Regular re-testing through pregnancy, since the right dose in the first trimester is often not the right dose later on',
+      'Clear counselling on why thyroid medication must continue through pregnancy, with any Ayurveda or lifestyle support offered alongside it, never as a replacement',
+      'Thyroid care and pregnancy care coordinated together between your obstetrician and endocrinologist, not managed separately',
+    ],
+    when: 'Any woman on thyroid medication who becomes pregnant, or is planning a pregnancy, needs a TSH test and dose review without delay. This is time-sensitive, not something to fit in at the next routine visit. Newly pregnant women with thyroid symptoms should also be tested.',
+    redFlags: {
+      emergency: ['Chest pain, a very fast heart rate, or severe breathlessness in a pregnant woman with known thyroid disease', 'Signs of a possible miscarriage or severe abdominal pain, needing immediate obstetric care'],
+      soon: ['A missed thyroid dose review after a new pregnancy is confirmed', 'Symptoms of poorly controlled thyroid disease appearing or worsening during pregnancy', 'Any advice to stop thyroid medication that did not come from your treating doctor'],
+    },
+    sources: [
+      ['2017 ATA Guidelines for the Diagnosis and Management of Thyroid Disease During Pregnancy and the Postpartum', 'https://www.liebertpub.com/doi/full/10.1089/thy.2016.0457'],
+      ['Trimester-specific reference ranges for thyroid hormones in pregnant women (PMC)', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6358369/'],
+    ],
+    related: [['Hypothyroidism', 'hypothyroidism'], ['Hyperthyroidism', 'hyperthyroidism']],
+  },
+};
 
 /* Category key -> condition map. conditionPage()/generate.mjs resolve through this. */
 export const CONDITION_SETS = { kidney: CONDITIONS, liver: LIVER, heart: HEART, general: GENERAL };

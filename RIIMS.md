@@ -172,15 +172,15 @@ RiimS/
    - Plus a loop over `['liver', 'heart', 'general']` that writes one **category hub**
      (`conditions/<dir>/index.html`, via `categoryHubPage(base, cat)` in `pages.mjs`) per
      category, and a second loop over `CONDITION_SETS['liver'|'heart'|'general']` (see §26)
-     that writes `conditions/<dir>/<slug>.html` pages. As of Task 3, **liver is a complete
-     12-condition silo (its hub + all 12 condition pages)**; heart and general still have an
-     empty hub (0 cards, 0 condition pages) until their tasks land.
+     that writes `conditions/<dir>/<slug>.html` pages. As of Task 4, **liver and general are
+     both complete 12-condition silos** (hub + all 12 condition pages each); heart still has an
+     empty hub (0 cards, 0 condition pages) until its task lands.
 5. Writes every page to `site/`, then writes `sitemap.xml` (with `<lastmod>` = build date and
    per-type `<priority>`) and `robots.txt`. It also emits **`site/js/search-data.js`**
    (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
    the home disease-search results (see §8) — and `js/gtag.js` if a Google Tag ID is set.
 
-Run it: `npm run build`. It logs `Generated 65 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 77 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -267,8 +267,12 @@ site, or via `data/content.json` in the repo.
   `CONDITIONS`. As of Task 3, **`LIVER` is complete at 12 conditions**: the 3 Task 2 flagship
   pages (`raised-sgpt-sgot`, `fatty-liver`, `drug-herb-induced-liver-injury`) plus the 9 Task 3
   pages (`fatty-liver-grade-2`, `fatty-liver-diet`, `liver-function-test-report`, `jaundice`,
-  `hepatitis-b`, `hepatitis-c`, `liver-cirrhosis`, `alcoholic-liver-disease`, `liver-abscess`);
-  `HEART`/`GENERAL` remain **empty** (filled by later tasks). `CONDITION_SETS` maps a category key
+  `hepatitis-b`, `hepatitis-c`, `liver-cirrhosis`, `alcoholic-liver-disease`, `liver-abscess`).
+  As of Task 4, **`GENERAL` is also complete at 12 conditions**: `diabetes-and-kidney-disease` and
+  `uric-acid-gout` (the two kidney-bridge pages), plus `type-2-diabetes`, `prediabetes`,
+  `hypothyroidism`, `hyperthyroidism`, `obesity`, `metabolic-syndrome`, `insulin-resistance`,
+  `vitamin-d-deficiency`, `vitamin-b12-deficiency`, `thyroid-in-pregnancy`. `HEART` remains
+  **empty** (filled by Task 5). `CONDITION_SETS` maps a category key
   to its condition map (`{kidney: CONDITIONS, liver: LIVER, heart: HEART, general: GENERAL}`) and
   is what `conditionPage()`/`generate.mjs` resolve a slug through.
 - **`PROBLEMS`** — the home "conditions we help with" grid (links to the main condition pages).
@@ -482,7 +486,9 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 | `/blog/{9 slugs}.html` | Blog articles | breadcrumb + Article JSON-LD |
 | `/conditions/liver/` | Liver Diseases hub | 12 condition cards via `categoryHubPage` + disclaimer + CTA; breadcrumb + CollectionPage schema (see §26) |
 | `/conditions/liver/{12 slugs}.html` | Liver condition pages | raised-sgpt-sgot, fatty-liver, drug-herb-induced-liver-injury (Task 2); fatty-liver-grade-2, fatty-liver-diet, liver-function-test-report, jaundice, hepatitis-b, hepatitis-c, liver-cirrhosis, alcoholic-liver-disease, liver-abscess (Task 3) — each breadcrumb + MedicalWebPage + FAQPage JSON-LD (see §26). The liver silo is now complete (12/12). |
-| `/conditions/heart/` `/conditions/general/` | Heart / General hubs | registered and live, but render **0 cards** — `HEART`/`GENERAL` are still empty maps, populated by later tasks |
+| `/conditions/general/` | General & Lifestyle Diseases hub | 12 condition cards via `categoryHubPage` + disclaimer + CTA; breadcrumb + CollectionPage schema (see §26) |
+| `/conditions/general/{12 slugs}.html` | General condition pages | diabetes-and-kidney-disease, uric-acid-gout (kidney bridges), type-2-diabetes, prediabetes, hypothyroidism, hyperthyroidism, obesity, metabolic-syndrome, insulin-resistance, vitamin-d-deficiency, vitamin-b12-deficiency, thyroid-in-pregnancy — each breadcrumb + MedicalWebPage + FAQPage JSON-LD. The general silo is now complete (12/12). |
+| `/conditions/heart/` | Heart hub | registered and live, but renders **0 cards** — `HEART` is still an empty map, populated by Task 5 |
 
 ## 15. SEO implementation
 
@@ -846,11 +852,12 @@ The site is expanding from kidney-only to **4 disease categories** — Kidney, L
 General — across 6 planned tasks (see `docs/superpowers/plans/2026-07-15-multi-disease-expansion.md`
 and `docs/superpowers/specs/2026-07-15-multi-disease-expansion-design.md`). **Task 1 was pure
 plumbing** (the generator learned about categories, no content). **Task 2 shipped the first real
-content: the liver silo's 3 flagship pages.** **Task 3 (this one) completed the liver silo** — all
-12 conditions now live under `/conditions/liver/`, plus its category hub. The build now emits
-**65 files** (50 from before Task 1/2 + 3 category hubs + 12 liver conditions); every existing
-kidney page stays byte-identical (content-wise) to before, and the heart/general hubs still render
-with 0 cards until their tasks land.
+content: the liver silo's 3 flagship pages.** **Task 3 completed the liver silo** — all
+12 conditions live under `/conditions/liver/`, plus its category hub. **Task 4 completed the
+general/metabolic silo** — all 12 conditions live under `/conditions/general/`, plus its category
+hub. The build now emits **77 files** (50 from before Task 1/2 + 3 category hubs + 12 liver
+conditions + 12 general conditions); every existing kidney page stays byte-identical
+(content-wise) to before, and the heart hub still renders with 0 cards until its task lands.
 
 ### The model
 - **`CATEGORIES`** (`build/data.mjs`, after the `CONDITIONS` map) — one entry per category key
@@ -859,9 +866,11 @@ with 0 cards until their tasks land.
   `'heart'`/`'general'` for the others).
 - **`CONDITION_SETS`** (`build/data.mjs`) — `{kidney: CONDITIONS, liver: LIVER, heart: HEART,
   general: GENERAL}`. `LIVER`, `HEART`, `GENERAL` are condition maps in the exact same shape as
-  `CONDITIONS` (see §8). `LIVER` now holds all **12** conditions (Task 2's 3 flagship pages +
+  `CONDITIONS` (see §8). `LIVER` holds all **12** conditions (Task 2's 3 flagship pages +
   Task 3's remaining 9, two contiguous banner-commented blocks in `data.mjs` right after
-  `CATEGORIES`); `HEART`/`GENERAL` are still empty `{}` — later tasks populate them.
+  `CATEGORIES`). `GENERAL` now also holds all **12** conditions (Task 4: the two kidney-bridge
+  pages + the remaining 10, two contiguous banner-commented blocks in `data.mjs` right after
+  `HEART`). `HEART` is still empty `{}` — Task 5 populates it.
 - **URL rule — kidney deliberately stays flat, new categories nest one level deeper.** Kidney
   keeps `/conditions/<slug>.html` (it already ranks on Google for these URLs — moving them would
   be real business risk). Liver/Heart/General use `/conditions/<dir>/<slug>.html` (e.g.
@@ -873,7 +882,7 @@ with 0 cards until their tasks land.
   existing call site (which doesn't pass `cat`) is unaffected.
 - **Optional condition fields** (`redFlags`, `sources`) — added to the condition shape in Task 1;
   no kidney entry uses them (kidney pages render both blocks empty, unchanged from before). All
-  12 liver conditions (Task 2 + Task 3) set both fields:
+  12 liver conditions (Task 2 + Task 3) and all 12 general conditions (Task 4) set both fields:
   - `redFlags?: { emergency: string[], soon?: string[] }` → renders `.riims-redflags`, a loud
     "Go to hospital now" box (via `redFlagBox()` in `pages.mjs`), placed **immediately after the
     reviewed-by line and before the "about" section** — a patient must not have to scroll past it.
@@ -891,18 +900,19 @@ with 0 cards until their tasks land.
   1. A **category-hub loop** over `['liver', 'heart', 'general']` that pushes one
      `conditions/<dir>/index.html` per category (`body: categoryHubPage('../../', cat)`;
      `BreadcrumbList` + `CollectionPage` JSON-LD). Runs even for empty categories, so
-     heart/general already have a live (if card-less) hub.
+     heart already has a live (if card-less) hub.
   2. The **condition loop** over `['liver', 'heart', 'general']` × `Object.keys(CONDITION_SETS[cat])`,
      pushing a page per condition: `BreadcrumbList` + `MedicalWebPage` + **`FAQPage`** JSON-LD (the
      `FAQPage` block was added in Task 2 — it mirrors kidney's own condition-loop FAQPage exactly,
      built from `c.aboutTitle`/`c.about`, a "When should I consult a doctor about …" question from
      `c.when`, and a "How does RIIMS approach …" question from `c.approach`; kidney's loop keeps its
      own near-identical block with kidney-specific wording, so the two are not shared code, by
-     design, to keep the kidney string frozen). Because `HEART`/`GENERAL` are still empty, only the
-     now-12 liver conditions produce pages.
+     design, to keep the kidney string frozen). Because `HEART` is still empty, only the
+     now-12 liver conditions and now-12 general conditions produce pages (24 condition pages total
+     across the two loops, plus 3 category-hub pages = 27 pages from this part of the generator).
 
   `mkdirSync` pre-creates `site/conditions/{liver,heart,general}/` for all three categories
-  regardless of content (harmless empty directories for heart/general; git doesn't track them).
+  regardless of content (a harmless empty directory for heart; git doesn't track it).
 - **CSS** (`site/css/site.css`) — `.riims-redflags` (danger-toned card, `var(--danger)`/
   `var(--danger-soft)` tokens, which already existed in `colors.css`) and `.riims-sources`
   (a plain top-border list block), added near the other component blocks (after
@@ -973,8 +983,72 @@ NVHCP). `related[]` links now form a fully-connected web across all 12 liver slu
 pages had their `related` lists widened in Task 3 to point at the new pages instead of only each
 other, closing the gap Task 2 flagged). No dead links; verified by `npm test`.
 
+### General/Metabolic silo content (Task 4, complete at 12 conditions)
+The highest-value SEO category: diabetes, thyroid, obesity, uric acid and vitamin deficiencies sit
+behind most of the site's kidney and liver traffic. Built with two "bridge" pages first, chosen
+because they raise topical coherence with the existing kidney silo rather than dilute it:
+- **`diabetes-and-kidney-disease`** ⭐ — the primary bridge. States that protein in urine
+  (microalbuminuria) appears before creatinine rises, and inline-links (plain `<a>` tags inside
+  `about`, not `related[]`) to the existing flat kidney pages `../diabetic-kidney-disease.html`
+  and `../hypertensive-kidney-disease.html`.
+- **`uric-acid-gout`** ⭐ — the second bridge, linking gout, kidney stones and CKD. States the ACR
+  2020 conditional recommendation *against* urate-lowering drugs for asymptomatic hyperuricaemia (a
+  high number alone is not a disease), that serum urate can be normal during an acute attack, and
+  the septic-arthritis red flag (fever + hot swollen joint = emergency until proven otherwise).
+  Inline-links to `../kidney-stone-treatment.html` and `../ckd.html`.
+- **`type-2-diabetes`** — never "cure"/"reverse"/"get off insulin". Uses the ADA/EASD 2021 remission
+  definition verbatim (HbA1c <6.5% sustained ≥3 months after stopping all glucose-lowering
+  medication) without ever writing the word the panel deliberately avoided, and states why: implying
+  the condition was gone for good would wrongly suggest follow-up can stop. Quotes DiRECT in full
+  (46% at 1 year → 36% at 2 years → 13% at 5 years, never 46% alone) and flags that DiRECT enrolled a
+  Scottish, non-insulin, ≤6-year-diabetes population, so generalisability to Asian Indians is not
+  established. Notes Look-AHEAD found no cardiovascular benefit from lifestyle alone in established
+  diabetes.
+- **`prediabetes`** — uses the Indian IDPP-1 trial (3-year incidence 55.0% control → 39.3%
+  lifestyle; metformin added nothing on top of lifestyle), not the US DPP. States ICMR-INDIAB
+  prediabetes prevalence (15.3%) and that Uttar Pradesh has India's lowest measured diabetes
+  (4.8%) but a low diabetes:prediabetes ratio (large unconverted pool) — framed as prevention
+  mattering *most* here, never "UP is safe".
+- **`hypothyroidism`** — does not overclaim lifelong treatment for everyone: states the 2019 BMJ
+  Rapid Recommendations strong recommendation *against* treating subclinical hypothyroidism (21 RCTs,
+  n=2,192, no quality-of-life benefit), the exceptions where treatment stays standard (pregnancy/
+  planning, TSH >10, anti-TPO+ with symptoms, children), and India prevalence 10.95% (8-city study).
+- **`hyperthyroidism`** — Graves' at 50–80% of cases. The agranulocytosis safety point (fever or sore
+  throat on anti-thyroid drugs needs an urgent white-cell count) is stated in the about text, the
+  approach list, the red-flag box and the "when" line, worded each time to direct the patient to
+  urgent testing and their prescribing doctor rather than to self-directed stopping of medicine.
+- **`obesity`** — leads with waist circumference (≥90 cm men / ≥80 cm women, stable across Indian
+  frameworks) ahead of BMI; states which BMI threshold is used (the 2025 revision, >23) rather than
+  mixing it with the 2009 consensus's ≥25. Realistic framing: 3–5% weight loss improves triglycerides/
+  glucose, 5–10% improves BP/lipids; no promised kilogram figure.
+- **`metabolic-syndrome`** — IDF South Asian criteria stated precisely: waist ≥90/≥80 mandatory, plus
+  any two of TG ≥150, HDL <40/<50, BP ≥130/85, FBS ≥100.
+- **`insulin-resistance`** — states plainly that HOMA-IR and fasting insulin are research tools with
+  no validated Indian cut-off, not routine diagnostics, and that they are marketed in health-check
+  packages beyond what the evidence supports; redirects to assessing consequences (waist, HbA1c,
+  lipids, BP, liver) instead.
+- **`vitamin-d-deficiency`** — states the Endocrine Society's 2024 guideline against routine screening
+  of asymptomatic adults under 75, and cites a real Indian (Kashmir) case series where mega-dose,
+  unmonitored intramuscular injections caused genuine toxicity.
+- **`vitamin-b12-deficiency`** — the safety point stated directly: high-dose folic acid can correct the
+  anaemia of B12 deficiency while nerve damage continues unrecognised, so B12 must be checked before
+  folic acid is given for an unexplained anaemia. Flags metformin as a common, under-screened cause.
+  Uses "may not fully recover" for long-standing nerve damage, never "reverse".
+- **`thyroid-in-pregnancy`** — not on any Drugs & Magic Remedies Act Schedule (lowest legal risk of
+  the 12). States that any woman on thyroid medication who becomes pregnant needs immediate TSH
+  testing and a dose review against trimester-specific ranges, and is the page that explains directly
+  why stopping thyroid medication on natural-remedy advice during pregnancy is dangerous.
+
+All 12 carry `redFlags` and `sources` (2–3 real, linked citations each — NIDDK, KDIGO/Annals of
+Internal Medicine, PMC, PubMed, Lancet Diabetes & Endocrinology, NEJM, Diabetologia, BMJ, StatPearls/
+NCBI Bookshelf, IDF, Circulation, Endocrine Society, NIH Office of Dietary Supplements, the American
+Thyroid Association). `related[]` forms a fully-connected web across all 12 general slugs; the two
+kidney cross-links live as inline `<a>` text inside `about` (verified resolving, not via `related[]`,
+since the related-link builder only ever targets the current category's own directory). No dead
+links, no em dashes, no banned compliance words (`cure`, `guaranteed`, `permanent`, `reverse`, etc.);
+verified by `npm test` and a source grep on the `GENERAL` block.
+
 ### What later tasks do
-- **Task 4** — General/Metabolic: 12 conditions + hub (`GENERAL`).
 - **Task 5** — Heart: 8 conditions + hub (`HEART`).
 - **Task 6** — wires all 4 categories into the rest of the site (nav, `PROBLEMS`, cross-links) and
   fixes a referral contradiction noted in the design spec.
