@@ -88,14 +88,22 @@ export const SITE = {
   facebook: social('facebook', 'https://www.facebook.com/profile.php?id=61590269039418'),
   instagram: social('instagram', 'https://www.instagram.com/riimshospital/'),
   youtube: social('youtube', 'https://youtube.com/@riimshospitals'),
-  city: str(S.city, 'Baraut, Uttar Pradesh 250611'),
-  addressLine: str(S.addressLine, 'Near Baraut Medicity Hospital'),
-  addressSub: str(S.addressSub, '36VW+JHV, Kotana Rd, Baraut, Uttar Pradesh 250611'),
-  hours: str(S.hours, 'Mon–Sat, 9am–7pm'),
-  // Clinic coordinates — VERIFY against the Google Business Profile (Admin → Settings).
+  /* NAP (name/address/phone) + hours below are copied from the Google Business
+     Profile verbatim (checked 2026-07-17). Google cross-checks this schema against
+     the GBP: a mismatch costs local ranking, and a wrong closing time sends a
+     night-time emergency patient away. If the GBP changes, change these too.
+     GBP: "RIIMS – Rashtriya Institute of Integrated Medical Sciences", kgmid
+     /g/11nq2qr_sq, category Hospital, 5.0 from 8 reviews. */
+  city: str(S.city, 'Baraut, Bohla, Uttar Pradesh 250611'),
+  addressLine: str(S.addressLine, 'Medicity Hospital, Kotana Rd'),
+  addressSub: str(S.addressSub, 'Baraut, Bohla, Uttar Pradesh 250611'),
+  hours: str(S.hours, 'Open 24 hours'),
+  // Clinic coordinates — still the pre-GBP values; NOT yet confirmed against the
+  // profile. The map embed keys off mapsQuery (the exact GBP name), so the pin is
+  // right regardless; this only feeds schema geo. Replace via Admin → Settings.
   geo: { lat: Number(G.lat) || 29.1066, lng: Number(G.lng) || 77.2637 },
   mapsQuery: 'RIIMS+Rashtriya+Institute+of+Integrated+Medical+Sciences+Baraut',
-  mapsLink: str(S.mapsLink, 'https://www.google.com/maps/search/?api=1&query=RIIMS+Baraut'),
+  mapsLink: str(S.mapsLink, 'https://www.google.com/maps/search/?api=1&query=RIIMS+Rashtriya+Institute+of+Integrated+Medical+Sciences+Baraut'),
   serviceCities: (Array.isArray(S.serviceCities) && S.serviceCities.filter(Boolean).length)
     ? S.serviceCities.map((c) => String(c).trim()).filter(Boolean)
     : ['Baraut', 'Baghpat', 'Meerut', 'Shamli'],

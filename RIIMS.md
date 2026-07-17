@@ -564,10 +564,21 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
   Delhi-NCR"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
   + `aria-label` on image tiles. Lucide is **self-hosted** (pinned) — no CDN dependency.
 - Branded **404 page**, real **Google Maps embed** on contact, all off-site links `rel="noopener"`.
+- **NAP matches the Google Business Profile** (synced 2026-07-17 from the owner's GBP —
+  "RIIMS – Rashtriya Institute of Integrated Medical Sciences", kgmid `/g/11nq2qr_sq`, category
+  Hospital, 5.0 from 8 reviews). Address `Medicity Hospital, Kotana Rd, Baraut, Bohla, Uttar
+  Pradesh 250611`; **Open 24 hours** (schema says all 7 days 00:00–23:59). Google cross-checks
+  the LocalBusiness schema against the GBP, so **if the GBP changes, change `data/content.json →
+  site` (or Admin → Settings) in the same breath** — the site previously advertised "Mon–Sat,
+  9am–7pm" against a 24-hour profile, which both contradicted Google and told a night-time
+  emergency patient the door was shut.
 - **Already set for go-live:** `SITE.origin = https://riimshospitals.com`. Off-site actions that
   remain (only you can do): verify the domain + submit `sitemap.xml` in Google Search Console,
-  create/verify the Google Business Profile (Baraut), and update `SITE.geo`/`mapsQuery` to the
-  exact clinic coordinates. See DEPLOY.md §6.
+  finish GBP verification ("Get verified" is still pending on the profile), and give
+  `SITE.geo` the exact clinic coordinates — those are still the pre-GBP estimate
+  (29.1066, 77.2637) and are **not** confirmed against the profile. The contact map embed keys
+  off `mapsQuery` (the exact GBP name), so the visible pin is right either way; `geo` only feeds
+  schema. See DEPLOY.md §6.
 - **Blog articles are deep, audit-driven long-form content** derived from the *Kidney Kavach* book
   (founder Dr. Abhishek Gupta). Each `POSTS[]` in `data/content.json` holds a complete, compliance-safe
   `body` (with report/ACR/HD-vs-PD/myth-vs-fact tables, a CKD diet chart, etc.) plus `faqs`, `refs` and
@@ -708,8 +719,11 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 ### 18.8 Post-launch SEO actions (off-site; not in code)
 
 1. **Google Search Console** → verify `riimshospitals.com` → submit `https://riimshospitals.com/sitemap.xml`.
-2. **Google Business Profile** (Baraut clinic) — #1 lever for local/"near me" searches; then set
-   `SITE.geo`/`mapsQuery` in `build/data.mjs` to the exact verified place and rebuild.
+2. **Google Business Profile** (Baraut clinic) — #1 lever for local/"near me" searches. The
+   profile exists and its NAP/hours are now mirrored on the site (§16 note). Still open: click
+   **Get verified** on the profile (unverified edits do not show), and set `SITE.geo` to the exact
+   coordinates — right-click the pin in Google Maps and copy the two numbers, then paste them in
+   Admin → Settings.
 3. Real doctor names/photos + Google reviews; replace the 9 templated blog articles with full originals.
 
 ## 19. How to make common changes

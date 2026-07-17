@@ -6,15 +6,15 @@
     "facebook": "https://www.facebook.com/profile.php?id=61590269039418",
     "instagram": "https://www.instagram.com/riimshospital/",
     "youtube": "https://youtube.com/@riimshospitals",
-    "city": "Baraut, Uttar Pradesh 250611",
-    "addressLine": "Near Baraut Medicity Hospital",
-    "addressSub": "36VW+JHV, Kotana Rd, Baraut, Uttar Pradesh 250611",
-    "hours": "Mon–Sat, 9am–7pm",
+    "city": "Baraut, Bohla, Uttar Pradesh 250611",
+    "addressLine": "Medicity Hospital, Kotana Rd",
+    "addressSub": "Baraut, Bohla, Uttar Pradesh 250611",
+    "hours": "Open 24 hours",
     "geo": {
       "lat": 29.1066,
       "lng": 77.2637
     },
-    "mapsLink": "https://www.google.com/maps/search/?api=1&query=RIIMS+Baraut",
+    "mapsLink": "https://www.google.com/maps/search/?api=1&query=RIIMS+Rashtriya+Institute+of+Integrated+Medical+Sciences+Baraut",
     "serviceCities": [
       "Baraut",
       "Baghpat",
@@ -1067,7 +1067,7 @@
         ],
         [
           "Contact",
-          "For any privacy question, contact RIIMS, Near Baraut Medicity Hospital, Baraut, Uttar Pradesh 250611, or call +91 85120 40000."
+          "For any privacy question, contact RIIMS, Medicity Hospital, Kotana Rd, Baraut, Bohla, Uttar Pradesh 250611, or call +91 85120 40000."
         ]
       ]
     },

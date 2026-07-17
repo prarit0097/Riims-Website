@@ -109,13 +109,15 @@ function clinicGraph() {
     hasMap: SITE.mapsLink,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: `${SITE.addressLine}, ${SITE.addressSub}`,
+      streetAddress: SITE.addressLine,
       addressLocality: 'Baraut', addressRegion: 'Uttar Pradesh', postalCode: '250611', addressCountry: 'IN',
     },
+    /* Open 24 hours, per the Google Business Profile. Schema.org's way to say that is
+       all seven days 00:00–23:59; it must agree with the GBP, or Google trusts neither. */
     openingHoursSpecification: [{
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      opens: '09:00', closes: '19:00',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '00:00', closes: '23:59',
     }],
     sameAs: [SITE.facebook, SITE.instagram, SITE.youtube].filter(Boolean),
   };
