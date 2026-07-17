@@ -234,6 +234,11 @@ narrow exception:** for `posts`, an empty `body`/`faqs`/`refs`/`relatedPosts` is
 matching repo post, so repo-authored blog content is never wiped when the admin copy leaves those
 fields blank). `build/data.mjs` reads/merges both and derives the phone formats.
 
+If `content.local.json` is ever **unparseable** (a stray hand-edit on the VPS), the build logs
+`[data] IGNORING data/content.local.json — invalid JSON …` and carries on with the repo content
+instead of throwing. That matters: an exception here would stop *every* rebuild and freeze the
+live site. `content.json` is in git and still fails loudly — `npm test` is what guards it.
+
 The **20 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `site` (numbers + business
 info + social), `tracking`, `stats`, `storyVideo`, `doctors`, `reels`, `testimonials`, `faqs`, `posts`,
 `search`, `cta`, `protocol`, `services`, `why`, `steps`, `about`, `legal`, `banners`, `pagesSeo`,
@@ -637,9 +642,22 @@ nginx -t && systemctl reload nginx
 ### 18.3 Updating the live site (after any push to GitHub)
 
 ```bash
-cd /opt/riims && git pull        # static files served instantly — no reload needed
+bash /opt/riims/deploy/update.sh   # git fetch + reset --hard origin/main, then rebuilds
 ```
-Helper: `/opt/riims/deploy/update.sh` does the same (`git fetch` + `reset --hard origin/main`).
+Static files are served straight from disk — no nginx reload. Use the helper rather than a bare
+`git pull`: it also re-runs the generator, so admin edits in `content.local.json` are re-applied
+on top of the new code (a plain pull would leave `site/` showing the repo's content until the
+next rebuild) and `data/pages-manifest.json` is refreshed for the Pages / SEO tab.
+
+> **If the change touched `admin/` (server or UI), that is NOT enough.** The admin runs as a
+> long-lived container that already has `server.mjs` loaded, so add:
+> ```bash
+> docker compose -f /opt/riims/docker-compose.admin.yml restart
+> ```
+> `docker-compose.admin.yml` bind-mounts the repo into a stock `node:24-alpine`, so a restart
+> is sufficient — nothing to rebuild. UI-only changes (`admin/ui/*.js|css`) need no restart, but
+> hard-refresh the browser (Ctrl+Shift+R) to get past its cache. Passwords never need a restart
+> (`getConfig()` re-reads the file every request).
 
 ### 18.4 Re-applying the nginx config (only if `deploy/nginx-riims-bootstrap.conf` changes)
 
@@ -725,6 +743,16 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 
 ## 21. Known placeholders / next steps
 
+- **Review what the SEO contractor publishes — this is a standing owner task, not a one-off.**
+  The `seo` role can rewrite the title, meta description, H1 and body text of all 47 disease
+  pages. `build/compliance.mjs` refuses the obvious illegal claim, but **a denylist cannot catch
+  a fluent promise that avoids the banned words** ("your reports will be normal again", "you
+  won't need dialysis"). On a YMYL medical site under the Drugs & Magic Remedies Act the
+  liability is the hospital's, so read their edits — Admin → Pages / SEO marks every changed
+  page with an **edited** badge, which is the review queue. See §23.
+- **Doctors for the new categories.** Liver/heart/metabolic pages are live, but the Doctors list
+  is still nephrology-led. The owner has confirmed in-house specialists exist for these — adding
+  them (with Reg. No.) in Admin → Doctors is what makes the E-E-A-T claim on those pages true.
 - **Doctor names & photos** are mock (illustrated portraits in `site/assets/doctors/`). Swap
   real names/credentials/photos in `build/data.mjs` + the asset files.
 - **Google rating / review counts / patient numbers** in the stats strip are **demo figures** —
