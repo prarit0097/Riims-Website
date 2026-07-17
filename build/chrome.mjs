@@ -21,11 +21,14 @@ export function appointmentForm() {
   ];
 
   const form = `<form data-step="0" class="appt-step" style="display:flex;flex-direction:column;gap:.9rem">`
-    + input({ label: 'Full name', required: true, icon: icon('user'), placeholder: 'Your name', name: 'name' })
-    + input({ label: 'Phone / WhatsApp', type: 'tel', required: true, icon: icon('phone'), placeholder: '10-digit mobile', name: 'phone' })
+    + input({ label: 'Full name', required: true, minlength: 2, icon: icon('user'), placeholder: 'Your name', name: 'name' })
+    /* pattern mirrors the server's rule (10 digits, starts 6-9) so a typo is caught
+       in the browser with a clear message instead of a failed submit. */
+    + input({ label: 'Phone / WhatsApp', type: 'tel', required: true, icon: icon('phone'), placeholder: '10-digit mobile', name: 'phone', pattern: '[6-9][0-9]{9}', inputmode: 'numeric', maxlength: 10, title: 'Enter your 10-digit mobile number (starts with 6, 7, 8 or 9)' })
     + select({ label: 'Problem / Disease', name: 'problem', icon: icon('activity'), options: PROBLEM_OPTIONS, placeholder: 'Select your problem' })
     + `<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:1px;width:1px;opacity:0">`
     + checkbox({ label: 'I agree to be contacted by RIIMS about my query.', name: 'agree', checked: true })
+    + `<p data-appt-error hidden style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--danger,#c0392b)"></p>`
     + button('Request a callback', { variant: 'primary', size: 'lg', fullWidth: true, type: 'submit', iconRight: icon('arrow-right', { size: 18 }) })
     + `<p style="margin:0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Takes ~20 seconds · our care team will call you back</p>`
     + `</form>`;

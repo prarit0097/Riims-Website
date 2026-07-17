@@ -78,7 +78,25 @@
 
   $$('[data-apptform]').forEach((form) => {
     const f = $('[data-step="0"]', form);
-    if (f) f.addEventListener('submit', (e) => { e.preventDefault(); track('form_submit', { page: location.pathname }); postLead(form); showStep(form, 2); });
+    /* Success shows only when the server actually stored the lead. It used to show
+       unconditionally, so a rejected submission looked like a booked callback. If
+       the network itself is down we still show success (the old behaviour) rather
+       than strand the patient — the server can't have a lead either way, and the
+       page tells them to call/WhatsApp too. */
+    if (f) f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      track('form_submit', { page: location.pathname });
+      const err = $('[data-appt-error]', form);
+      if (err) err.setAttribute('hidden', '');
+      postLead(form).then((res) => {
+        if (res && !res.ok) {
+          return res.json().catch(() => ({})).then((d) => {
+            if (err) { err.textContent = d.error || 'Something went wrong. Please call or WhatsApp us instead.'; err.removeAttribute('hidden'); }
+          });
+        }
+        showStep(form, 2);
+      });
+    });
     const reset = $('[data-appt-reset]', form);
     if (reset) reset.addEventListener('click', () => { if (f) f.reset(); showStep(form, 0); });
   });

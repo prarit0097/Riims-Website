@@ -940,6 +940,17 @@ the password.)
 - The public form (`site/js/site.js`) POSTs to **`/api/lead`** on submit (single step:
   name/phone/problem). Honeypot field + 10/min/IP rate limit. Leads go ONLY to the admin
   panel (no WhatsApp redirect, per owner request).
+- **`/api/lead` validates server-side** (added 2026-07-17 after a numberless lead reached the
+  panel via a direct POST — the browser's `required` only guards the form): name ≥2 chars and a
+  real Indian mobile are mandatory. The phone is normalised (`+91`/`91`/`0` prefixes and
+  spaces/dashes stripped) and must then match `[6-9]\d{9}`; anything else is a 400 with a
+  plain-language error. The honeypot answers **before** validation so bots keep getting their
+  fake ok. The form mirrors the same rule client-side (`pattern`/`inputmode`/`maxlength` on the
+  phone input via `input()`'s new optional attrs), and `site.js` now shows the success step
+  ONLY when the server said ok — a rejected submit shows the server's error in
+  `[data-appt-error]` instead of a false "Request received". If the network itself is down the
+  old show-success behaviour is kept deliberately (the server has no lead either way, and the
+  page offers call/WhatsApp).
 - Auth: scrypt password hash(es) + HMAC-signed 7-day session cookie carrying the role
   (`data/admin-config.json`, created by `node admin/set-password.mjs '<password>'`, plus
   `--seo` for the SEO role). UI is `noindex`.

@@ -274,6 +274,18 @@ createServer(async (req, res) => {
       if (!b) return send(res, 400, { error: 'bad json' });
       if (b.website) return send(res, 200, { ok: true, id: 'x' });           // honeypot bot
       const clean = (v, n = 200) => String(v || '').slice(0, n).trim();
+
+      /* A lead without a callable number is dead weight in the panel (one already
+         got in via a direct POST — the browser's `required` only guards the form).
+         Normalise +91/91/0 prefixes and spaces/dashes, then demand a real Indian
+         mobile: 10 digits starting 6-9. The honeypot answers BEFORE this so bots
+         keep getting their fake ok. */
+      const rawPhone = String(b.phone || '').replace(/[\s()-]/g, '');
+      const phone10 = (rawPhone.match(/^(?:\+?91|0)?([6-9]\d{9})$/) || [])[1] || '';
+      const nameClean = clean(b.name, 100);
+      if (nameClean.length < 2) return send(res, 400, { error: 'Please enter your name.' });
+      if (!phone10) return send(res, 400, { error: 'Please enter a valid 10-digit mobile number.' });
+
       const leads = getLeads();
       let lead = b.id ? leads.find((l) => l.id === b.id) : null;
       if (!lead) {
@@ -282,7 +294,7 @@ createServer(async (req, res) => {
       }
       Object.assign(lead, {
         stage: clean(b.stage, 20) || 'partial',
-        name: clean(b.name, 100), phone: clean(b.phone, 20), problem: clean(b.problem, 100),
+        name: nameClean, phone: phone10, problem: clean(b.problem, 100),
         city: clean(b.city, 50) || lead.city || '', creatinine: clean(b.creatinine, 30) || lead.creatinine || '',
         mode: clean(b.mode, 40) || lead.mode || '', page: clean(b.page, 200),
         updated: new Date().toISOString(),

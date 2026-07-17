@@ -233,11 +233,16 @@ function field({ label, required, hint, error, control, controlId }) {
 
 const INPUT_CSS = 'width:100%;font-family:var(--font-sans);font-size:var(--fs-md);color:var(--text-strong);background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-md);padding:.72rem .95rem;min-height:48px;outline:none;';
 
-export function input({ label, required, hint, icon: ic, type = 'text', name, placeholder } = {}) {
+export function input({ label, required, hint, icon: ic, type = 'text', name, placeholder, pattern, inputmode, minlength, maxlength, title } = {}) {
   const id = nextFieldId(name);
+  const extra = (pattern ? ` pattern="${esc(pattern)}"` : '')
+    + (inputmode ? ` inputmode="${inputmode}"` : '')
+    + (minlength ? ` minlength="${minlength}"` : '')
+    + (maxlength ? ` maxlength="${maxlength}"` : '')
+    + (title ? ` title="${esc(title)}"` : '');
   const control = `<div style="position:relative;display:flex;align-items:center">`
     + (ic ? `<span style="position:absolute;left:.85rem;color:var(--icon-default);pointer-events:none;display:inline-flex">${ic}</span>` : '')
-    + `<input id="${id}" class="riims-input" type="${type}"${name ? ` name="${name}"` : ''}${placeholder ? ` placeholder="${esc(placeholder)}"` : ''}${required ? ' required' : ''} style="${INPUT_CSS}padding-left:${ic ? '2.5rem' : '.95rem'}">`
+    + `<input id="${id}" class="riims-input" type="${type}"${name ? ` name="${name}"` : ''}${placeholder ? ` placeholder="${esc(placeholder)}"` : ''}${required ? ' required' : ''}${extra} style="${INPUT_CSS}padding-left:${ic ? '2.5rem' : '.95rem'}">`
     + `</div>`;
   return field({ label, required, hint, control, controlId: id });
 }
