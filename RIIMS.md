@@ -759,16 +759,20 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 
 ## 21. Known placeholders / next steps
 
-- 🔴 **The doctor roster is mock, and it publishes fabricated MD/DM credentials. Fix this first.**
-  `data/content.json → doctors` ships six invented people, two of them as **"MD, DM (Nephrology)"**
-  (Dr. A. Sharma, Dr. T. Roy), with no registration numbers. This is live on riimshospitals.com.
-  It is the same misrepresentation the rest of the site carefully refuses to make (§27), except
-  worse, because these doctors do not exist — and it now contradicts
-  `/doctors/best-nephrologist-delhi-ncr.html`, which tells patients plainly that Dr. Abhishek is
-  not a nephrologist. A patient one click apart sees both. Replace the roster with the real
-  in-house doctors and their real Reg. Nos. in **Admin → Doctors**; the schema specialty then
-  derives from each doctor's own quals (§27). Until then, that page's honesty is undermined by
-  the page next to it.
+- 🔴 **Dr. Abhishek Gupta is titled "Senior Nephrologist" in Admin → Doctors while his
+  qualification field says B.A.M.S. Change that title.** Live as of 2026-07-17 on
+  `/doctors.html` and the homepage. A B.A.M.S. practitioner presented as a nephrologist
+  misrepresents a qualification under Indian law, and it directly contradicts
+  `/doctors/best-nephrologist-delhi-ncr.html`, which tells patients plainly that he is not one —
+  a patient sees both, one click apart. Use the wording the rest of the site already uses:
+  **"Founder & Senior Kidney-Care Physician"** (`SPECIALIST_DOCTOR.role` in `build/pages.mjs`).
+  The admin now **refuses** to save an AYUSH qualification under an allopathic-specialty title
+  (`checkDoctors()` in `admin/server.mjs`), so this cannot recur — but the value already saved
+  stays live until someone edits it.
+  *Note for future readers:* `data/content.json → doctors` still holds the old six mock names
+  (Dr. A. Sharma etc.). That is the **repo default only** — the VPS `content.local.json` overrides
+  it with the three real doctors, who carry real Reg. Nos. Do not diagnose the live roster from
+  the repo; check the live page or Admin → Doctors.
 - **Review what the SEO contractor publishes — this is a standing owner task, not a one-off.**
   The `seo` role can rewrite the title, meta description, H1 and body text of all 47 disease
   pages. `build/compliance.mjs` refuses the obvious illegal claim, but **a denylist cannot catch
@@ -1450,3 +1454,17 @@ kidney-failure `intro` trimmed under clampDesc's 155 (it was losing the word "up
 "we never promise cure, and say so upfront"), and `landingPage()` guarded against a missing
 `points`/`related`. The second QA pass also caught this very note claiming only 62 pages changed —
 that measurement predated the footer links.
+
+### Doctor credential guard (`checkDoctors()` in `admin/server.mjs`)
+A save to **Admin → Doctors** is refused when a doctor's `quals` name an AYUSH degree
+(B.A.M.S./B.H.M.S./B.U.M.S./B.N.Y.S., or "ayurved/homeopath/unani/siddha") while their `title`
+claims an allopathic specialty (nephrolog/cardiolog/hepatolog/urolog/oncolog/…/MBBS/MD/DM/MS/DNB),
+or when a specialty title carries no qualification at all. The error names the doctor, both
+fields, and suggests honest wording.
+
+Why it exists: the founder was live as "Senior Nephrologist" with `quals: Bams` — the exact
+misrepresentation `build/pages.mjs`'s SPECIALISTS rule forbids, and the exact claim
+`/doctors/best-nephrologist-delhi-ncr.html` denies. It is one word in one field, so a rule beats a
+reminder. A genuine MBBS/MD/DM nephrologist saves fine — the guard reads the degree, not the title.
+It pairs with `specialtyOf()` in `generate.mjs`, which derives schema `medicalSpecialty` from the
+same `quals` rather than assuming Nephrology.

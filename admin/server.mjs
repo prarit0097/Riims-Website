@@ -168,7 +168,36 @@ const COND_STR_FIELDS = ['intro', 'aboutTitle', 'about', 'when'];
 const COND_ARR_FIELDS = ['symptoms', 'approach'];
 const LOCKED_FIELDS = ['redFlags', 'sources'];
 
+/* An AYUSH practitioner may not be presented as an allopathic specialist — in India
+   that misrepresents a qualification, and the whole site is written to avoid it (see
+   the rule above SPECIALISTS in build/pages.mjs). This caught a real, live case: the
+   founder, a B.A.M.S., was titled "Senior Nephrologist" on the doctors page while a
+   new page told patients plainly he is not one. A title is one careless word; this
+   makes that word impossible to save. */
+const AYUSH_QUAL = /B\.?A\.?M\.?S|B\.?H\.?M\.?S|B\.?U\.?M\.?S|B\.?N\.?Y\.?S|ayurved|homeopath|unani|siddha/i;
+const ALLOPATHIC_TITLE = /\b(nephrolog|cardiolog|hepatolog|endocrinolog|urolog|oncolog|neurolog|gastroenterolog|surgeon|MBBS|\bMD\b|\bDM\b|\bMS\b|\bDNB\b)/i;
+
+function checkDoctors(list) {
+  if (!Array.isArray(list)) return null;
+  for (const d of list) {
+    if (!d || typeof d !== 'object') continue;
+    const name = String(d.name || 'A doctor').trim();
+    const quals = String(d.quals || '');
+    const title = String(d.title || '');
+    if (AYUSH_QUAL.test(quals) && ALLOPATHIC_TITLE.test(title)) {
+      const word = (title.match(ALLOPATHIC_TITLE) || [''])[0];
+      return `${name}: the qualification says "${quals.trim()}" but the title says "${title.trim()}". An Ayurveda/AYUSH doctor cannot be titled "${word}" — in India that misrepresents a qualification, and it contradicts what the rest of the site tells patients. Use a title like "Founder & Senior Kidney-Care Physician" or "Senior Ayurveda Acharya". If this doctor really does hold MBBS/MD/DM, put that in the qualifications field.`;
+    }
+    if (ALLOPATHIC_TITLE.test(title) && !quals.trim()) {
+      return `${name}: the title claims a medical specialty but the qualifications field is empty. Add the real degree — an unbacked specialty claim on a medical site is exactly what Google and the law penalise.`;
+    }
+  }
+  return null;
+}
+
 function validateSection(section, b) {
+  // Doctors: a specialty title must be backed by the degree that grants it.
+  if (section === 'doctors') return checkDoctors(b);
   /* The Tracking tab is for site-verification tags. The generator emits the page's own
      description/og/twitter/robots tags, so accepting those here would ship a duplicate
      (an SEO fault by itself) AND put uncontrolled ad copy in every page's <head>. */
