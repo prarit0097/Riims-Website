@@ -621,7 +621,7 @@ This section is the source of truth for the running production setup.
 
 | Thing | Value |
 |-------|-------|
-| Domain | `riimshospitals.com` (non-www canonical; `www` also serves; `http`→`https` 301) |
+| Domain | `riimshospitals.com` (non-www canonical; `http`→`https` 301; `www`→apex 301 — added to `deploy/nginx-riims-bootstrap.conf` 2026-07-17 after an SEO audit found `www` serving the full site as a 200 duplicate. **Needs the §18.4 re-apply on the VPS to go live.**) |
 | Registrar / DNS | GoDaddy — `A @` and `A www` → `187.127.132.106` |
 | Host | Hostinger VPS, Ubuntu 24.04 LTS, `ssh root@187.127.132.106` |
 | Web server | **host nginx 1.24.0** (systemd) on ports 80/443 — it reverse-proxies all the box's sites. (A `traefik-*` Docker project exists but is **dormant/not used**; other apps run as Docker containers with their own nginx — do not touch them.) |
