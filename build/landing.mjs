@@ -79,7 +79,7 @@ export const LANDING = {
     points: {
       title: 'What long-term CKD care at RIIMS involves',
       items: [
-        'A first visit built around your actual reports — eGFR read together with urine protein, sugar, BP and haemoglobin, not one number in isolation',
+        'A first visit built around your actual reports, with eGFR read together with urine protein, sugar, BP and haemoglobin, not one number in isolation',
         'A written kidney diet you can cook at home (the RiiMS Renal Plate), sized to your stage rather than copied off the internet',
         'A follow-up schedule on the Kidney Alert System, so a change shows up as a trend instead of a shock',
         'Coordination with your nephrologist, who keeps every medical and dialysis decision',
@@ -113,7 +113,7 @@ export const LANDING = {
     points: {
       title: 'What RIIMS can honestly do at this stage',
       items: [
-        'Support the work of protecting whatever kidney function is left — BP, potassium, anaemia and acid balance managed together with your treating team',
+        'Support the work of protecting whatever kidney function is left, with BP, potassium, anaemia and acid balance managed together with your treating team',
         'Symptom and quality-of-life support: swelling, itching, nausea, appetite, sleep',
         'A renal diet and fluid plan matched to your stage and your dialysis status, not a generic list',
         'Plain answers for the family, and preparation done calmly beforehand rather than in a crisis at midnight',

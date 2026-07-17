@@ -36,7 +36,7 @@ function guidesHomeSection(base) {
   return `<section style="padding-block:var(--section-pad-y);background:var(--white)"><div class="riims-container">`
     + eyebrow('Patient Guides')
     + `<h2 style="font-size:var(--fs-2xl);margin:.3rem 0 .4rem">Understand your kidneys, one clear step at a time</h2>`
-    + `<p style="max-width:62ch;color:var(--text-muted);margin:0 0 var(--space-6)">Plain-language guides from our clinical team, grounded in Dr. Abhishek Gupta's book <em>Kidney Kavach</em> — learn what your reports mean, what to eat, and what to do next.</p>`
+    + `<p style="max-width:62ch;color:var(--text-muted);margin:0 0 var(--space-6)">Plain-language guides from our clinical team, grounded in Dr. Abhishek Gupta's book <em>Kidney Kavach</em>. Learn what your reports mean, what to eat, and what to do next.</p>`
     + `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-4)">${GUIDE_ORDER.map((k) => guideCard(base, k)).join('')}</div>`
     + `<div style="margin-top:var(--space-6)">${button('See all patient guides', { variant: 'outline', href: `${base}guides.html`, iconRight: icon('arrow-right', { size: 16 }) })}</div>`
     + `</div></section>`;
@@ -162,15 +162,15 @@ export const DEFAULT_ABOUT = {
   hero: { title: 'About RIIMS', intro: 'Rashtriya Institute of Integrated Medical Sciences is a kidney-focused institute for ethical, doctor-led, report-based and integrated kidney care.' },
   storyHeading: 'Kidney care built on reports, not guesswork',
   story: [
-    'RIIMS is a doctor-led, report-based institute founded on a simple belief: kidney disease is rarely sudden, and the people living with it deserve honest information, calm guidance and a plan made for them. Every plan begins with your actual reports — creatinine, eGFR and your wider health picture — read alongside your history and daily life. We don’t compare one patient to another, because two people with the same creatinine can have very different causes and needs.',
-    'Our approach is integrated. We bring together the useful strengths of modern medical science and Ayurveda, working alongside your medical treatment rather than in place of it. This is the thinking behind our care backbone, the <strong>DNA Kayakalp Protocol™</strong> — a structured framework combining scientific understanding, nutrition, lifestyle and Ayurveda to support kidney health responsibly.',
-    'We also believe medicine alone is not enough — diet, routine, mental well-being, family support and regular follow-up matter too. Above all we stay honest: no false promises and no shortcuts, just the right information, discipline and steady medical guidance. Kidney disease can be serious, but with the right care and a positive outlook, many people live fuller, better-quality lives.',
+    'RIIMS is a doctor-led, report-based institute founded on a simple belief: kidney disease is rarely sudden, and the people living with it deserve honest information, calm guidance and a plan made for them. Every plan begins with your actual reports (creatinine, eGFR and your wider health picture), read alongside your history and daily life. We don’t compare one patient to another, because two people with the same creatinine can have very different causes and needs.',
+    'Our approach is integrated. We bring together the useful strengths of modern medical science and Ayurveda, working alongside your medical treatment rather than in place of it. This is the thinking behind our care backbone, the <strong>DNA Kayakalp Protocol™</strong>, a structured framework that combines scientific understanding, nutrition, lifestyle and Ayurveda to support kidney health responsibly.',
+    'We also believe medicine alone is not enough: diet, routine, mental well-being, family support and regular follow-up matter too. Above all we stay honest: no false promises and no shortcuts, just the right information, discipline and steady medical guidance. Kidney disease can be serious, but with the right care and a positive outlook, many people live fuller, better-quality lives.',
   ],
   imageAlt: 'RIIMS institute building, Baraut',
-  ckdNote: '<strong>Roughly 1 in 6–7 people in India</strong> may be affected by Chronic Kidney Disease (CKD) at some stage — a general awareness estimate from published studies, not a RIIMS performance measure. CKD is often called a “silent disease” because it can progress with few early symptoms, which is why timely testing and regular check-ups matter.',
+  ckdNote: '<strong>Roughly 1 in 6 or 7 people in India</strong> may be affected by Chronic Kidney Disease (CKD) at some stage, a general awareness estimate from published studies, not a RIIMS performance measure. CKD is often called a “silent disease” because it can progress with few early symptoms, which is why timely testing and regular check-ups matter.',
   values: [
-    { icon: 'file-check-2', t: 'Report-based care', d: 'Every plan starts from your actual reports and full picture — never guesswork.' },
-    { icon: 'git-merge', t: 'Truly integrated', d: 'Modern nephrology with safe Ayurveda-supported lifestyle care — alongside, never instead of, treatment.' },
+    { icon: 'file-check-2', t: 'Report-based care', d: 'Every plan starts from your actual reports and full picture, never guesswork.' },
+    { icon: 'git-merge', t: 'Truly integrated', d: 'Modern nephrology with safe, Ayurveda-supported lifestyle care, offered alongside treatment and never instead of it.' },
     { icon: 'heart-handshake', t: 'Personalised & honest', d: 'Two people with the same creatinine can need different care. Plain-language guidance, no false promises.' },
   ],
 };
@@ -216,7 +216,7 @@ export const SPECIALIST_DOCTOR = {
   cred: 'B.A.M.S. · Ayurvedacharya',
   role: 'Founder & Senior Kidney-Care Physician, RIIMS',
   reg: 'DBCP A/7368',
-  note: 'Creator of the DNA Kayakalp Protocol™ and author of the patient book <em>Kidney Kavach</em> — an integrated, report-based approach that brings modern medical understanding together with Ayurveda and lifestyle care. Always alongside your medical treatment, never instead of it.',
+  note: 'Creator of the DNA Kayakalp Protocol™ and author of the patient book <em>Kidney Kavach</em>. His approach is integrated and report-based, and it brings modern medical understanding together with Ayurveda and lifestyle care, always alongside your medical treatment and never instead of it.',
   init: 'AG',
 };
 
@@ -241,12 +241,12 @@ export const SPECIALISTS = {
     icon: 'stethoscope', h1: 'Kidney Doctor in Delhi-NCR & Baraut',
     metaTitle: 'Kidney Doctor in Delhi-NCR & Baraut — Dr. Abhishek Gupta | RIIMS',
     crumb: 'Doctors · Kidney Doctor (Delhi-NCR)',
-    intro: 'Looking for an experienced, ethical kidney doctor near Delhi-NCR? Dr. Abhishek Gupta leads integrated, report-based kidney care at RIIMS in Baraut — within the NCR region and easily reached from Delhi, Ghaziabad, Meerut and Baghpat.',
-    lead: 'Kidney problems deserve calm, honest guidance — not fear or false promises. At RIIMS, Dr. Abhishek Gupta and the care team read your actual reports (creatinine, eGFR, urine protein and your wider health picture) before advising, and build a plan made for you. Care is integrated: modern medical understanding works alongside Ayurveda and lifestyle support, and we coordinate with nephrologists for medical or dialysis needs — never replacing them.',
+    intro: 'Looking for an experienced, ethical kidney doctor near Delhi-NCR? Dr. Abhishek Gupta leads integrated, report-based kidney care at RIIMS in Baraut, within the NCR region and easily reached from Delhi, Ghaziabad, Meerut and Baghpat.',
+    lead: 'Kidney problems deserve calm, honest guidance, not fear or false promises. At RIIMS, Dr. Abhishek Gupta and the care team read your actual reports (creatinine, eGFR, urine protein and your wider health picture) before advising, and build a plan made for you. Care is integrated: modern medical understanding works alongside Ayurveda and lifestyle support, and we coordinate with nephrologists for medical or dialysis needs, never replacing them.',
     helps: [
       'High creatinine, CKD (all stages), kidney failure and dialysis guidance',
       'Protein in urine, kidney swelling, stones and urinary infections',
-      'Diabetic and hypertensive kidney disease — protecting remaining function',
+      'Diabetic and hypertensive kidney disease, protecting remaining function',
       'Personalised kidney diet (RiiMS Renal Plate) and lifestyle coaching',
       'Report-based Kidney Mapping and clear, jargon-free explanations',
     ],
@@ -257,24 +257,24 @@ export const SPECIALISTS = {
     icon: 'droplet', h1: 'High Creatinine Specialist',
     metaTitle: 'High Creatinine Specialist — Dr. Abhishek Gupta | RIIMS Baraut',
     crumb: 'Doctors · High Creatinine Specialist',
-    intro: 'A raised creatinine is a signal to investigate calmly, not a diagnosis on its own. Dr. Abhishek Gupta helps you understand why it is high and what to do next — honestly, and without panic.',
-    lead: 'Creatinine is a marker, not the disease. Dr. Abhishek Gupta reads it alongside eGFR, urine protein, potassium and your history, then looks for the real cause — dehydration, certain medicines, infection, diabetes or blood pressure. The goal is not to chase a single number, but to protect your kidney function with a personalised diet, lifestyle changes and treating the underlying cause.',
+    intro: 'A raised creatinine is a signal to investigate calmly, not a diagnosis on its own. Dr. Abhishek Gupta helps you understand why it is high and what to do next, honestly and without panic.',
+    lead: 'Creatinine is a marker, not the disease. Dr. Abhishek Gupta reads it alongside eGFR, urine protein, potassium and your history, then looks for the real cause: dehydration, certain medicines, infection, diabetes or blood pressure. The goal is not to chase a single number, but to protect your kidney function with a personalised diet, lifestyle changes and treating the underlying cause.',
     helps: [
-      'Root-cause review of a raised creatinine — reversible causes treated first',
+      'Root-cause review of a raised creatinine, with reversible causes treated first',
       'Reading creatinine with eGFR, urine protein and your full history',
       'A personalised kidney diet (RiiMS Renal Plate) and nephrotoxin avoidance',
       'Coordinating blood-pressure and sugar control with your treating doctors',
       'Regular monitoring so any change is caught early',
     ],
-    when: 'If creatinine stays high across repeat reports or eGFR is falling — or you have diabetes, BP or swelling — see a kidney-care doctor early. A sudden drop in urine, breathlessness or very high potassium needs prompt medical care.',
+    when: 'If creatinine stays high across repeat reports or eGFR is falling, or you have diabetes, BP or swelling, see a kidney-care doctor early. A sudden drop in urine, breathlessness or very high potassium needs prompt medical care.',
     related: [['High Creatinine', 'high-creatinine'], ['High Creatinine Without Dialysis', 'high-creatinine-without-dialysis'], ['CKD', 'ckd'], ['Protein in Urine', 'proteinuria']],
   },
   'kidney-failure-specialist': {
     icon: 'heart-pulse', h1: 'Kidney Failure Specialist',
     metaTitle: 'Kidney Failure Specialist — Dr. Abhishek Gupta | RIIMS Baraut',
     crumb: 'Doctors · Kidney Failure Specialist',
-    intro: 'A kidney-failure diagnosis is frightening, but the right information changes everything. Dr. Abhishek Gupta helps you understand your stage and the realistic options — with honesty and support.',
-    lead: 'Kidney failure means the kidneys are working at a very low level. Care depends on your stage, symptoms and reports. Dr. Abhishek Gupta and the RIIMS team focus on protecting remaining function, managing symptoms and quality of life, and preparing you for the right decisions — coordinating closely with nephrologists for dialysis or advanced medical care when needed. We stay honest: we never promise cure, or that dialysis can always be avoided or stopped.',
+    intro: 'A kidney-failure diagnosis is frightening, but the right information changes everything. Dr. Abhishek Gupta helps you understand your stage and the realistic options, with honesty and support.',
+    lead: 'Kidney failure means the kidneys are working at a very low level. Care depends on your stage, symptoms and reports. Dr. Abhishek Gupta and the RIIMS team focus on protecting remaining function, managing symptoms and quality of life, and preparing you for the right decisions. For dialysis or advanced medical care, we coordinate closely with nephrologists when needed. We stay honest: we never promise cure, or that dialysis can always be avoided or stopped.',
     helps: [
       'Understanding your stage and the realistic options, in plain language',
       'Protecting remaining kidney function and managing symptoms',
@@ -289,8 +289,8 @@ export const SPECIALISTS = {
     icon: 'circle-dot', h1: 'Kidney Stone Specialist',
     metaTitle: 'Kidney Stone Specialist — Dr. Abhishek Gupta | RIIMS Baraut',
     crumb: 'Doctors · Kidney Stone Specialist',
-    intro: 'Kidney stones cause severe pain and can come back. Dr. Abhishek Gupta helps with evaluation, safe treatment guidance and — importantly — preventing the next stone.',
-    lead: 'Most stones are diagnosed with an ultrasound or CT and simple tests. Small stones often pass with fluids, pain control and medical support; larger stones or a blockage may need a urologist procedure (such as laser/RIRS), which RIIMS helps coordinate and refer for. Just as important is prevention — Dr. Abhishek Gupta reviews your diet, fluids and metabolic factors to lower the risk of recurrence.',
+    intro: 'Kidney stones cause severe pain and can come back. Dr. Abhishek Gupta helps with evaluation, safe treatment guidance and, above all, preventing the next stone.',
+    lead: 'Most stones are diagnosed with an ultrasound or CT and simple tests. Small stones often pass with fluids, pain control and medical support; larger stones or a blockage may need a urologist procedure (such as laser/RIRS), which RIIMS helps coordinate and refer for. Just as important is prevention. Dr. Abhishek Gupta reviews your diet, fluids and metabolic factors to lower the risk of recurrence.',
     helps: [
       'Evaluation of stone size, position and any obstruction',
       'Guidance on when a stone can pass vs when a procedure is needed',
@@ -305,12 +305,12 @@ export const SPECIALISTS = {
     icon: 'shield-check', h1: 'UTI Specialist',
     metaTitle: 'UTI Specialist — Urinary Infection Care | Dr. Abhishek Gupta, RIIMS',
     crumb: 'Doctors · UTI Specialist',
-    intro: 'Burning urination and frequent infections are common — and treatable. Dr. Abhishek Gupta helps diagnose, treat and prevent urinary tract infections, and spot when they involve the kidneys.',
-    lead: 'Most UTIs are straightforward, but repeated infections — or infection reaching the kidney (pyelonephritis) — need proper evaluation. Dr. Abhishek Gupta reviews your symptoms and reports (urine routine/culture), guides appropriate treatment, and looks for causes behind recurrent UTIs, such as stones, diabetes or incomplete bladder emptying, with prevention advice to break the cycle.',
+    intro: 'Burning urination and frequent infections are common, and usually treatable. Dr. Abhishek Gupta helps diagnose, treat and prevent urinary tract infections, and spot when they involve the kidneys.',
+    lead: 'Most UTIs are straightforward, but repeated infections, or an infection that reaches the kidney (pyelonephritis), need proper evaluation. Dr. Abhishek Gupta reviews your symptoms and reports (urine routine/culture), guides appropriate treatment, and looks for causes behind recurrent UTIs, such as stones, diabetes or incomplete bladder emptying, with prevention advice to break the cycle.',
     helps: [
       'Telling simple UTIs apart from recurrent or kidney-involving infection',
       'Report-based guidance (urine routine and culture)',
-      'Finding causes of recurrent UTIs — stones, diabetes and more',
+      'Finding causes of recurrent UTIs: stones, diabetes and more',
       'Prevention advice: hydration, hygiene and habits',
       'Coordination for any specialist treatment needed',
     ],
@@ -321,8 +321,8 @@ export const SPECIALISTS = {
     icon: 'gauge', h1: 'Kidney Doctor for Diabetic Patients',
     metaTitle: 'Kidney Doctor for Diabetic Patients — Dr. Abhishek Gupta | RIIMS',
     crumb: 'Doctors · Kidney Doctor for Diabetic Patients',
-    intro: 'Diabetes is a leading cause of kidney disease — but early, coordinated care can protect your kidneys. Dr. Abhishek Gupta helps diabetic patients screen for and slow diabetic kidney disease.',
-    lead: 'In diabetes, high sugar can quietly damage the kidney\'s filters over years, often showing first as protein in the urine before creatinine rises. Dr. Abhishek Gupta focuses on early screening (urine albumin, eGFR), tight coordination of sugar and blood-pressure control with your treating doctors, and a practical diabetic-kidney diet — to protect remaining function. Care is honest and integrated, alongside your medical treatment.',
+    intro: 'Diabetes is a leading cause of kidney disease, but early, coordinated care can protect your kidneys. Dr. Abhishek Gupta helps diabetic patients screen for and slow diabetic kidney disease.',
+    lead: 'In diabetes, high sugar can quietly damage the kidney\'s filters over years. It often shows up first as protein in the urine, before creatinine rises. Dr. Abhishek Gupta focuses on early screening (urine albumin, eGFR), tight coordination of sugar and blood-pressure control with your treating doctors, and a practical diabetic-kidney diet, all to protect the function that remains. Care is honest and integrated, alongside your medical treatment.',
     helps: [
       'Early screening for diabetic kidney disease (urine albumin, eGFR)',
       'Coordinating sugar and blood-pressure control with your treating doctors',
@@ -330,7 +330,7 @@ export const SPECIALISTS = {
       'Protecting remaining kidney function and slowing progression',
       'Clear monitoring so changes are caught early',
     ],
-    when: 'If you have diabetes — especially for several years, or with protein in urine, swelling or a rising creatinine — get your kidneys screened. Early care offers the most protection.',
+    when: 'If you have diabetes, especially for several years, or with protein in urine, swelling or a rising creatinine, get your kidneys screened. Early care offers the most protection.',
     related: [['Diabetic Kidney Disease', 'diabetic-kidney-disease'], ['Hypertensive Kidney Disease', 'hypertensive-kidney-disease'], ['High Creatinine', 'high-creatinine'], ['Protein in Urine', 'proteinuria']],
   },
 };
@@ -370,7 +370,7 @@ export function specialistPage(base, slug) {
   const aside = `<aside style="position:sticky;top:128px;display:flex;flex-direction:column;gap:var(--space-5)">`
     + card(
       `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Consult ${SPECIALIST_DOCTOR.name}</h3>`
-      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion — video, phone or in-clinic.</p>`
+      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion: video, phone or in-clinic.</p>`
       + `<div style="display:flex;flex-direction:column;gap:.6rem">`
       + button('Book Consultation', { variant: 'primary', fullWidth: true, iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
       + button('WhatsApp Now', { variant: 'whatsapp', fullWidth: true, iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
@@ -436,7 +436,7 @@ export function landingPage(base, slug) {
   const aside = `<aside style="position:sticky;top:128px;display:flex;flex-direction:column;gap:var(--space-5)">`
     + card(
       `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Talk to the RIIMS team</h3>`
-      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion — video, phone or in-clinic.</p>`
+      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion: video, phone or in-clinic.</p>`
       + `<div style="display:flex;flex-direction:column;gap:.6rem">`
       + button('Book Consultation', { variant: 'primary', fullWidth: true, iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
       + button('WhatsApp Now', { variant: 'whatsapp', fullWidth: true, iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
@@ -478,7 +478,7 @@ export function doctorsPage(base) {
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-subtle)"><div class="riims-container">`
     + eyebrow('Specialist kidney care')
     + `<h2 style="font-size:var(--fs-2xl);margin:.3rem 0 .3rem">Care for your specific concern</h2>`
-    + `<p style="max-width:60ch;color:var(--text-muted);margin:0 0 var(--space-6)">Led by Dr. Abhishek Gupta — choose the area closest to your need.</p>`
+    + `<p style="max-width:60ch;color:var(--text-muted);margin:0 0 var(--space-6)">Led by Dr. Abhishek Gupta. Choose the area closest to your need.</p>`
     + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">${specialistCards}</div>`
     + `</div></section>`
     + S.ctaBand();
@@ -518,15 +518,15 @@ export function blogPage(base) {
   ).join('');
 
   const newsletter = `<div style="margin-top:var(--space-12);border-radius:var(--radius-xl);background:var(--surface-cream);border:1px solid var(--cream-200);padding:clamp(1.6rem,1.2rem + 2vw,2.6rem);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-6)">`
-    + `<div style="max-width:42ch"><h2 style="font-size:var(--fs-2xl);margin:0 0 .4rem">Kidney health tips, simply explained</h2><p style="margin:0;color:var(--text-muted)">Get our doctor-reviewed kidney diet and lifestyle guides. No spam, no scary promises — unsubscribe anytime.</p></div>`
+    + `<div style="max-width:42ch"><h2 style="font-size:var(--fs-2xl);margin:0 0 .4rem">Kidney health tips, simply explained</h2><p style="margin:0;color:var(--text-muted)">Get our doctor-reviewed kidney diet and lifestyle guides. No spam, no scary promises. Unsubscribe anytime.</p></div>`
     + `<form data-newsletter style="display:flex;gap:.6rem;flex:1 1 280px;max-width:420px">`
     + `<input type="email" required placeholder="Your email" class="riims-input" style="flex:1;font-family:var(--font-sans);font-size:var(--fs-md);background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-md);padding:.72rem .95rem;min-height:48px;outline:none">`
     + button('Subscribe', { variant: 'primary', type: 'submit', iconRight: icon('arrow-right', { size: 16 }) })
     + `</form>`
-    + `<span data-newsletter-done hidden style="display:inline-flex;align-items:center;gap:.5rem;color:var(--text-accent);font-weight:700;font-family:var(--font-sans)">${icon('check', { size: 20 })} Subscribed — thank you!</span>`
+    + `<span data-newsletter-done hidden style="display:inline-flex;align-items:center;gap:.5rem;color:var(--text-accent);font-weight:700;font-family:var(--font-sans)">${icon('check', { size: 20 })} Subscribed. Thank you!</span>`
     + `</div>`;
 
-  return pageHero(base, { crumb: 'Blog', icon: 'book-open', title: 'Kidney Health Blog & Patient Education', intro: 'Honest, doctor-aligned articles on high creatinine, CKD, dialysis guidance, kidney diet and Ayurveda-supported integrated care — written in plain language for patients and families across India.' })
+  return pageHero(base, { crumb: 'Blog', icon: 'book-open', title: 'Kidney Health Blog & Patient Education', intro: 'Honest, doctor-aligned articles on high creatinine, CKD, dialysis guidance, kidney diet and Ayurveda-supported integrated care, written in plain language for patients and families across India.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container">`
     + `<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:var(--space-8)">${filterBtns}</div>`
@@ -618,7 +618,7 @@ export function blogPostPage(base, p) {
 
   const cta = card(
     `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Talk to a kidney care expert</h3>`
-    + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your reports for doctor-guided, evidence-aware guidance — no false promises.</p>`
+    + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your reports for doctor-guided, evidence-aware guidance without false promises.</p>`
     + `<div style="display:flex;flex-wrap:wrap;gap:.6rem">`
     + button('Book Consultation', { variant: 'primary', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
     + button('WhatsApp Now', { variant: 'whatsapp', iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
@@ -697,7 +697,7 @@ export const DEFAULT_LEGAL = {
     intro: 'Please read this important note about the information on this site.',
     sections: [
       ['For awareness only', 'Information on this site is for awareness only and does not replace medical consultation. Treatment depends on doctor evaluation and patient reports. Never delay seeking medical advice because of something you read here.'],
-      ['No false claims', 'RIIMS provides ethical, evidence-aware, integrated kidney care. We do not make claims of “100% cure”, “guaranteed kidney recovery”, or “permanently stopping dialysis”. Ayurveda-supported lifestyle care is offered alongside, and in coordination with, medical treatment — never as a replacement for it.'],
+      ['No false claims', 'RIIMS provides ethical, evidence-aware, integrated kidney care. We do not make claims of “100% cure”, “guaranteed kidney recovery”, or “permanently stopping dialysis”. Ayurveda-supported lifestyle care is offered alongside, and in coordination with, medical treatment, never as a replacement for it.'],
       ['Individual results vary', 'Patient stories and examples reflect individual experiences. Results vary from person to person and depend on the underlying cause, stage, and doctor-led care plan.'],
       ['Not an emergency service', 'This website and its contact channels are not for medical emergencies. If you have a medical emergency, contact your nearest hospital immediately.'],
     ],
@@ -718,7 +718,7 @@ const LEGAL = Object.fromEntries(Object.entries(DEFAULT_LEGAL).map(([k, def]) =>
 
 /* ---------- Kidney Diseases hub (/conditions/) ---------- */
 export function conditionsHubPage(base) {
-  return pageHero(base, { crumb: 'Kidney Diseases', icon: 'activity', title: 'Kidney Diseases We Treat', intro: 'Clear, doctor-aligned guidance on high creatinine, CKD, kidney failure, dialysis, protein in urine, swelling, diabetes/BP kidney risk and stones — explained simply, for patients and families.' })
+  return pageHero(base, { crumb: 'Kidney Diseases', icon: 'activity', title: 'Kidney Diseases We Treat', intro: 'Clear, doctor-aligned guidance on high creatinine, CKD, kidney failure, dialysis, protein in urine, swelling, diabetes/BP kidney risk and stones, explained simply for patients and families.' })
     + S.problemsSection(base)
     + S.faqSection()
     + S.ctaBand();
@@ -751,19 +751,19 @@ export function servicesPage(base) {
     + `<h2 style="font-size:var(--fs-lg);margin:.1rem 0 0;font-family:var(--font-display)">${sv.t}</h2>`
     + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${sv.d}</p></div>`
   ).join('');
-  return pageHero(base, { crumb: 'Treatments & Services', icon: 'stethoscope', title: 'Kidney Treatments & Services at RIIMS', intro: 'Integrated, doctor-led kidney care — consultations (clinic, video, phone), report review, dialysis guidance, personalized kidney diet, Ayurveda-supported lifestyle care, and long-term follow-up. Ethical, report-based, no false promises.' })
+  return pageHero(base, { crumb: 'Treatments & Services', icon: 'stethoscope', title: 'Kidney Treatments & Services at RIIMS', intro: 'Integrated, doctor-led kidney care: consultations (clinic, video, phone), report review, dialysis guidance, personalized kidney diet, Ayurveda-supported lifestyle care and long-term follow-up. Ethical, report-based, no false promises.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container">`
     + eyebrow('What we treat')
     + `<h2 style="font-size:var(--fs-2xl);margin:.3rem 0 1rem">One doctor-led approach, four areas of care</h2>`
     + `<p style="max-width:70ch;color:var(--text-muted);margin:0 0 var(--space-6)">RIIMS is a kidney-focused institute that also treats liver, heart and general/metabolic conditions in-house, working alongside your medical treatment rather than replacing it. Pick an area below to see what we cover.</p>`
     + `<div class="grid-4" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-4);margin-bottom:var(--space-10)">${catCards}</div>`
     + `<div class="services-grid" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-4)">${tiles}</div>`
-    + `<p style="margin:var(--space-8) auto 0;max-width:70ch;text-align:center;color:var(--text-body)">Every service starts from your actual reports. Share your creatinine/eGFR reports for a doctor-guided opinion, get a clear plan in plain language, and follow up with diet and lifestyle support that fits Indian routines — at the clinic in Baraut or from home via video consultation.</p>`
+    + `<p style="margin:var(--space-8) auto 0;max-width:70ch;text-align:center;color:var(--text-body)">Every service starts from your actual reports. Share your creatinine/eGFR reports for a doctor-guided opinion, get a clear plan in plain language, and follow up with diet and lifestyle support that fits Indian routines, at the clinic in Baraut or from home by video consultation.</p>`
     + `<div style="text-align:center;margin-top:var(--space-6)">${button('Book Consultation', { variant: 'primary', size: 'lg', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })}</div>`
     + `</div></section>`
     + `<div style="margin-top:var(--space-8)">` + card(
       `<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem">`
-      + `<div style="max-width:60ch"><h2 style="font-size:var(--fs-xl);margin:0 0 .3rem">Care built on the DNA Kayakalp Protocol™</h2><p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">Our doctor-led framework — Diagnosis, Nutrition and Ayurveda-led activation — mapped to your reports and adapted over time. Supportive, honest, never a promise of cure.</p></div>`
+      + `<div style="max-width:60ch"><h2 style="font-size:var(--fs-xl);margin:0 0 .3rem">Care built on the DNA Kayakalp Protocol™</h2><p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">Our doctor-led framework (Diagnosis, Nutrition and Ayurveda-led activation), mapped to your reports and adapted over time. Supportive and honest, never a promise of cure.</p></div>`
       + button('Explore the protocol', { variant: 'primary', href: `${base}dna-kayakalp-protocol.html`, iconRight: icon('arrow-right', { size: 16 }) })
       + `</div>`,
       { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } }) + `</div>`
@@ -773,11 +773,11 @@ export function servicesPage(base) {
 
 /* ---------- DNA Kayakalp Protocol (/dna-kayakalp-protocol.html) ---------- */
 const DEFAULT_PROTOCOL_FAQS = [
-  ['Does the DNA Kayakalp Protocol™ cure kidney disease or reverse damage?', 'No — and we will always be honest about this. It does not claim to cure kidney disease, reverse damage or promise any fixed outcome. Its purpose is safe, personalised, well-managed kidney care that supports your health journey — alongside your medical treatment, never replacing it.'],
+  ['Does the DNA Kayakalp Protocol™ cure kidney disease or reverse damage?', 'No, and we will always be honest about this. It does not claim to cure kidney disease, reverse damage or promise any fixed outcome. Its purpose is safe, personalised, well-managed kidney care that supports your health alongside your medical treatment, never replacing it.'],
   ['Can this protocol replace my medicines or dialysis?', 'No. It is designed to work alongside and in coordination with your medical care. Please continue your prescribed medicines and any dialysis exactly as your treating doctors advise. Never stop or change medical treatment on your own.'],
-  ['Is Panchakarma safe for every kidney patient?', 'Not automatically. Not every patient needs it, and not every therapy suits every CKD stage — dialysis patients need special caution. Any supportive therapy is chosen individually and carried out only under a qualified Ayurveda physician’s supervision.'],
-  ['Is there one diet chart that fits everyone?', 'No. The RiiMS Renal Plate is a visual guide, not a fixed chart. Your plate depends on your stage, potassium, proteinuria, diabetes, blood pressure, dialysis status, weight and appetite — always personalised and reviewed with your care team.'],
-  ['Do detox, kadhas and lots of water clean the kidneys?', 'Be very careful with this idea. In kidney disease, water may be restricted and unsupervised fasting, strong kadhas or excess water can be harmful. Here, detox means safe, controlled support for the body’s own systems, under medical guidance — nothing aggressive or self-directed.'],
+  ['Is Panchakarma safe for every kidney patient?', 'Not automatically. Not every patient needs it, and not every therapy suits every CKD stage. Dialysis patients need special caution here. Any supportive therapy is chosen individually and carried out only under a qualified Ayurveda physician’s supervision.'],
+  ['Is there one diet chart that fits everyone?', 'No. The RiiMS Renal Plate is a visual guide, not a fixed chart. Your plate depends on your stage, potassium, proteinuria, diabetes, blood pressure, dialysis status, weight and appetite. It is always personalised and reviewed with your care team.'],
+  ['Do detox, kadhas and lots of water clean the kidneys?', 'Be very careful with this idea. In kidney disease, water may be restricted and unsupervised fasting, strong kadhas or excess water can be harmful. Here, detox means safe, controlled support for the body’s own systems, under medical guidance, and nothing aggressive or self-directed.'],
 ];
 
 /* Admin (Admin → Protocol) can override the protocol FAQs; stored as {q,a} objects,
@@ -796,13 +796,13 @@ export function protocolPage(base) {
     { pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } });
 
   const domains = [
-    'Kidney Function — creatinine, eGFR, urea/BUN',
-    'Kidney Damage Markers — urine protein, albuminuria, urine routine',
-    'Fluid & Electrolytes — potassium, sodium, calcium, phosphorus, swelling, urine output',
-    'Metabolic Status — diabetes, HbA1c, lipid profile, fatty liver, obesity',
-    'Blood & Energy — haemoglobin, iron profile, weakness, fatigue',
-    'Structural Status — ultrasound KUB, kidney size, stones/obstruction',
-    'Lifestyle & Risk — painkillers, self-medication, supplements, sleep, stress, activity',
+    'Kidney Function: creatinine, eGFR, urea/BUN',
+    'Kidney Damage Markers: urine protein, albuminuria, urine routine',
+    'Fluid & Electrolytes: potassium, sodium, calcium, phosphorus, swelling, urine output',
+    'Metabolic Status: diabetes, HbA1c, lipid profile, fatty liver, obesity',
+    'Blood & Energy: haemoglobin, iron profile, weakness, fatigue',
+    'Structural Status: ultrasound KUB, kidney size, stones/obstruction',
+    'Lifestyle & Risk: painkillers, self-medication, supplements, sleep, stress, activity',
   ];
   const nephrotoxins = [
     'Painkillers taken without advice', 'Self-medication or borrowed prescriptions',
@@ -811,22 +811,22 @@ export function protocolPage(base) {
     'Excess salt and hidden sodium', 'Smoking and tobacco', 'Excess alcohol', 'Repeated dehydration',
   ];
   const therapies = [
-    'HTS — Healing Therapeutic Sweating Therapy', 'MMT — Mind Massage Therapy',
-    'CCS — Colon Care Support', 'KTL — Kidney Thermal Lep',
-    'PRS — Planter Reflex Stimulation', 'LCS — Lymphatic Circulation Support',
-    'Other supportive therapies — targeted sweat, herbal heat compress, nasal wellness, yoga & guided relaxation',
+    'HTS: Healing Therapeutic Sweating Therapy', 'MMT: Mind Massage Therapy',
+    'CCS: Colon Care Support', 'KTL: Kidney Thermal Lep',
+    'PRS: Planter Reflex Stimulation', 'LCS: Lymphatic Circulation Support',
+    'Other supportive therapies: targeted sweat, herbal heat compress, nasal wellness, yoga & guided relaxation',
   ];
   const activation = [
-    'Sleep (Nidra) — adequate, timely rest and recovery',
-    'Brahmacharya & appropriate yoga — steadiness of body and mind',
-    'Movement as Medicine — gentle, capacity-appropriate activity, not the gym',
-    'Laughter as Medicine — a lighter, more positive frame of mind',
-    'Breath & oxygen support — calming, medically-appropriate breathing',
-    'Gravity Treatment — nature, sunlight and circulation support',
-    'Adaptive Lifestyle Planning — a personalised daily plan that changes with you',
+    'Sleep (Nidra): adequate, timely rest and recovery',
+    'Brahmacharya & appropriate yoga: steadiness of body and mind',
+    'Movement as Medicine: gentle, capacity-appropriate activity, not the gym',
+    'Laughter as Medicine: a lighter, more positive frame of mind',
+    'Breath & oxygen support: calming, medically-appropriate breathing',
+    'Gravity Treatment: nature, sunlight and circulation support',
+    'Adaptive Lifestyle Planning: a personalised daily plan that changes with you',
   ];
   const steps = [
-    ['Understand fully', 'We map your complete kidney and body picture across the 7 Kidney Mapping domains — not one number.'],
+    ['Understand fully', 'We map your complete kidney and body picture across the 7 Kidney Mapping domains, not one number.'],
     ['Find the real causes', 'We identify the root cause(s) straining your kidneys and reduce unnecessary metabolic load, safely.'],
     ['Organise nutrition', 'We build your personalised RiiMS Renal Plate and LDP routine, matched to your reports and life.'],
     ['Reduce harm', 'We help you avoid nephrotoxins, using any supportive Ayurvedic therapy only under qualified supervision.'],
@@ -834,36 +834,36 @@ export function protocolPage(base) {
     ['Review & adapt', 'We revisit your plan at every follow-up and change it as your reports and needs change.'],
   ];
 
-  return pageHero(base, { crumb: 'Treatments · DNA Kayakalp Protocol', icon: 'git-merge', title: 'The DNA Kayakalp Protocol™', intro: 'The integrated, doctor-guided kidney-care framework developed by our founder, Dr. Abhishek Gupta — combining modern medical science with Ayurveda to support safe, personalised kidney management. Always alongside your treating doctors, never in place of them.' })
+  return pageHero(base, { crumb: 'Treatments · DNA Kayakalp Protocol', icon: 'git-merge', title: 'The DNA Kayakalp Protocol™', intro: 'The integrated, doctor-guided kidney-care framework developed by our founder, Dr. Abhishek Gupta. It combines modern medical science with Ayurveda to support safe, personalised kidney management, always alongside your treating doctors and never in place of them.' })
     + section(
       h2('What is the DNA Kayakalp Protocol™?')
-      + p('For most people living with kidney disease, one question sits at the centre of everything: “What should I actually do now?” Reports are read and medicines are taken, but daily life often stays confusing. The DNA Kayakalp Protocol™ was built to answer that question in an organised way — a structured Kidney Health Management Framework shaped over years of clinical work with thousands of patients.')
-      + p('It is important to be honest about what this protocol is — and is not. It does <strong>not</strong> promise to cure kidney disease, reverse damage, or replace medical treatment or dialysis. Instead, it gives you correct information, the right nutrition, and the right lifestyle — under qualified medical and Ayurvedic supervision, tailored to each individual.')
+      + p('For most people living with kidney disease, one question sits at the centre of everything: “What should I actually do now?” Reports are read and medicines are taken, but daily life often stays confusing. The DNA Kayakalp Protocol™ was built to answer that question in an organised way, a structured Kidney Health Management Framework shaped over years of clinical work with thousands of patients.')
+      + p('We want to be honest about what this protocol is, and is not. It does <strong>not</strong> promise to cure kidney disease, reverse damage, or replace medical treatment or dialysis. Instead, it gives you correct information, the right nutrition, and the right lifestyle, all under qualified medical and Ayurvedic supervision and tailored to each individual.')
       + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin-top:var(--space-4)">`
       + [['D', 'Diagnosis & Detox Support', 'the right information'], ['N', 'Nutrition & Nephrotoxin Reduction', 'the right nutrition'], ['A', 'Ayurveda-led Activation & Adaptive Care', 'the right lifestyle']].map(([t, ti, ta]) => card(`<span style="font-family:var(--font-display);font-weight:800;font-size:1.7rem;color:var(--brand-primary)">${t}</span><h3 style="font-size:var(--fs-lg);margin:.2rem 0">${ti}</h3><p style="margin:0;color:var(--text-body);font-weight:600;font-size:var(--fs-sm)">${ta}</p>`, { tone: 'cream', pad: 'md' })).join('')
       + `</div>`)
     + section(
       pillar('D', 'Diagnosis & Detox Support', 'the right information',
-        p('One of the biggest mistakes in kidney disease is judging the whole illness by a single number. The better question is not “What is my creatinine?” but “What is the complete condition of my kidneys?” So the protocol begins by looking at the full picture — calmly, and together.')
-        + h3('Kidney Mapping — the 7 domains')
+        p('One of the biggest mistakes in kidney disease is judging the whole illness by a single number. The better question is not “What is my creatinine?” but “What is the complete condition of my kidneys?” So the protocol begins by looking at the full picture, calmly and together.')
+        + h3('Kidney Mapping: the 7 domains')
         + infoList(domains, { icon: 'dot', color: 'var(--icon-brand)' })
         + h3('Root cause, metabolic load & safe detox')
-        + p('We identify the real reasons straining the kidney — often several together — and reduce unnecessary “metabolic load” (this does <strong>not</strong> mean starving or weakening the body). Crucially, “detox” here means gently supporting the body’s own systems — not aggressive kadhas, fasting or excess water, which can be dangerous in kidney disease and are avoided.')),
+        + p('We identify the real reasons straining the kidney (often several together) and reduce unnecessary “metabolic load” (this does <strong>not</strong> mean starving or weakening the body). And “detox” here means gently supporting the body’s own systems, not aggressive kadhas, fasting or excess water, which can be dangerous in kidney disease and are avoided.')),
       true)
     + section(
       pillar('N', 'Nutrition & Nephrotoxin Reduction', 'the right nutrition',
-        p('Medicines alone are not enough. The <strong>LDP Protocol™ (Life of Disciplined People)</strong> — Lifestyle, Discipline and People (family support) — turns Ayurveda’s Ahara–Nidra–Brahmacharya into a practical daily routine.')
+        p('Medicines alone are not enough. The <strong>LDP Protocol™ (Life of Disciplined People)</strong>, built on Lifestyle, Discipline and People (family support), turns Ayurveda’s Ahara, Nidra and Brahmacharya into a practical daily routine.')
         + h3('The RiiMS Renal Plate Model')
-        + p('A visual nutrition guide, not a fixed chart: <strong>½ plate vegetables</strong> (mostly low-potassium, lightly cooked) + <strong>¼ plate grains</strong> (controlled) + <strong>¼ plate protein</strong> (moong/masoor dal, small paneer, tofu, egg if suitable). Five principles — fresh, seasonal, local, personalised and mindful eating. The plate changes with your stage, potassium, diabetes, dialysis status and weight.')
+        + p('A visual nutrition guide, not a fixed chart: <strong>½ plate vegetables</strong> (mostly low-potassium, lightly cooked) + <strong>¼ plate grains</strong> (controlled) + <strong>¼ plate protein</strong> (moong/masoor dal, small paneer, tofu, egg if suitable). Five principles: fresh, seasonal, local, personalised and mindful eating. The plate changes with your stage, potassium, diabetes, dialysis status and weight.')
         + h3('Nephrotoxins to avoid')
         + p('“Natural” does not always mean “safe.” Be careful of:')
         + infoList(nephrotoxins, { icon: 'dot', color: 'var(--icon-brand)' })
-        + h3('Panchakarma Support Framework — supervised only')
-        + p('Supportive therapies chosen per patient, offered alongside medical care and carried out only under a qualified Ayurveda physician’s supervision — never a “miraculous cure,” with special caution for dialysis patients:')
+        + h3('Panchakarma Support Framework: supervised only')
+        + p('Supportive therapies chosen per patient, offered alongside medical care and carried out only under a qualified Ayurveda physician’s supervision, never a “miraculous cure,” and with special caution for dialysis patients:')
         + infoList(therapies, { icon: 'dot', color: 'var(--icon-brand)' })))
     + section(
       pillar('A', 'Ayurveda-led Activation & Adaptive Care', 'the right lifestyle',
-        p('Once diagnosis and nutrition are in place, this pillar gently helps the body become active again — safely and under medical guidance. The care plan is <strong>adaptive</strong>: it is not fixed, and changes with your reports, stage, strength, age, dialysis status, sleep and mental state.')
+        p('Once diagnosis and nutrition are in place, this pillar gently helps the body become active again, safely and under medical guidance. The care plan is <strong>adaptive</strong>: it is not fixed, and changes with your reports, stage, strength, age, dialysis status, sleep and mental state.')
         + infoList(activation, { icon: 'dot', color: 'var(--icon-brand)' })),
       true)
     + section(
@@ -877,7 +877,7 @@ export function protocolPage(base) {
       true)
     + section(
       card(
-        `<p style="margin:0;color:var(--text-body)"><strong>Important:</strong> The DNA Kayakalp Protocol™ is an integrative, doctor-guided approach that combines modern medical science with Ayurvedic principles. It is intended to support — and always work alongside — your ongoing medical treatment, and is never a substitute for the advice, medicines or dialysis prescribed by your treating doctors. Ayurvedic therapies, Panchakarma and herbal support are supportive measures only, provided per patient and under qualified supervision. This protocol does not cure kidney disease, reverse damage or guarantee any outcome. Always consult your nephrologist and qualified RIIMS practitioners before making any decision about your care.</p>`,
+        `<p style="margin:0;color:var(--text-body)"><strong>Important:</strong> The DNA Kayakalp Protocol™ is an integrative, doctor-guided approach that combines modern medical science with Ayurvedic principles. It is intended to support, and always work alongside, your ongoing medical treatment, and is never a substitute for the advice, medicines or dialysis prescribed by your treating doctors. Ayurvedic therapies, Panchakarma and herbal support are supportive measures only, provided per patient and under qualified supervision. This protocol does not cure kidney disease, reverse damage or guarantee any outcome. Always consult your nephrologist and qualified RIIMS practitioners before making any decision about your care.</p>`,
         { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } }))
     + S.ctaBand();
 }
@@ -890,7 +890,7 @@ export function guidesHubPage(base) {
     + `<h3 style="font-size:var(--fs-lg);margin:.1rem 0 0;font-family:var(--font-display)">The DNA Kayakalp Protocol™</h3>`
     + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">How RIIMS integrates modern medicine and Ayurveda into one honest, doctor-led care plan.</p>`
     + `<span style="margin-top:.2rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-link);font-weight:700;font-family:var(--font-sans);font-size:var(--fs-sm)">Explore the protocol ${icon('arrow-right', { size: 15 })}</span></a>`;
-  return pageHero(base, { crumb: 'Patient Guides', icon: 'book-open', title: 'Patient Guides: Understand and Care for Your Kidneys', intro: 'Plain-language kidney guides from our clinical team, grounded in founder Dr. Abhishek Gupta’s book Kidney Kavach. They help you understand your reports and support your care at home — always alongside, never instead of, your doctor’s advice.' })
+  return pageHero(base, { crumb: 'Patient Guides', icon: 'book-open', title: 'Patient Guides: Understand and Care for Your Kidneys', intro: 'Plain-language kidney guides from our clinical team, grounded in founder Dr. Abhishek Gupta’s book Kidney Kavach. They help you understand your reports and support your care at home, always alongside your doctor’s advice and never instead of it.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container">`
     + `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-4)">${cards}</div>`
     + `</div></section>`
@@ -913,7 +913,7 @@ export function guidePage(base, key) {
     + (faqHtml ? `<h2 style="font-size:var(--fs-2xl);margin:var(--space-8) 0 .6rem">Frequently asked questions</h2>` + faqHtml : '')
     + card(
       `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Talk to a kidney care expert</h3>`
-      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your reports for doctor-guided, evidence-aware guidance — no false promises.</p>`
+      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your reports for doctor-guided, evidence-aware guidance without false promises.</p>`
       + `<div style="display:flex;flex-wrap:wrap;gap:.6rem">`
       + button('Book Consultation', { variant: 'primary', iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
       + button('WhatsApp Now', { variant: 'whatsapp', iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
@@ -928,7 +928,7 @@ export function guidePage(base, key) {
 
 /* ---------- 404 (served with absolute /base so it works at any depth) ---------- */
 export function notFoundPage(base) {
-  return pageHero(base, { crumb: 'Page not found', icon: 'compass', title: 'Page not found (404)', intro: 'The page you were looking for could not be found. It may have moved. Try one of these instead — or reach our care team directly.' })
+  return pageHero(base, { crumb: 'Page not found', icon: 'compass', title: 'Page not found (404)', intro: 'The page you were looking for could not be found. It may have moved. Try one of these instead, or reach our care team directly.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)"><div class="riims-container" style="max-width:820px">`
     + `<div style="display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:var(--space-8)">`
     + button('Go to homepage', { variant: 'primary', href: `${base}index.html`, iconLeft: icon('home', { size: 18 }) })

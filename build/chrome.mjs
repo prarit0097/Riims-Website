@@ -127,7 +127,7 @@ export function footer(base) {
     + `<div class="riims-container" style="padding-block:var(--space-12)">`
     + `<div class="footer-grid" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:var(--space-8)">`
     + `<div>${logo(base, { light: true })}`
-    + `<p style="margin:1rem 0 1.2rem;font-size:var(--fs-sm);max-width:34ch">Rashtriya Institute of Integrated Medical Sciences — ethical, kidney-focused integrated care, patient education and report-based consultation.</p>`
+    + `<p style="margin:1rem 0 1.2rem;font-size:var(--fs-sm);max-width:34ch">Rashtriya Institute of Integrated Medical Sciences: ethical, kidney-focused integrated care, patient education and report-based consultation.</p>`
     + social + `</div>` + colHtml + `</div>`
     + `<div style="margin-top:var(--space-10)">${disclaimerDark()}</div>`
     + `<div style="margin-top:var(--space-8);padding-top:var(--space-6);border-top:1px solid rgba(255,255,255,.12);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-size:var(--fs-sm)">`

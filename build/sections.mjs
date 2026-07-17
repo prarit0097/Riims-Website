@@ -139,7 +139,7 @@ export function statsStrip() {
 export function completeCare() {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-subtle)">`
     + `<div class="riims-container">`
-    + sectionHead({ eyebrow: `${icon('layout-grid', { size: 15 })} Complete Care`, title: 'All your kidney care, in one place', intro: 'Integrated, doctor-led services — from first consultation to long-term lifestyle support.' })
+    + sectionHead({ eyebrow: `${icon('layout-grid', { size: 15 })} Complete Care`, title: 'All your kidney care, in one place', intro: 'Integrated, doctor-led services: from first consultation to long-term lifestyle support.' })
     + `<div class="services-grid" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-4)">`
     + SERVICES.map((sv, i) =>
       `<div class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
@@ -167,7 +167,7 @@ export function whyRiims() {
 export function howItWorks() {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-cream)">`
     + `<div class="riims-container">`
-    + sectionHead({ eyebrow: `${icon('route', { size: 15 })} How consultation works`, title: 'Four simple, transparent steps', intro: 'From first message to a follow-up plan — you always know what happens next.' })
+    + sectionHead({ eyebrow: `${icon('route', { size: 15 })} How consultation works`, title: 'Four simple, transparent steps', intro: 'From first message to a follow-up plan, you always know what happens next.' })
     + `<div class="grid-4" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:var(--space-5);position:relative">`
     + STEPS.map((s) =>
       `<div style="background:var(--surface-card);border:1px solid var(--cream-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`

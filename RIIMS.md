@@ -1398,6 +1398,31 @@ Verification: `npm test` → 0 problems, 85 pages (unchanged — this task adds 
 pages). All 4 category hub links resolve from `services.html` and sitewide from the footer.
 No `cure`/`guaranteed`/`reverse`/`permanent` language introduced in the new copy.
 
+## 26b. Sitewide humanization pass (2026-07-17)
+
+A 10-agent sweep removed AI-writing tells (Wikipedia "Signs of AI writing" criteria) from every
+prose surface: the 4 condition registries (`data.mjs`), SPECIALISTS + page copy (`pages.mjs`),
+LANDING (`landing.mjs`), the 7 guides (`guides/*.md` + `guides.mjs`), all 9 blog bodies + FAQs +
+about/why/steps/cta (`content.json`), and the small UI copy (`sections.mjs`/`chrome.mjs`).
+~300 prose em-dashes went, plus "journey/Crucially/It is important to note"-class vocabulary,
+-ing tails and negative parallelisms. Untouched by design: numbers/ranges/citations, `redFlags`,
+`sources`, disclaimers, compliance negations (negation stays in the same sentence as the claim),
+kidney `intro`s (feed ranking meta descriptions — byte-identical), all titles/canonicals, the
+home sr-only h1, refs-list "Source — Title" separators (bibliographic style, not prose).
+
+Verified after the pass: npm test 0 (91 pages); ALL titles + canonicals byte-identical to the
+pre-pass snapshot; kidney + home meta descriptions byte-identical (a bulk regex briefly rewrote
+13 kidney intros mid-pass; caught by the ranking-fields diff and restored from git HEAD);
+12 other pages' descs changed deliberately (intro/excerpt smoothing, all ≤155); zero number
+drift across every diff hunk; compliance scan clean on all six content sets; external links
+76/76 alive; live render sweep 30 templates clean; rendered AI-vocab scan: only literal uses
+("saves the journey" = the road trip, "Elevate your feet" = raise your feet).
+
+Known, pre-existing, deliberately not "fixed": condition-page FAQPage schema paraphrases the
+page (its third answer joins `approach[]` with ". "), so schema text is not a verbatim substring
+of the page. That predates this pass (156 such entries before, same pattern after) and fixing it
+means rebuilding schema on ranking pages — a separate decision, not a humanization regression.
+
 ## 27. Delhi-NCR landing pages (the "where do I get treated" silo)
 
 Six pages added 2026-07-17 from the owner's brief (`Need to create few new pages - RIIMS.docx`),

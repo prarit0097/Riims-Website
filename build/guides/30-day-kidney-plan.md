@@ -1,4 +1,4 @@
-Across more than fifteen years of caring for thousands of kidney patients, Dr. Abhishek Gupta and his team noticed something clear: the patients who did best were rarely the "luckiest" ones. They were the ones who quietly kept good habits going. As the book puts it, healthy habits form slowly, but their effect stays with you for a long time. This 30-day plan turns that lesson into a routine you can actually follow. None of it replaces your treatment — it supports it. Keep taking your medicines exactly as prescribed and keep every follow-up with your own doctor.
+Across more than fifteen years of caring for thousands of kidney patients, Dr. Abhishek Gupta and his team noticed something clear: the patients who did best were rarely the "luckiest" ones. They were the ones who quietly kept good habits going. As the book puts it, healthy habits form slowly, but their effect stays with you for a long time. This 30-day plan turns that lesson into a routine you can actually follow. None of it replaces your treatment; it supports it. Keep taking your medicines exactly as prescribed and keep every follow-up with your own doctor.
 
 ## Daily habits
 
@@ -55,7 +55,7 @@ Every patient's disease, reports and treatment are different, yet the people who
 - They kept an active lifestyle, walking daily within their capacity
 - They treated good sleep as an important part of care
 - They worked on controlling stress through family, prayer, meditation and positive thinking
-- They kept patience and understood that kidney care can be a long journey
+- They kept patience and understood that kidney care can be a long road
 - They did not change their treatment on their own based on social media or a friend's advice
 - They held on to a positive outlook and stayed actively involved in their own care
 

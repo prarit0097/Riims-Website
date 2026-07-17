@@ -1,4 +1,4 @@
-Myths spread faster than facts. In our years of clinical experience, we have seen the same misunderstandings return again and again — and often they do more harm than the disease itself, because they delay a simple test or a timely follow-up. Correct information is the first step to a correct decision. Below are the myths we hear most, the honest facts behind them, the mistakes worth avoiding, and the short list of numbers every kidney patient should know. None of this replaces your doctor — it helps you talk to your doctor better.
+Myths spread faster than facts. In our years of clinical experience, we have seen the same misunderstandings return again and again, and often they do more harm than the disease itself, because they delay a simple test or a timely follow-up. Correct information is the first step to a correct decision. Below are the myths we hear most, the honest facts behind them, the mistakes worth avoiding, and the short list of numbers every kidney patient should know. None of this replaces your doctor; it helps you talk to your doctor better.
 
 ## Myths vs Facts
 
@@ -28,7 +28,7 @@ Myths spread faster than facts. In our years of clinical experience, we have see
 - **Fact:** The treatment plan is different for every patient. A transplant is one option, and that decision depends on many medical factors decided with your doctor.
 
 - **Myth:** Just taking medicine will fix everything.
-- **Fact:** Diet, lifestyle, regular testing, mental balance and medical discipline are all important parts of treatment — medicine is only one part.
+- **Fact:** Diet, lifestyle, regular testing, mental balance and medical discipline are all important parts of treatment; medicine is only one part.
 
 - **Myth:** I can stop my medicines on my own once I feel better.
 - **Fact:** Stopping or changing any medicine without medical advice is not safe. Feeling better does not always mean the problem has resolved.
@@ -42,13 +42,13 @@ Myths spread faster than facts. In our years of clinical experience, we have see
 - **Fact:** The right amount of water depends on your condition and your doctor's advice. For some patients, too much can be harmful.
 
 - **Myth:** A kidney patient must not eat protein at all.
-- **Fact:** Protein is not banned — the amount is set according to your CKD stage, dialysis status and nutrition. Cutting it out entirely can weaken you.
+- **Fact:** Protein is not banned; the amount is set according to your CKD stage, dialysis status and nutrition. Cutting it out entirely can weaken you.
 
 - **Myth:** Exercise puts strain on the kidneys.
 - **Fact:** Regular, safe physical activity done on medical advice is beneficial for most patients. What matters is doing the right amount.
 
 - **Myth:** Sleep has nothing to do with kidney disease.
-- **Fact:** Good sleep supports the body's recovery, hormone balance and overall health — all of which help your treatment.
+- **Fact:** Good sleep supports the body's recovery, hormone balance and overall health, all of which help your treatment.
 
 - **Myth:** Stress is only a mental issue and has no link to the kidneys.
 - **Fact:** Long-term stress can affect how well you follow treatment, your blood pressure and your quality of life.
@@ -68,7 +68,7 @@ Myths spread faster than facts. In our years of clinical experience, we have see
 - **Fact:** Information online is general. Treatment always has to be individual, based on your own reports and doctor.
 
 - **Myth:** One single system of medicine is enough for every patient.
-- **Fact:** The right approach is chosen according to your stage, your needs and qualified medical advice — not a one-size-fits-all rule.
+- **Fact:** The right approach is chosen according to your stage, your needs and qualified medical advice, not a one-size-fits-all rule.
 
 ### Mindset myths
 
@@ -79,7 +79,7 @@ Myths spread faster than facts. In our years of clinical experience, we have see
 - **Fact:** With correct treatment, regular monitoring and a disciplined lifestyle, many patients go on to live better lives.
 
 - **Myth:** There is no need to tell my family about the disease.
-- **Fact:** Family support plays an important role in treatment and in improving daily lifestyle. Sharing helps — it does not weaken you.
+- **Fact:** Family support plays an important role in treatment and in improving daily lifestyle. Sharing helps; it does not weaken you.
 
 - **Myth:** It is fine to constantly compare myself with other patients.
 - **Fact:** Every patient's disease, cause, reports and treatment are different. Comparison usually brings needless fear, not clarity.
@@ -116,7 +116,7 @@ From years of clinical experience, avoiding these mistakes is as important as th
 
 Knowing your own numbers reduces fear and helps you make better decisions with your doctor. Try to know and track:
 
-- Your creatinine and eGFR — read together, not in isolation.
+- Your creatinine and eGFR: read together, not in isolation.
 - Your urine protein result.
 - Your blood pressure and blood sugar, and whether they are in your target range.
 - Key values like potassium and haemoglobin (Hb), as advised.
@@ -124,4 +124,4 @@ Knowing your own numbers reduces fear and helps you make better decisions with y
 - Which medicines to take carefully, and which symptoms need urgent attention.
 - When your next follow-up is due.
 
-And beyond the numbers: keep all your reports safely in order, attend every follow-up, and let your family support you — their support is one of the biggest strengths in your treatment journey.
+And beyond the numbers: keep all your reports safely in order, attend every follow-up, and let your family support you; their support is one of the biggest strengths you have as you manage your treatment.
