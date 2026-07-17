@@ -716,6 +716,29 @@ Node endpoint); Call/WhatsApp are plain `tel:`/`wa.me` links that never touch th
 system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apache-riimshospitals.conf`
 + `site/.htaccess`). Any static host (Netlify/Vercel/GitHub Pages) also works.
 
+### 18.7b Semrush audit (2026-07-17) — what was fixed and what was deliberately not
+
+An external Semrush Site Audit (health 96%, top-10% benchmark 92%) prompted these changes:
+- **`medicalSpecialty` was invalid markup on every page** — schema.org defines
+  MedicalSpecialty as a *closed enumeration* and we were sending free text. Now enum values:
+  clinic = `Renal, PrimaryCare, Gastroenterologic, Cardiovascular, Endocrine`; doctors via
+  `specialtyOf()` → `Renal`/`DietNutrition`/`PrimaryCare`, and **AYUSH doctors get no
+  `medicalSpecialty` at all** (no Ayurveda enum exists; omitting is honest and valid).
+- **`/llms.txt`** now generated every build from the `pages` array (AI-search convention;
+  Semrush flagged its absence). Curated markdown map, ~81 links, auto-includes new pages.
+- **Legacy GoDaddy-shop URLs** still requested by crawlers (`/shop`, `/ols/*`,
+  `/privacy-policy`, `/terms-and-conditions`) now 301 to real pages in the nginx config
+  (needs the §18.4 re-apply to go live).
+- **Backlink profile is the real problem Semrush surfaced**: Authority Score 2, 17 backlinks
+  almost all from PBN/Fiverr-promo link farms ("Dangerous — direct link farms"). Disavow
+  starter file: `docs/disavow-riimshospitals.txt` — export the full referring-domain list from
+  Semrush, complete the file, upload at https://search.google.com/search-console/disavow-links.
+  **Nobody should ever buy links for this site.**
+- **Deliberately NOT done:** "Low text-to-HTML ratio" (49 pages) — an artifact of the inline-style
+  design system; Google does not use that ratio and a rewrite risks the ranking pages for zero
+  gain. "Unminified JS/CSS" — gzip already compresses 8×; a hand-rolled minifier risks breaking
+  the site to save ~3-4KB per asset. Revisit only with a real build-tool decision.
+
 ### 18.8 Post-launch SEO actions (off-site; not in code)
 
 1. **Google Search Console** → verify `riimshospitals.com` → submit `https://riimshospitals.com/sitemap.xml`.

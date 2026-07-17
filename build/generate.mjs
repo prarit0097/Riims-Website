@@ -102,7 +102,11 @@ function clinicGraph() {
     logo: `${SITE.origin}/assets/riims-logo.png`,
     image: `${SITE.origin}/assets/riims-logo.png`,
     telephone: SITE.phoneTel,
-    medicalSpecialty: ['Nephrology', 'Internal Medicine', 'Hepatology', 'Cardiology', 'Endocrinology'],
+    /* schema.org MedicalSpecialty is a CLOSED enumeration — free text here is invalid
+       markup (Semrush flagged it on every page). The enum's names for our fields:
+       kidney = Renal, heart = Cardiovascular, hormones = Endocrine, liver falls under
+       Gastroenterologic, and general practice = PrimaryCare. */
+    medicalSpecialty: ['Renal', 'PrimaryCare', 'Gastroenterologic', 'Cardiovascular', 'Endocrine'],
     priceRange: '₹₹',
     areaServed: SITE.serviceCities.map((c) => ({ '@type': 'City', name: c })),
     geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
@@ -144,24 +148,27 @@ function websiteGraph() {
    B.A.M.S. Ayurveda lead was a nephrologist — in India that misrepresents a
    qualification, and it is the exact claim the rest of this site refuses to make
    (see the rule above SPECIALISTS in build/pages.mjs). */
+/* Values must come from schema.org's MedicalSpecialty enumeration (kidney = Renal,
+   diet = DietNutrition, general = PrimaryCare). Ayurveda has NO enum value — for an
+   AYUSH doctor we omit medicalSpecialty entirely rather than force a wrong one; the
+   description still carries the real qualification. Free text here is invalid markup. */
 const SPECIALTY_BY_QUAL = [
-  [/\bDM\b|nephro/i, 'Nephrology'],
-  [/B\.?A\.?M\.?S|ayurved/i, 'Ayurvedic Medicine'],
-  [/nutrition|dietit/i, 'Dietetics'],
-  [/\bMD\b|\bMBBS\b|physician|medicine/i, 'Internal Medicine'],
+  [/\bDM\b|nephro/i, 'Renal'],
+  [/nutrition|dietit/i, 'DietNutrition'],
+  [/\bMD\b|\bMBBS\b|physician|medicine/i, 'PrimaryCare'],
 ];
 function specialtyOf(d) {
   const hay = `${d.quals || ''} ${d.title || ''}`;
   // Ayurveda wins over a bare "Medicine" match so a BAMS is never labelled allopathic.
-  if (/B\.?A\.?M\.?S|ayurved/i.test(hay)) return 'Ayurvedic Medicine';
+  if (/B\.?A\.?M\.?S|ayurved/i.test(hay)) return null;
   const hit = SPECIALTY_BY_QUAL.find(([re]) => re.test(hay));
-  return hit ? hit[1] : 'Internal Medicine';
+  return hit ? hit[1] : null;
 }
 function physiciansGraph() {
   return DOCTORS_FULL.map((d) => ({
     '@type': 'Physician',
     name: String(d.name || '').trim(),
-    medicalSpecialty: specialtyOf(d),
+    ...(specialtyOf(d) ? { medicalSpecialty: specialtyOf(d) } : {}),
     worksFor: { '@id': `${SITE.origin}/#clinic` },
     ...(d.quals ? { description: String(d.quals).trim() } : {}),
     ...(d.reg ? { identifier: { '@type': 'PropertyValue', name: 'Medical registration number', value: String(d.reg).trim() } } : {}),
@@ -672,5 +679,24 @@ writeFileSync(join(OUT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, 'utf8');
 writeFileSync(join(OUT, 'robots.txt'),
   `User-agent: *\nAllow: /\n\nSitemap: ${SITE.origin}/sitemap.xml\n`, 'utf8');
+
+/* llms.txt — the emerging convention AI crawlers (and Semrush's AI-search audit)
+   look for: a curated markdown map of the site. Built from the same `pages` array,
+   so it can never list a page that doesn't exist. */
+const LLMS_GROUPS = [
+  ['Start here', (p) => ['/', '/about.html', '/services.html', '/doctors.html', '/contact.html', '/dna-kayakalp-protocol.html'].includes(p.path)],
+  ['Kidney conditions', (p) => /^\/conditions\/[a-z0-9-]+\.html$/.test(p.path) && p.path !== '/conditions/index.html'],
+  ['Liver, heart & metabolic conditions', (p) => /^\/conditions\/(liver|heart|general)\//.test(p.path)],
+  ['Doctors & specialist care', (p) => p.path.startsWith('/doctors/')],
+  ['Patient guides', (p) => GUIDE_ORDER.some((k) => p.path === `/${k}.html`)],
+  ['Blog', (p) => p.path.startsWith('/blog/')],
+];
+let llms = `# RIIMS — Rashtriya Institute of Integrated Medical Sciences\n\n> Integrated, doctor-led kidney care in Baraut (Delhi-NCR region), India: high creatinine, CKD, kidney failure and dialysis guidance, plus liver, heart and metabolic care, with Ayurveda-supported lifestyle care alongside medical treatment — never instead of it. RIIMS never promises cure or that dialysis can be avoided.\n\nOpen 24 hours · ${SITE.phone} · ${SITE.addressLine}, Baraut, Uttar Pradesh 250611\n\n`;
+for (const [label, match] of LLMS_GROUPS) {
+  const rows = pages.filter((p) => !p.noindex && match(p));
+  if (!rows.length) continue;
+  llms += `## ${label}\n\n` + rows.map((p) => `- [${p.title.replace(/ *\|.*$/, '').replace(/ — Symptoms.*$/, '')}](${SITE.origin}${p.path}): ${clampDesc(p.desc)}`).join('\n') + '\n\n';
+}
+writeFileSync(join(OUT, 'llms.txt'), llms, 'utf8');
 
 console.log(`Generated ${pages.length} pages + sitemap.xml + robots.txt into /site`);

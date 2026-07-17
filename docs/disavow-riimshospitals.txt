@@ -1,0 +1,25 @@
+# Disavow file for riimshospitals.com — upload to Google's Disavow Tool:
+# https://search.google.com/search-console/disavow-links
+#
+# Why: Semrush (2026-07-17) shows 17 backlinks, almost all from PBN/link-farm
+# domains with anchors that literally advertise backlink-selling services
+# ("High Quality Dofollow Backlinks DA 50 PA 40 Premium PBN...") or carry
+# fabricated testimonials name-dropping riimshospitals.com. Semrush's network
+# graph labels the profile "Dangerous — direct link farms". Nobody at RIIMS
+# should ever BUY links; if any were bought, stop immediately — on a YMYL
+# medical site a paid-link penalty is existential.
+#
+# These are the farm domains visible in the Semrush report. Before uploading,
+# export the FULL referring-domains list from Semrush (Backlink Analytics →
+# Referring Domains → Export) and add any further farm domains to this list —
+# 13 referring domains existed at audit time, 8 were identifiable on screen.
+# Keep legitimate domains (e.g. godaddy.com, genuine directories) OUT of it.
+
+domain:seo-backlink.agency
+domain:portailorange.net
+domain:8coint.com
+domain:fiverr-seo-for-small-businesses.site
+domain:fiverr-seo-for-business-growth.site
+domain:fiverr-quality-seo-at-affordable-rates.site
+domain:fiverr-cost-effective-seo.site
+domain:fiverr-affordable-seo-services.site
