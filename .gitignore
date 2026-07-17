@@ -13,6 +13,9 @@ RIIMS Design System-handoff.zip
 # Source book (large PDF; content is integrated into the site, book kept local only)
 kidney kavach book-1.pdf
 *.pdf
+# Owner briefs dropped in the repo root (inputs, not project source — the decisions
+# they lead to get written into RIIMS.md instead)
+*.docx
 
 # Source images for the home hero + banners (large originals; compressed copies
 # ship in site/assets/ as banner-*.webp — re-run: node build/optimize-images.mjs)

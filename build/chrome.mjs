@@ -103,8 +103,10 @@ export function footer(base) {
   });
   const cols = [
     { h: 'Conditions', links: [['High Creatinine', 'conditions/high-creatinine.html'], ['CKD', 'conditions/ckd.html'], ['Kidney Failure', 'conditions/kidney-failure.html'], ['Dialysis Guidance', 'conditions/dialysis.html'], ['Protein in Urine', 'conditions/proteinuria.html'], ['Kidney Swelling', 'conditions/kidney-swelling-treatment.html'], ['Kidney Stone Treatment', 'conditions/kidney-stone-treatment.html'], ...categoryLinks] },
-    { h: 'Care', links: [['DNA Kayakalp Protocol', 'dna-kayakalp-protocol.html'], ['Patient Guides', 'guides.html'], ['Understand Your Reports', 'understand-kidney-reports.html'], ['Kidney Diet & Renal Plate', 'kidney-diet-renal-plate.html'], ['Treatments & Services', 'services.html']] },
-    { h: 'Institute', links: [['About RIIMS', 'about.html'], ['Our Doctors', 'doctors.html'], ['Kidney Doctor (Delhi-NCR)', 'doctors/best-kidney-doctor-delhi-ncr.html'], ['High Creatinine Specialist', 'doctors/high-creatinine-specialist.html'], ['Blog', 'blog.html'], ['Contact', 'contact.html']] },
+    // The Delhi-NCR landing pages live only here in the sitewide nav — without a link
+    // in from somewhere, a page is an orphan and Google has little reason to rank it.
+    { h: 'Care', links: [['DNA Kayakalp Protocol', 'dna-kayakalp-protocol.html'], ['Patient Guides', 'guides.html'], ['Understand Your Reports', 'understand-kidney-reports.html'], ['Kidney Diet & Renal Plate', 'kidney-diet-renal-plate.html'], ['Treatments & Services', 'services.html'], ['Affordable Kidney Treatment', 'affordable-kidney-treatment-delhi-ncr.html']] },
+    { h: 'Institute', links: [['About RIIMS', 'about.html'], ['Our Doctors', 'doctors.html'], ['Kidney Doctor (Delhi-NCR)', 'doctors/best-kidney-doctor-delhi-ncr.html'], ['High Creatinine Specialist', 'doctors/high-creatinine-specialist.html'], ['CKD Hospital (Delhi-NCR)', 'chronic-kidney-disease-hospital-delhi-ncr.html'], ['Kidney Failure Hospital (Delhi-NCR)', 'best-kidney-failure-hospital-in-delhi-ncr.html'], ['Blog', 'blog.html'], ['Contact', 'contact.html']] },
   ];
   const colHtml = cols.map((c) =>
     `<div><h4 style="font-family:var(--font-sans);font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin:0 0 .9rem">${c.h}</h4>`

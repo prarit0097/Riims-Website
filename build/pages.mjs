@@ -9,6 +9,7 @@ import {
   ABOUT_ADMIN, LEGAL_ADMIN, CATEGORIES, CONDITION_SETS,
 } from './data.mjs';
 import { GUIDES, GUIDE_ORDER, CONDITION_GUIDES } from './guides.mjs';
+import { LANDING } from './landing.mjs';
 
 /* A disease-category card (Treatments page — one per CATEGORIES entry). Kidney
    links to its existing flat hub (conditions/index.html); the others to their
@@ -220,6 +221,22 @@ export const SPECIALIST_DOCTOR = {
 };
 
 export const SPECIALISTS = {
+  'kidney-specialist-delhi-ncr': {
+    icon: 'clipboard-list', h1: 'Kidney Specialist in Delhi NCR & Baraut',
+    metaTitle: 'Kidney Specialist in Delhi NCR — Dr. Abhishek Gupta | RIIMS',
+    crumb: 'Doctors · Kidney Specialist (Delhi NCR)',
+    intro: 'Coming to a kidney specialist from Delhi NCR? This is what a consultation at RIIMS Baraut involves, from the reports you bring to the follow-up plan.',
+    lead: 'Most people arrive with a folder of reports and one question: how bad is it? The consultation starts by reading that folder properly. Dr. Abhishek Gupta (B.A.M.S., Ayurvedacharya) reads creatinine alongside eGFR, urine protein, potassium, haemoglobin and your ultrasound, and against your older reports, because the direction a number is moving tells you more than the number itself. Then he looks for what is straining the kidney: diabetes, blood pressure, a medicine you are taking, an infection or an obstruction. You leave knowing what your reports mean in plain language, what your plan is, and what is not being promised, because RIIMS coordinates with nephrologists for medical and dialysis decisions and never replaces them.',
+    helps: [
+      'Report-based Kidney Mapping across 7 domains, instead of a verdict from one creatinine value',
+      'Your older reports read as a trend, so a single bad reading is not mistaken for a diagnosis',
+      'A full medicine review, including painkillers, protein powders and herbal products bought without a prescription',
+      'Your RiiMS Renal Plate worked out for your stage, your potassium and the food your family actually cooks',
+      'A written follow-up schedule, and a nephrologist referral when your reports call for one',
+    ],
+    when: 'Bring your last two or three creatinine and eGFR reports, a recent urine routine, your ultrasound KUB, and every medicine and supplement you take. Video, phone and in-clinic visits are available at RIIMS in Baraut, reached from Delhi, Ghaziabad, Meerut and Baghpat. A sudden drop in urine, breathlessness or a potassium your lab has flagged should not wait for an appointment: that needs emergency medical care.',
+    related: [['High Creatinine', 'high-creatinine'], ['Protein in Urine', 'proteinuria'], ['Stage 3 CKD', 'stage-3-ckd'], ['Kidney Disease Treatment', 'kidney-disease-treatment']],
+  },
   'best-kidney-doctor-delhi-ncr': {
     icon: 'stethoscope', h1: 'Kidney Doctor in Delhi-NCR & Baraut',
     metaTitle: 'Kidney Doctor in Delhi-NCR & Baraut — Dr. Abhishek Gupta | RIIMS',
@@ -373,11 +390,80 @@ export function specialistPage(base, slug) {
     + S.ctaBand();
 }
 
+/* ---------- Landing pages (SEO: "… hospital / … care in Delhi-NCR") ----------
+   Same furniture as specialistPage, different job: these answer "where do I get
+   treated", not "what is this disease" — the condition pages already do that, and
+   repeating them would just make the two compete in Google. Entries live in the
+   LANDING registry (build/landing.mjs).
+
+   `doctor: false` hides the founder card. That exists for the nephrology page:
+   Dr. Abhishek is an Ayurvedacharya (B.A.M.S.), so putting his face under a
+   "nephrologist" heading would imply a qualification he does not hold — illegal in
+   India and dishonest to a patient. That page speaks for the institution instead. */
+export function landingPage(base, slug) {
+  const L = LANDING[slug];
+  const reviewedLine = `<p style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS kidney-care team · Last updated: ${REVIEW_DATE}</p>`;
+  const related = L.related.map(([l, target]) =>
+    `<li><a href="${base}conditions/${target}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('arrow-right', { size: 15 })} ${l}</a></li>`).join('');
+
+  const bodySections = (L.body || []).map(([h, p]) =>
+    `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">${h}</h2><p style="margin:0;color:var(--text-body)">${p}</p></div>`).join('');
+
+  const faqBlock = (L.faqs || []).length
+    ? `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .9rem">Common questions</h2>`
+      + L.faqs.map(([q, a]) => `<div style="margin-bottom:var(--space-5)"><h3 style="font-size:var(--fs-lg);margin:0 0 .3rem">${q}</h3><p style="margin:0;color:var(--text-body)">${a}</p></div>`).join('')
+      + `</div>`
+    : '';
+
+  const main = `<div style="display:flex;flex-direction:column;gap:var(--space-8)">`
+    + reviewedLine
+    + (L.doctor === false ? '' : doctorFeature(base))
+    + `<div><p style="color:var(--text-body);font-size:var(--fs-lg)">${L.lead}</p></div>`
+    + card(
+      `<h3 style="font-size:var(--fs-xl);margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem">${icon('route', { size: 20, style: 'color:var(--icon-brand)' })} ${L.points.title}</h3>`
+      + infoList(L.points.items),
+      { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } })
+    + bodySections
+    + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">When to get in touch</h2><p style="margin:0;color:var(--text-body)">${L.when}</p></div>`
+    + faqBlock
+    + disclaimer()
+    + `</div>`;
+
+  const aside = `<aside style="position:sticky;top:128px;display:flex;flex-direction:column;gap:var(--space-5)">`
+    + card(
+      `<h3 style="font-size:var(--fs-xl);margin:0 0 .3rem">Talk to the RIIMS team</h3>`
+      + `<p style="margin:0 0 1rem;color:var(--text-muted);font-size:var(--fs-sm)">Share your kidney reports for a doctor-guided opinion — video, phone or in-clinic.</p>`
+      + `<div style="display:flex;flex-direction:column;gap:.6rem">`
+      + button('Book Consultation', { variant: 'primary', fullWidth: true, iconLeft: icon('calendar-check', { size: 18 }), extraAttrs: { 'data-book': true } })
+      + button('WhatsApp Now', { variant: 'whatsapp', fullWidth: true, iconLeft: icon('message-circle', { size: 18 }), href: SITE.whatsapp })
+      + button('Call Now', { variant: 'outline', fullWidth: true, iconLeft: icon('phone', { size: 18 }), href: `tel:${SITE.phoneTel}` })
+      + `</div>`,
+      { accent: true, pad: 'lg', style: { boxShadow: 'var(--shadow-lg)' } })
+    + card(
+      `<h4 style="font-family:var(--font-sans);margin:0 0 .7rem;font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-brand)">Related conditions</h4>`
+      + `<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem">${related}</ul>`,
+      { tone: 'blue', pad: 'lg' })
+    + `</aside>`;
+
+  return pageHero(base, { crumb: L.crumb, icon: L.icon, title: L.h1, intro: L.intro })
+    + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
+    + `<div class="riims-container condition-grid" style="display:grid;grid-template-columns:1.4fr .9fr;gap:var(--space-12);align-items:start">`
+    + main + aside + `</div></section>`
+    + S.ctaBand();
+}
+
 export function doctorsPage(base) {
-  const specialistCards = Object.entries(SPECIALISTS).map(([slug, sp]) =>
+  /* Every /doctors/ page belongs in this grid, whichever registry it came from —
+     a landing page that nothing links to is invisible to Google no matter how good
+     it is. LANDING entries with dir:'doctors' join the SPECIALISTS ones here. */
+  const doctorPages = [
+    ...Object.entries(SPECIALISTS).map(([slug, sp]) => [slug, sp.icon, sp.h1]),
+    ...Object.entries(LANDING).filter(([, L]) => L.dir === 'doctors').map(([slug, L]) => [slug, L.icon, L.h1]),
+  ];
+  const specialistCards = doctorPages.map(([slug, ic, h1]) =>
     `<a href="${base}doctors/${slug}.html" class="riims-card riims-card--hover" style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:var(--space-5);display:flex;flex-direction:column;gap:.4rem;text-decoration:none;color:inherit">`
-    + `<span style="display:inline-flex;width:44px;height:44px;border-radius:var(--radius-md);background:var(--surface-blue-soft);color:var(--icon-brand);align-items:center;justify-content:center">${icon(sp.icon, { size: 20 })}</span>`
-    + `<h3 style="font-size:var(--fs-lg);margin:.2rem 0 0">${sp.h1}</h3>`
+    + `<span style="display:inline-flex;width:44px;height:44px;border-radius:var(--radius-md);background:var(--surface-blue-soft);color:var(--icon-brand);align-items:center;justify-content:center">${icon(ic, { size: 20 })}</span>`
+    + `<h3 style="font-size:var(--fs-lg);margin:.2rem 0 0">${h1}</h3>`
     + `<span style="margin-top:.1rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-link);font-weight:700;font-family:var(--font-sans);font-size:var(--fs-sm)">Learn more ${icon('arrow-right', { size: 15 })}</span></a>`).join('');
 
   return pageHero(base, { crumb: 'Doctors', icon: 'stethoscope', title: 'Our doctors & care team', intro: 'A kidney-focused team led by Dr. Abhishek Gupta, combining integrated kidney care with safe, evidence-aware lifestyle support.' })

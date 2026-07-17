@@ -273,7 +273,9 @@ export const CONDITIONS = {
     symptoms: ['Usually no symptoms — silent for years', 'High or hard-to-control blood pressure', 'Protein or foam in the urine', 'Gradually rising creatinine / falling eGFR', 'Headaches or swelling as it advances', 'Higher risk with diabetes alongside'],
     approach: ['Kidney screening for anyone with hypertension — urine ACR, creatinine and eGFR', 'Coordination with your BP medication and targets — supporting it, never replacing it', 'A lower-salt personalized diet (RiiMS Renal Plate) to protect the kidneys and the heart', 'Regular monitoring so blood pressure and kidney trends are tracked together'],
     when: 'Everyone with high blood pressure should have kidney tests at least yearly. If BP is hard to control, or reports show protein or a rising creatinine, consult early.',
-    related: [['Diabetic kidney disease', 'diabetic-kidney-disease'], ['Protein in urine', 'proteinuria'], ['CKD', 'ckd'], ['High Creatinine', 'high-creatinine']],
+    // First link points at the treatment-intent sibling, so the pair reads as one
+    // topic to Google (explanation ↔ treatment) rather than two rivals for one query.
+    related: [['High BP kidney treatment', 'high-bp-kidney-disease'], ['Protein in urine', 'proteinuria'], ['CKD', 'ckd'], ['High Creatinine', 'high-creatinine']],
   },
   'kidney-stone-treatment': {
     icon: 'circle-dot', title: 'Kidney Stone Treatment', crumb: 'Kidney Diseases · Kidney Stone Treatment',
@@ -304,6 +306,21 @@ export const CONDITIONS = {
     approach: ['Report-based assessment of whether a procedure is truly needed — many stones do not need one', 'Clear explanation of the options (natural passage, ESWL, laser/RIRS) in plain language', 'Coordination and referral to a urologist for laser/RIRS when advised', 'Post-procedure hydration, diet and prevention support to reduce recurrence'],
     when: 'A stone that is large, blocking urine, causing repeated pain, or associated with fever or infection needs prompt evaluation to decide if laser/RIRS is required.',
     related: [['Kidney Stone Treatment', 'kidney-stone-treatment'], ['UTI treatment', 'uti-treatment'], ['High Creatinine', 'high-creatinine'], ['Kidney disease treatment', 'kidney-disease-treatment']],
+  },
+  /* Treatment-intent sibling of hypertensive-kidney-disease. That page explains the
+     disease; this one is about being treated for it month to month. Kept deliberately
+     free of mechanism so the two don't compete for the same query. `metaTitle` opts out
+     of the "— Symptoms & Care" suffix, which fights this page's intent. */
+  'high-bp-kidney-disease': {
+    icon: 'route', title: 'High BP Kidney Treatment in Delhi NCR', crumb: 'Kidney Diseases · High BP Kidney Treatment',
+    metaTitle: 'High BP Kidney Treatment in Delhi NCR | RIIMS Baraut',
+    intro: 'Kidney care for high blood pressure is month-to-month work, not a one-time prescription. Here is what the treatment actually involves at RIIMS.',
+    aboutTitle: 'What does BP kidney treatment actually involve?',
+    about: 'Most of this treatment does not happen in our clinic. It happens at your home, between visits, which is why it helps to know what the months look like before you start. Your blood pressure medicines belong to the doctor who prescribes them. RIIMS does not change a dose or stop a tablet, and neither should you, not even on a day the reading looks fine. What we do is read everything around those medicines. Your BP target is set for you rather than copied off a chart, and people leaking protein in the urine are often given a tighter one. One clinic reading is a weak guide, so we ask for a home diary: same arm, seated, rested, morning and evening, written down. On the report side, creatinine and eGFR, urine ACR and potassium are the ones that repeat, usually every few months while things are steady and sooner after any change of medicine. Creatinine can also nudge up a little when some BP medicines are started or increased. Your doctor expects that and reads it in context. The direction across three or four reports tells us far more than any single value.',
+    symptoms: ['Home readings sitting above the target your doctor set', 'Readings that look normal in the clinic but run high at home', 'Urine ACR climbing across repeat reports, or new foam in the urine', 'Swelling, or a few kilos of fluid weight gained between visits', 'Creatinine or potassium drifting from one report to the next', 'Dizziness on standing after a dose change: tell your doctor, do not self-adjust'],
+    approach: ['Your BP diary read next to your kidney reports, judged together instead of at two separate visits', 'Coordination with the doctor who prescribes your BP medicines. We support that prescription and never ask you to reduce it', 'A repeat-testing schedule you can keep: creatinine, eGFR, urine ACR and potassium at sensible intervals, not a fresh scan every visit', 'Correct home measurement and a simple diary, so the numbers you bring are actually usable', 'A lower-salt version of your own food (RiiMS Renal Plate), built around namkeen, pickle, papad and packaged snacks rather than a new menu', 'Follow-up on the Kidney Alert System, with Ayurveda and lifestyle support alongside your medical treatment and known to your doctor'],
+    when: 'If you have had high blood pressure for years and never had a kidney test, start there. If you are already on treatment and your home readings sit above target, your urine ACR is rising, or swelling is increasing, bring your reports and your diary for a review. RIIMS is in Baraut, within the NCR region, and a phone or video review works well for a diary-and-reports check if travelling is hard. A reading of 180/120 mmHg with chest pain, breathlessness, severe headache, vision change or weakness needs emergency care, not an appointment. So does a potassium your lab has flagged as high, a sudden fall in urine, or breathlessness at rest: high potassium can affect the heart rhythm and usually gives no warning symptoms of its own, which is why some BP medicines come with a potassium test.',
+    related: [['Hypertensive kidney disease', 'hypertensive-kidney-disease'], ['Protein in urine', 'proteinuria'], ['High Creatinine', 'high-creatinine'], ['CKD', 'ckd']],
   },
 };
 

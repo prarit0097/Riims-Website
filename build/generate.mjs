@@ -9,7 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage, categoryHubPage } from './pages.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage, categoryHubPage, landingPage } from './pages.mjs';
+import { LANDING } from './landing.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
 import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS, CATEGORIES, CONDITION_SETS, PAGES_SEO, CONDITION_DEFAULTS } from './data.mjs';
@@ -134,12 +135,31 @@ function websiteGraph() {
 }
 
 /* Physician nodes (doctors page) — one per admin doctor, tied to the clinic.
-   Helps E-E-A-T + doctor rich results. Names/quals come from the admin roster. */
+   Helps E-E-A-T + doctor rich results. Names/quals come from the admin roster.
+
+   medicalSpecialty is derived from the doctor's own qualifications, never assumed.
+   It used to be hardcoded 'Nephrology' for everyone, which told Google that the
+   B.A.M.S. Ayurveda lead was a nephrologist — in India that misrepresents a
+   qualification, and it is the exact claim the rest of this site refuses to make
+   (see the rule above SPECIALISTS in build/pages.mjs). */
+const SPECIALTY_BY_QUAL = [
+  [/\bDM\b|nephro/i, 'Nephrology'],
+  [/B\.?A\.?M\.?S|ayurved/i, 'Ayurvedic Medicine'],
+  [/nutrition|dietit/i, 'Dietetics'],
+  [/\bMD\b|\bMBBS\b|physician|medicine/i, 'Internal Medicine'],
+];
+function specialtyOf(d) {
+  const hay = `${d.quals || ''} ${d.title || ''}`;
+  // Ayurveda wins over a bare "Medicine" match so a BAMS is never labelled allopathic.
+  if (/B\.?A\.?M\.?S|ayurved/i.test(hay)) return 'Ayurvedic Medicine';
+  const hit = SPECIALTY_BY_QUAL.find(([re]) => re.test(hay));
+  return hit ? hit[1] : 'Internal Medicine';
+}
 function physiciansGraph() {
   return DOCTORS_FULL.map((d) => ({
     '@type': 'Physician',
     name: String(d.name || '').trim(),
-    medicalSpecialty: 'Nephrology',
+    medicalSpecialty: specialtyOf(d),
     worksFor: { '@id': `${SITE.origin}/#clinic` },
     ...(d.quals ? { description: String(d.quals).trim() } : {}),
     ...(d.reg ? { identifier: { '@type': 'PropertyValue', name: 'Medical registration number', value: String(d.reg).trim() } } : {}),
@@ -342,7 +362,9 @@ for (const slug of Object.keys(CONDITIONS)) {
   const path = `/conditions/${slug}.html`;
   pages.push({
     out: `conditions/${slug}.html`, base: '../', path, nav: `conditions/${slug}.html`, mobile: '',
-    title: `${c.title} — Symptoms & Care | RIIMS`,
+    // metaTitle opts a page out of the "— Symptoms & Care" suffix — for entries whose
+    // intent is treatment/location rather than explaining the disease.
+    title: c.metaTitle || `${c.title} — Symptoms & Care | RIIMS`,
     desc: `${c.intro} Doctor-led, report-based kidney care at RIIMS, Baraut, UP.`,
     body: conditionPage('../', slug),
     ld: [breadcrumb(c.crumb, `${SITE.origin}${path}`), {
@@ -507,6 +529,37 @@ for (const key of GUIDE_ORDER) {
       ...(g.faqs && g.faqs.length ? [{
         '@type': 'FAQPage',
         mainEntity: g.faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+      }] : []),
+    ],
+  });
+}
+
+/* Landing pages ("… hospital / … care in Delhi-NCR") — see build/landing.mjs.
+   `dir` puts a page at /slug.html or /doctors/slug.html, which sets its base. */
+for (const slug of Object.keys(LANDING)) {
+  const L = LANDING[slug];
+  const dir = L.dir || '';
+  const path = dir ? `/${dir}/${slug}.html` : `/${slug}.html`;
+  const crumbs = [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.origin}/` }];
+  if (dir === 'doctors') crumbs.push({ '@type': 'ListItem', position: 2, name: 'Doctors', item: `${SITE.origin}/doctors.html` });
+  crumbs.push({ '@type': 'ListItem', position: crumbs.length + 1, name: L.h1, item: `${SITE.origin}${path}` });
+  pages.push({
+    out: dir ? `${dir}/${slug}.html` : `${slug}.html`,
+    base: dir ? '../' : '',
+    path, nav: dir === 'doctors' ? 'doctors.html' : '', mobile: '',
+    title: L.metaTitle,
+    desc: L.intro,
+    body: landingPage(dir ? '../' : '', slug),
+    ld: [
+      { '@type': 'BreadcrumbList', itemListElement: crumbs },
+      {
+        '@type': 'MedicalWebPage', name: L.h1, description: L.intro, url: `${SITE.origin}${path}`,
+        inLanguage: 'en-IN', isPartOf: { '@id': `${SITE.origin}/#website` },
+      },
+      // Mirrors the FAQ text rendered on the page — Google requires the two to match.
+      ...((L.faqs || []).length ? [{
+        '@type': 'FAQPage',
+        mainEntity: L.faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
       }] : []),
     ],
   });

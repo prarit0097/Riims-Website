@@ -86,7 +86,8 @@ RiimS/
 │   │                         #   complete care, why, how, doctors, experts, blog cards,
 │   │                         #   testimonials, FAQ, CTA band, contact)
 │   ├── pages.mjs             # full page bodies (home, condition, about, doctors, blog,
-│   │                         #   contact, blog-article, legal)
+│   │                         #   contact, blog-article, legal, landing)
+│   ├── landing.mjs           # LANDING registry — the Delhi-NCR "where do I get treated" pages (§27)
 │   ├── serve.mjs             # zero-dependency local preview server (port 5173)
 │   ├── check.mjs             # integrity tests: links, assets, JSON-LD, <h1>, meta, dead anchors, stale domain
 │   ├── compliance.mjs        # banned medical claims guard — admin refuses any save that hits it (§23)
@@ -510,7 +511,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 - **Count-up stats** — `[data-countup]` animate from 0 when scrolled into view
   (IntersectionObserver; supports decimals, Indian grouping, suffix).
 
-## 14. Page inventory (84 indexable URLs + a 404)
+## 14. Page inventory (90 indexable URLs + a 404)
 
 | URL | Page | Notes |
 |-----|------|-------|
@@ -521,12 +522,13 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 | `/guides.html` | Patient Guides hub | Cards linking the 7 guides + the protocol (nav "Guides") |
 | `/{7 guide slugs}.html` | Patient Guides | how-kidneys-work, understand-kidney-reports, kidney-diet-renal-plate, ayurvedic-kidney-herbs, kidney-myths-facts, everyday-symptom-care, 30-day-kidney-plan — each breadcrumb + MedicalWebPage + FAQPage schema (Kidney Kavach) |
 | `/about.html` | About | story, values, doctors |
-| `/doctors.html` | Doctors | 6 doctors + Specialist-care grid linking the 6 specialist pages |
-| `/doctors/{6 specialist slugs}.html` | Doctor/Specialist SEO pages | best-kidney-doctor-delhi-ncr, high-creatinine-specialist, kidney-failure-specialist, kidney-stone-specialist, uti-specialist, kidney-doctor-for-diabetic-patients — each features Dr. Abhishek Gupta; breadcrumb + MedicalWebPage + Physician schema |
+| `/doctors.html` | Doctors | 6 doctors + Specialist-care grid linking every `/doctors/` page — the 7 SPECIALISTS entries **and** any LANDING entry with `dir:'doctors'` (so a new one is never orphaned) |
+| `/doctors/{7 specialist slugs}.html` | Doctor/Specialist SEO pages | best-kidney-doctor-delhi-ncr, kidney-specialist-delhi-ncr, high-creatinine-specialist, kidney-failure-specialist, kidney-stone-specialist, uti-specialist, kidney-doctor-for-diabetic-patients — each features Dr. Abhishek Gupta; breadcrumb + MedicalWebPage + Physician schema |
+| `/doctors/best-nephrologist-delhi-ncr.html` + 3 root landing pages | Delhi-NCR landing pages (§27) | chronic-kidney-disease-hospital-delhi-ncr, affordable-kidney-treatment-delhi-ncr, best-kidney-failure-hospital-in-delhi-ncr — breadcrumb + MedicalWebPage + FAQPage schema |
 | `/blog.html` | Blog index | filter, featured, 9 cards, newsletter |
 | `/contact.html` | Contact | form, map placeholder, FAQ |
 | `/privacy.html` `/terms.html` `/disclaimer.html` | Legal | real content pages |
-| `/conditions/{15 slugs}.html` | Conditions / SEO landing pages | breadcrumb + MedicalWebPage + per-condition FAQPage JSON-LD. Incl. high-creatinine(+without-dialysis), ckd(+stage-3/4), kidney-failure, kidney-disease-treatment, dialysis, proteinuria, kidney-swelling-treatment, diabetic-/hypertensive-kidney-disease, kidney-stone-/uti-/laser-kidney-stone-treatment. **3 old slugs 301-redirect** to new ones (diabetes-bp→diabetic-kidney-disease, stone-uti→kidney-stone-treatment, swelling→kidney-swelling-treatment) via `deploy/nginx-riims-bootstrap.conf`. |
+| `/conditions/{16 slugs}.html` | Conditions / SEO landing pages | breadcrumb + MedicalWebPage + per-condition FAQPage JSON-LD. Incl. high-creatinine(+without-dialysis), ckd(+stage-3/4), kidney-failure, kidney-disease-treatment, dialysis, proteinuria, kidney-swelling-treatment, diabetic-/hypertensive-kidney-disease, kidney-stone-/uti-/laser-kidney-stone-treatment, high-bp-kidney-disease (§27). **3 old slugs 301-redirect** to new ones (diabetes-bp→diabetic-kidney-disease, stone-uti→kidney-stone-treatment, swelling→kidney-swelling-treatment) via `deploy/nginx-riims-bootstrap.conf`. |
 | `/blog/{9 slugs}.html` | Blog articles | breadcrumb + Article JSON-LD |
 | `/conditions/liver/` | Liver Diseases hub | 12 condition cards via `categoryHubPage` + disclaimer + CTA; breadcrumb + CollectionPage schema (see §26) |
 | `/conditions/liver/{12 slugs}.html` | Liver condition pages | raised-sgpt-sgot, fatty-liver, drug-herb-induced-liver-injury (Task 2); fatty-liver-grade-2, fatty-liver-diet, liver-function-test-report, jaundice, hepatitis-b, hepatitis-c, liver-cirrhosis, alcoholic-liver-disease, liver-abscess (Task 3) — each breadcrumb + MedicalWebPage + FAQPage JSON-LD (see §26). The liver silo is now complete (12/12). |
@@ -743,6 +745,16 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 
 ## 21. Known placeholders / next steps
 
+- 🔴 **The doctor roster is mock, and it publishes fabricated MD/DM credentials. Fix this first.**
+  `data/content.json → doctors` ships six invented people, two of them as **"MD, DM (Nephrology)"**
+  (Dr. A. Sharma, Dr. T. Roy), with no registration numbers. This is live on riimshospitals.com.
+  It is the same misrepresentation the rest of the site carefully refuses to make (§27), except
+  worse, because these doctors do not exist — and it now contradicts
+  `/doctors/best-nephrologist-delhi-ncr.html`, which tells patients plainly that Dr. Abhishek is
+  not a nephrologist. A patient one click apart sees both. Replace the roster with the real
+  in-house doctors and their real Reg. Nos. in **Admin → Doctors**; the schema specialty then
+  derives from each doctor's own quals (§27). Until then, that page's honesty is undermined by
+  the page next to it.
 - **Review what the SEO contractor publishes — this is a standing owner task, not a one-off.**
   The `seo` role can rewrite the title, meta description, H1 and body text of all 47 disease
   pages. `build/compliance.mjs` refuses the obvious illegal claim, but **a denylist cannot catch
@@ -1344,3 +1356,70 @@ touching kidney's SEO anchor (home `<title>`/`<h1>` untouched, kidney's URLs unt
 Verification: `npm test` → 0 problems, 85 pages (unchanged — this task adds links/cards, not
 pages). All 4 category hub links resolve from `services.html` and sitewide from the footer.
 No `cure`/`guaranteed`/`reverse`/`permanent` language introduced in the new copy.
+
+## 27. Delhi-NCR landing pages (the "where do I get treated" silo)
+
+Six pages added 2026-07-17 from the owner's brief (`Need to create few new pages - RIIMS.docx`),
+targeting place/intent keywords. Site went **85 → 91 pages**.
+
+| URL | Registry | Targets |
+|-----|----------|---------|
+| `/doctors/kidney-specialist-delhi-ncr.html` | `SPECIALISTS` (pages.mjs) | "kidney specialist in Delhi NCR" |
+| `/doctors/best-nephrologist-delhi-ncr.html` | `LANDING` (`dir:'doctors'`) | "best nephrologist in Delhi NCR" |
+| `/chronic-kidney-disease-hospital-delhi-ncr.html` | `LANDING` | "CKD hospital in Delhi NCR" |
+| `/conditions/high-bp-kidney-disease.html` | `CONDITIONS` (data.mjs) | "high BP kidney treatment in Delhi NCR" |
+| `/affordable-kidney-treatment-delhi-ncr.html` | `LANDING` | "affordable kidney treatment in Delhi NCR" |
+| `/best-kidney-failure-hospital-in-delhi-ncr.html` | `LANDING` | "best kidney failure hospital in Delhi NCR" |
+
+### The `LANDING` type (`build/landing.mjs` + `landingPage()` in `pages.mjs`)
+Same furniture as `specialistPage()`; different job. `dir` decides `/slug.html` vs
+`/doctors/slug.html`; `points`/`body`/`faqs`/`when`/`related` drive the sections; `faqs` is
+rendered **and** emitted as FAQPage schema (the two must stay identical — Google requires it).
+`doctor: false` suppresses the founder card — used only on the nephrology page, see below.
+Registered by a loop in `generate.mjs`; `classify()` files the root ones as `static` and the
+`/doctors/` one as `specialist`, so all six appear in Admin → Pages / SEO automatically.
+
+### Three decisions worth not re-litigating
+1. **Nobody is called a nephrologist.** The brief asked for "Best Nephrologist in Delhi NCR"
+   featuring Dr. Abhishek. He is **B.A.M.S. (Ayurvedacharya)**; a nephrologist holds MBBS + MD +
+   DM. In India that misrepresentation is illegal, and it is what `pages.mjs:207` already forbade.
+   The owner chose: name no doctor as a nephrologist. So the page targets the keyword while
+   stating plainly that Dr. Abhishek does not hold that qualification and that RIIMS refers to
+   nephrologists. Its FAQ answers "Is Dr. Abhishek Gupta a nephrologist?" with "No." — which is
+   what Google lifts into the rich result. **Claims are about the named individual, never about
+   the institution's staff** (the owner has in-house doctors not yet listed on the site, so
+   "RIIMS has no nephrologist" would be an unverifiable negative).
+2. **No "Best" in any visible `<h1>`/`<title>`** — the keyword stays in the URL slug only,
+   following `best-kidney-doctor-delhi-ncr` (title: "Kidney Doctor in Delhi-NCR & Baraut").
+3. **Geo stays honest.** The brief supplied `geo.placename: Delhi NCR` and ICBM `28.6139,77.2090`
+   — those are Connaught Place coordinates. RIIMS is in **Baraut (29.1066, 77.2637)**. The brief's
+   meta block was not used: the generator emits its own consistent `<head>`, and a second
+   `<meta name="description">` would have been a duplicate. Every page says Baraut plainly; the
+   CKD and affordable pages answer "Is there a Delhi branch?" with "No."
+
+### Cannibalisation guard
+Each landing page has an existing condition page it could have competed with. The split is
+deliberate: **condition pages explain the disease, landing pages answer "where do I get treated"**.
+`/conditions/high-bp-kidney-disease.html` (treatment, month-to-month) and
+`/conditions/hypertensive-kidney-disease.html` (the disease) now link to each other — first entry
+in each `related` — so Google reads them as one topic, not two rivals. If a landing page ever
+starts re-explaining CKD, that split is broken.
+`metaTitle` (new, optional, on a CONDITIONS entry) opts a page out of the auto
+`"— Symptoms & Care | RIIMS"` title suffix, which fights a treatment-intent page.
+
+### Internal linking (they were all orphans on first build)
+A page nothing links to does not rank, whatever its content. Fixed: `doctorsPage()` now lists
+LANDING `dir:'doctors'` entries beside SPECIALISTS; the three root pages sit in the sitewide
+footer (Care + Institute columns); the BP page is linked from its condition sibling.
+
+### `medicalSpecialty` is now derived, not assumed (`generate.mjs`)
+`physiciansGraph()` hardcoded `medicalSpecialty: 'Nephrology'` on **every** doctor — which told
+Google the B.A.M.S. Ayurveda lead was a nephrologist. It is now derived from each doctor's own
+`quals`/`title` (`specialtyOf()`), with Ayurveda winning over a bare "Medicine" match so a BAMS
+is never labelled allopathic.
+
+Verification: `npm test` → 0 problems, 91 pages. Of the 85 pre-existing pages, 62 changed only in
+auto-numbered form-field ids (`fld-name-259` → `-277`; the counter in `input()` shifts when pages
+are added — invisible, no content/title/meta/schema impact) and `doctors.html` gained one link
+card. Reviewed by two QA agents (legal/medical/factual + build/SEO/render); their findings on
+credential wording, dialysis-timing, hyperkalaemia red flags and orphan links are applied above.
