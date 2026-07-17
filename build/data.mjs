@@ -14,8 +14,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONTENT_PATH = join(__dirname, '..', 'data', 'content.json');
 const LOCAL_PATH = join(__dirname, '..', 'data', 'content.local.json');
 
-const baseContent = JSON.parse(readFileSync(CONTENT_PATH, 'utf8'));
-const localContent = existsSync(LOCAL_PATH) ? JSON.parse(readFileSync(LOCAL_PATH, 'utf8')) : {};
+const baseContent = JSON.parse(readFileSync(CONTENT_PATH, 'utf8')); // in git — must fail loudly
+/* The admin panel is the only writer of content.local.json, but it lives on the VPS
+   where a hand-edit is possible. Refusing to parse it would stop EVERY rebuild and
+   freeze the live site, so fall back to the repo content and shout instead. */
+let localContent = {};
+if (existsSync(LOCAL_PATH)) {
+  try { localContent = JSON.parse(readFileSync(LOCAL_PATH, 'utf8')); }
+  catch (err) { console.error(`[data] IGNORING data/content.local.json — invalid JSON (${err.message}). Admin edits are NOT applied until this is fixed.`); }
+}
 
 /* Admin overrides (data/content.local.json) REPLACE the repo section wholesale — so the
    admin panel stays fully authoritative: every edit, addition, deletion and re-order the

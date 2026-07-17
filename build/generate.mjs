@@ -536,10 +536,17 @@ pages.push({
 
 /* ---------- Admin page manifest (data/pages-manifest.json) ----------
    The "Pages / SEO" tab lists pages from this file, so ANY page added later shows
-   up there automatically — nothing to register by hand. Written before overrides
-   are applied, so `title`/`desc`/`h1` here are always the built-in defaults the
-   panel shows as placeholders. Gitignored build artifact; every build rewrites it. */
+   up there automatically — nothing to register by hand. Written before PAGES_SEO is
+   applied, so title/desc/h1 are the defaults the panel shows as placeholders. (A
+   condition's title/desc do reflect conditionEdits, since data.mjs applies those at
+   import — which is what you want in a placeholder; `fields` stays pre-edit so
+   "reset to default" tells the truth.) Gitignored; every build rewrites it. */
 const H1_RE = /<h1\b[^>]*>([\s\S]*?)<\/h1>/;
+/* The h1 is scraped back out of rendered HTML, so it still carries entities. Decode
+   them (exact inverse of esc(), &amp; last) or the admin's H1 box would show the home
+   page as "Delhi-NCR &amp;amp; Baraut" — and copying that placeholder would publish a
+   double-escaped heading. title/desc need no decode: they never went through esc(). */
+const unesc = (s) => String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
 function classify(p) {
   if (p.noindex) return { type: 'system' };
   if (p.path === '/conditions/') return { type: 'hub', cat: 'all' };
@@ -561,7 +568,7 @@ const manifest = pages.map((p) => {
   const entry = {
     path: p.path, out: p.out, ...cls,
     title: p.title, desc: p.desc,
-    h1: (p.body.match(H1_RE) || [])[1] || '',
+    h1: unesc((p.body.match(H1_RE) || [])[1] || ''),
     noindex: !!p.noindex,
   };
   const defaults = cls.type === 'condition' && CONDITION_DEFAULTS[`${cls.cat}/${cls.slug}`];

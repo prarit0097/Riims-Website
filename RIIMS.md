@@ -237,8 +237,9 @@ fields blank). `build/data.mjs` reads/merges both and derives the phone formats.
 The **20 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `site` (numbers + business
 info + social), `tracking`, `stats`, `storyVideo`, `doctors`, `reels`, `testimonials`, `faqs`, `posts`,
 `search`, `cta`, `protocol`, `services`, `why`, `steps`, `about`, `legal`, `banners`, `pagesSeo`,
-`conditionEdits`. Each has a `/admin/` tab (see §23) — the last two are both driven by the **Pages /
-SEO** tab. For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
+`conditionEdits`. Most have their own `/admin/` tab (see §23); the exceptions: `site`/`stats`/`cta`
+share **Settings**, `storyVideo` sits in **Patient Stories**, and `pagesSeo`/`conditionEdits` are both
+driven by **Pages / SEO** — 17 tabs for 20 sections. For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
 `legal`, `search`), an absent/empty value falls back to the default baked into `data.mjs`/`pages.mjs`,
 so the site always renders.
 
@@ -698,7 +699,9 @@ system-nginx vhost (`deploy/nginx-riimshospitals.conf`), and Apache (`deploy/apa
 - **Edit copy that has an admin tab** (doctors, blogs, reels, testimonials, FAQs, services, why, steps,
   about, legal, protocol FAQs, search) → **use `/admin/`** (see §23) — it rebuilds automatically.
   Code defaults live in `build/data.mjs` / `build/pages.mjs`.
-- **Edit code-only copy** (the 15 condition pages `CONDITIONS`, the 6 specialist pages `SPECIALISTS`,
+- **Edit a condition page's title / meta / H1 / text** (any of the 47) → **use `/admin/` →
+  Pages / SEO** (§23). Its `redFlags` + `sources` are locked as safety content — those stay code.
+- **Edit code-only copy** (condition `redFlags`/`sources`, the 6 specialist pages `SPECIALISTS`,
   the 7 guides, `NAV`, footer columns, disclaimers) → `build/data.mjs` / `build/pages.mjs` /
   `build/guides/*` → `npm test` → push.
 - **Add a condition page** → add an entry to `CONDITIONS` (and to `PROBLEMS` for the home grid).
@@ -782,6 +785,13 @@ Pages / SEO — but that is only so the button isn't there to click; the 403 is 
 The seo role never *requests* leads on boot (a 403 inside the boot `Promise.all` would blank
 the panel).
 
+A password change needs **no restart** — `getConfig()` re-reads `admin-config.json` on every
+request. (The container restart in the setup block below is for the `server.mjs` **code**, not
+the password.)
+
+> **Rotating the OWNER password logs the SEO contractor out.** Owner mode mints a fresh session
+> `secret`, which invalidates every signed cookie — both roles. The SEO *credential* survives
+> (see the table), so they just log in again with the same password; nothing is broken.
 > **Token format changed** when this landed (`exp.sig` → `exp.role.sig`). Old cookies are
 > invalid, so everyone logs in once more after deploy. If `seoSalt`/`seoPassHash` are absent,
 > the SEO login simply fails with "Wrong password" — nothing crashes.
@@ -789,7 +799,7 @@ the panel).
 ### What it controls
 | Tab | What you can do |
 |-----|-----------------|
-| **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal) with a find-a-page filter. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the FAQPage/MedicalWebPage JSON-LD), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
+| **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal / System) with a find-a-page filter. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`; hiding a page asks for confirmation first). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the MedicalWebPage JSON-LD; `aboutTitle`/`about`/`when`/`approach` feed the FAQPage schema), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
 | **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
@@ -811,17 +821,36 @@ the panel).
   empty blog `body`/`faqs`/`refs` is filled from the repo post (see §8), then the server **auto-runs the
   generator** — the
   static site updates within seconds. Git pulls never clobber admin edits.
-- **Compliance guard (`build/compliance.mjs`).** Every content save except `tracking` (raw
-  meta tags) is scanned by `checkPayload()`; a hit is refused with **400** naming the phrase
-  and the field, and the panel shows it in a red toast. Blocks "100% cure", "guaranteed
-  cure/recovery", "permanent cure", "stop dialysis", "reverse kidney/liver failure",
-  "miracle cure", "पक्का इलाज", "गारंटी से इलाज". It deliberately does **not** fire on honest
-  copy that names a false claim to deny it ("No *100% cure* or *stop dialysis* promises,
-  ever."), on quoted mentions, or inside a question ("Can Ayurvedic herbs cure kidney
-  disease?" — an FAQ heading the site answers with "No.") — a match is exempt when negated
-  within the preceding 90 chars, quoted, or in a sentence ending in "?". Verified to flag
-  **zero** of the existing `content.json` / `CONDITION_SETS` / `GUIDES` copy. It is a guard
-  rail, not a lawyer: it catches the careless claim, not a determined author.
+- **Compliance guard (`build/compliance.mjs`).** **Every** content save is scanned by
+  `checkPayload()`; a hit is refused with **400** naming the phrase and the field, and the
+  panel shows it in a red toast. The `BANNED` rules cover: 100% cure (incl. "100 percent",
+  "１００％"), guaranteed cure/recovery **in either order** ("cure guaranteed"), permanent
+  cure, stop dialysis, no more dialysis, reverse kidney/renal/liver/heart failure **or
+  damage**, free-from-X-forever, goodbye-to-dialysis, money-back (strict — no exemption),
+  miracle cure, and Hindi/Hinglish forms (पक्का इलाज, गारंटी से इलाज, जड़ से खत्म, chutkara,
+  "thik ho jayega", "ilaj ki guarantee"). Input is NFKC-normalised and zero-width characters
+  are stripped first, so fullwidth/padded spellings cannot slip past.
+  **Exemptions** (so honest copy keeps saving) — a match is allowed only when it is negated
+  **within its own sentence**, before or after ("No *100% cure* … promises, ever." / "A
+  miracle cure does not exist."), or sits in a sentence that both ends in "?" **and** opens
+  with a question word ("Can Ayurveda give a 100% cure for CKD?" — an FAQ heading answered
+  "No."). Negation deliberately does **not** cross a sentence boundary: allowing that let
+  real claims through ("We never make false claims. Our treatment is a permanent cure.").
+  The cost is that a two-sentence denial ("Many clinics promise a permanent cure. RIIMS does
+  not.") is refused — rewrite it as one sentence with a dash. Copy that warns about someone
+  else's claim is exempt via "cautious/wary/beware of" and "claim(s)/promise(s) **of**".
+  Verified: flags **zero** of the existing `content.json` / `CONDITION_SETS` / `GUIDES` /
+  `POSTS` copy, blocks 19/19 realistic cure claims, and scans 2MB in ~48ms (the sentence
+  scan is bounded to ±400 chars — an unbounded one was quadratic and could freeze the
+  server, taking the public `/api/lead` booking endpoint down with it).
+  > **A denylist cannot catch a fluent claim that avoids the words** ("your reports will be
+  > normal again"). This is a tripwire, not sign-off: an outside contractor's edits to the
+  > 47 disease pages still need a human to read them before they are trusted.
+- **The Tracking tab cannot carry page copy.** `validateSection` refuses any `<meta>`/`<link>`
+  line whose `name`/`property` is `description`, `robots`, `title`, `keywords`, `canonical`,
+  `og:*` or `twitter:*` — the generator emits those itself, so accepting them would ship a
+  duplicate tag **and** put unreviewed ad copy in every page's `<head>`. That box is only for
+  verification tags (Search Console / Bing / Facebook).
 - **Shape validation** (`validateSection`, owner and seo alike) for the two new sections:
   page keys must look like paths, condition keys must be `<cat>/<slug>`, only the whitelisted
   fields are accepted, `redFlags`/`sources` are refused, and **`<` is rejected** — condition

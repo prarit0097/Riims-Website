@@ -20,24 +20,27 @@ multi-page site gives the strongest, simplest SEO footing:
 - `sitemap.xml` and `robots.txt`
 - Fast loads (no JS framework), great Core Web Vitals
 
-## Pages (25 total)
+## Pages (85 total)
 
-Home · About · Doctors · Blog · Contact · **8 condition pages**
-(High Creatinine, CKD, Kidney Failure, Dialysis, Protein in Urine, Swelling,
-Diabetes/BP Kidney Risk, Kidney Stone/UTI) · **9 blog-article pages**
-(one URL per post, under `/blog/`) · and **Privacy Policy / Terms / Medical Disclaimer**.
+Home · About · Doctors · Blog · Services · Contact · DNA Kayakalp Protocol ·
+**47 condition pages** across 4 categories — Kidney (15, flat at `/conditions/<slug>.html`),
+Liver (12), Heart (8) and General/metabolic (12) (the last three nested under
+`/conditions/<category>/`) · **3 category hubs** · **6 specialist pages** ·
+**9 blog articles** · **7 patient guides** · and **Privacy Policy / Terms / Medical Disclaimer**.
 
 Every link is active — no dead `#` anchors. Each page has its own URL, metadata and
-JSON-LD; the sitemap lists all 25.
+JSON-LD; the sitemap lists all 84 indexable URLs (404 is `noindex`).
 
 Interactive (vanilla JS): home disease search, Health Reels, count-up stat strip,
 FAQ accordion, blog category filter, newsletter, sticky header, mobile bottom nav,
 floating WhatsApp/Call, and a 2-step booking modal (leads POST to `/api/lead`).
 
 **Admin panel** at `/admin/` (zero-dependency Node server in `admin/`): lead management
-(status/notes/CSV/WhatsApp reply), and add/edit/remove for doctors, health reels, patient
+(status/notes/CSV/WhatsApp reply), a **Pages / SEO** tab to edit any page's title, meta
+description, H1 and disease-page text, and add/edit/remove for doctors, health reels, patient
 stories, FAQs and blogs (with image uploads), plus call/WhatsApp number settings — every
-save auto-rebuilds the static site. See RIIMS.md §23.
+save auto-rebuilds the static site. Two logins: **owner** (everything) and **seo** (everything
+except patient Leads, refused server-side). See RIIMS.md §23.
 
 ## Run it
 
@@ -76,7 +79,7 @@ build/                 # generator (run once; output is static)
 site/                  # ← deployable output
   index.html, about.html, doctors.html, blog.html, contact.html
   privacy.html, terms.html, disclaimer.html
-  conditions/*.html    # 8 SEO pages
+  conditions/*.html    # 15 kidney SEO pages (+ liver/, heart/, general/ subfolders = 47 total)
   blog/*.html          # 9 article pages (one per post)
   css/styles.css       # imports tokens + base layer
   css/site.css         # layout, responsive, imagery, component states

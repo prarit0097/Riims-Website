@@ -35,7 +35,7 @@ if (isSeo) {
   cfg.seoSalt = seoSalt.toString('hex');
   cfg.seoPassHash = scryptSync(password, seoSalt, 32).toString('hex');
   writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
-  console.log('SEO-role password set. Restart the admin server if it is running.');
+  console.log('SEO-role password set. It works immediately — no restart needed.');
 } else {
   const salt = randomBytes(16);
   const cfg = { salt: salt.toString('hex'), passHash: scryptSync(password, salt, 32).toString('hex'), secret: randomBytes(32).toString('hex') };
@@ -47,5 +47,6 @@ if (isSeo) {
     } catch { /* ignore malformed old config */ }
   }
   writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
-  console.log('Admin (owner) password set. Restart the admin server if it is running.');
+  console.log('Admin (owner) password set. It works immediately — no restart needed.');
+  console.log('Note: this signs everyone out (new session secret). The SEO password still works.');
 }

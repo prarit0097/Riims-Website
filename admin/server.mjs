@@ -19,7 +19,7 @@ import { spawn } from 'node:child_process';
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname, normalize } from 'node:path';
-import { checkPayload } from '../build/compliance.mjs';
+import { checkPayload, reservedMetaName } from '../build/compliance.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -162,11 +162,24 @@ function saveSection(section, value) {
    refused. redFlags/sources stay code-only: emergency advice and citations must not
    be editable from a browser. Returns an error string, or null when the shape is ok. */
 const SEO_FIELDS = ['title', 'desc', 'h1'];
+const MAX_FIELD = 4000;  // a condition paragraph; also bounds the compliance scan
+const MAX_LIST = 40;     // symptoms / approach bullets
 const COND_STR_FIELDS = ['intro', 'aboutTitle', 'about', 'when'];
 const COND_ARR_FIELDS = ['symptoms', 'approach'];
 const LOCKED_FIELDS = ['redFlags', 'sources'];
 
 function validateSection(section, b) {
+  /* The Tracking tab is for site-verification tags. The generator emits the page's own
+     description/og/twitter/robots tags, so accepting those here would ship a duplicate
+     (an SEO fault by itself) AND put uncontrolled ad copy in every page's <head>. */
+  if (section === 'tracking') {
+    const lines = String((b && b.metaTags) || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    for (const line of lines) {
+      const reserved = reservedMetaName(line);
+      if (reserved) return `metaTags: "${reserved}" is set by the site itself — remove that line. This box is only for verification tags (Search Console, Bing, Facebook). Page titles and descriptions are edited in the Pages / SEO tab.`;
+    }
+    return null;
+  }
   if (section !== 'pagesSeo' && section !== 'conditionEdits') return null;
   if (!b || typeof b !== 'object' || Array.isArray(b)) return `${section} must be an object`;
 
@@ -189,10 +202,13 @@ function validateSection(section, b) {
       for (const [f, val] of Object.entries(v)) {
         if (COND_STR_FIELDS.includes(f)) {
           if (typeof val !== 'string') return `${key}.${f}: must be text`;
+          if (val.length > MAX_FIELD) return `${key}.${f}: too long (max ${MAX_FIELD} characters)`;
           if (val.includes('<')) return `${key}.${f}: HTML tags are not allowed`;
         } else if (COND_ARR_FIELDS.includes(f)) {
           if (!Array.isArray(val)) return `${key}.${f}: must be a list`;
+          if (val.length > MAX_LIST) return `${key}.${f}: too many items (max ${MAX_LIST})`;
           if (val.some((s) => typeof s !== 'string')) return `${key}.${f}: list items must be text`;
+          if (val.some((s) => s.length > MAX_FIELD)) return `${key}.${f}: an item is too long (max ${MAX_FIELD} characters)`;
           if (val.some((s) => s.includes('<'))) return `${key}.${f}: HTML tags are not allowed`;
         } else return `${key}: unknown field "${f}"`;
       }
@@ -286,11 +302,8 @@ createServer(async (req, res) => {
         if (b === null) return send(res, 400, { error: 'bad json' });
         const shapeErr = validateSection(section, b);
         if (shapeErr) return send(res, 400, { error: shapeErr });
-        // 'tracking' holds raw meta/verification tags, not prose — nothing to claim there.
-        if (section !== 'tracking') {
-          const hit = checkPayload(b);
-          if (hit) return send(res, 400, { error: `Blocked: "${hit.phrase}" (${hit.label}) cannot go on a medical site. Rephrase honestly — say what RIIMS does NOT promise. Field: ${hit.path || section}` });
-        }
+        const hit = checkPayload(b);
+        if (hit) return send(res, 400, { error: `Blocked: "${hit.phrase}" (${hit.label}) cannot go on a medical site. Rephrase honestly — say what RIIMS does NOT promise. Field: ${hit.path || section}` });
         saveSection(section, b);
         return send(res, 200, { ok: true, rebuilding: true });
       }

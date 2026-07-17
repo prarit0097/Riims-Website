@@ -234,13 +234,19 @@
         const val = el.value.trim();
         if (val) ov[el.dataset.seo] = val;
       });
+      // Hiding a ranking page from Google is a big, quiet action — make it deliberate.
+      if (ov.noindex && !entry.noindex && !confirm(`Hide ${path} from Google?\n\nThis page will be removed from sitemap.xml and search results. Traffic to it will stop.`)) return;
       if (Object.keys(ov).length) seo[path] = ov; else delete seo[path];
 
       let condOk = true;
-      if (entry.type === 'condition') {
+      // Only touch the text overrides when the editor actually rendered those inputs.
+      // Without this, a page whose manifest entry lost its `fields` would render no
+      // text boxes and Save would read that as "cleared" — silently wiping the text.
+      const condInputs = body.querySelectorAll('[data-cond]');
+      if (entry.type === 'condition' && condInputs.length) {
         const key = `${entry.cat}/${entry.slug}`;
         const ce = {};
-        body.querySelectorAll('[data-cond]').forEach((el) => {
+        condInputs.forEach((el) => {
           const f2 = el.dataset.cond;
           if (COND_ARR.some(([k]) => k === f2)) {
             const list = el.value.split('\n').map((s) => s.trim()).filter(Boolean);

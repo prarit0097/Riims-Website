@@ -72,8 +72,8 @@ docker run --rm -v /opt/riims:/app -w /app node:24-alpine node build/generate.mj
 
 ### A0.7 — Admin panel (leads + content management)
 
-The admin panel lives at **`/admin/`** (lead management, doctors/reels/stories/FAQs/blogs
-editing, phone-number settings). One-time setup:
+The admin panel lives at **`/admin/`** (lead management, Pages/SEO editing,
+doctors/reels/stories/FAQs/blogs editing, phone-number settings). One-time setup:
 
 ```bash
 cd /opt/riims && git pull
@@ -84,7 +84,18 @@ certbot --nginx -d riimshospitals.com -d www.riimshospitals.com --redirect --non
 nginx -t && systemctl reload nginx
 ```
 Then open **https://riimshospitals.com/admin/** and log in. Form leads from the website are
-stored via `/api/lead` and appear in the Leads tab. Details: RIIMS.md §23.
+stored via `/api/lead` and appear in the Leads tab.
+
+**Two logins.** The command above sets the **owner** password (full panel, including patient
+Leads). To give an outside SEO contractor access to everything *except* Leads:
+
+```bash
+docker run --rm -v /opt/riims:/app -w /app node:24-alpine node admin/set-password.mjs --seo 'STRONG-SEO-PASSWORD'
+```
+
+Hand over only that password. Leads are refused for the SEO role **server-side** (403), not
+merely hidden. Passwords apply immediately — no restart. A change to `admin/server.mjs` itself
+does need `docker compose -f docker-compose.admin.yml restart`. Details: RIIMS.md §23.
 
 > Permissions: nginx (user `www-data`) must be able to read `/opt/riims/site`. If you get 403,
 > run `sudo chmod -R a+rX /opt/riims`.
