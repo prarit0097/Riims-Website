@@ -157,6 +157,11 @@
     const all = pagesManifest.pages;
     const shown = q ? all.filter((e) => (e.path + ' ' + e.title).toLowerCase().includes(q)) : all;
     const editedCount = Object.keys(seo).length + Object.keys(edits).length;
+    /* Number every page once, over the FULL list in display order — so a page keeps
+       its number while you filter. "Page 47" means the same page to everyone. */
+    const num = new Map();
+    let n = 0;
+    for (const [key] of PAGE_GROUPS) for (const e of all) if (groupOf(e) === key) num.set(e.path, ++n);
 
     let html = `<h2>Pages / SEO <span class="muted" style="font-weight:400;font-size:14px">${all.length} pages</span></h2>
       <p class="muted">Every page on the website. Edit the Google title, meta description, H1 heading — and the full text of a disease page. Leave a box empty to keep the built-in default.${editedCount ? ` <strong>${editedCount} page(s) edited.</strong>` : ''}</p>
@@ -173,7 +178,8 @@
         const open = pageOpen === e.path;
         html += `<div class="card pg${open ? ' open' : ''}">
           <div class="pg-head" data-open="${esc(e.path)}">
-            <div><strong>${esc(ov.title || e.title)}</strong>${isEdited ? ' <span class="badge">edited</span>' : ''}${e.noindex || ov.noindex ? ' <span class="badge warn">noindex</span>' : ''}
+            <span class="pg-num">${num.get(e.path)}</span>
+            <div class="pg-title"><strong>${esc(ov.title || e.title)}</strong>${isEdited ? ' <span class="badge">edited</span>' : ''}${e.noindex || ov.noindex ? ' <span class="badge warn">noindex</span>' : ''}
               <div class="muted small">${esc(e.path)}</div></div>
             <button class="btn light small">${open ? 'Close' : 'Edit'}</button>
           </div>
