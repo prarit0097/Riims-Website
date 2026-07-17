@@ -403,7 +403,7 @@ export function specialistPage(base, slug) {
 export function landingPage(base, slug) {
   const L = LANDING[slug];
   const reviewedLine = `<p style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-muted);display:flex;align-items:center;gap:.45rem">${icon('badge-check', { size: 16, style: 'color:var(--icon-accent)' })} Medically reviewed by the RIIMS kidney-care team · Last updated: ${REVIEW_DATE}</p>`;
-  const related = L.related.map(([l, target]) =>
+  const related = (L.related || []).map(([l, target]) =>
     `<li><a href="${base}conditions/${target}.html" style="display:flex;align-items:center;gap:.5rem;color:var(--text-link);text-decoration:none;font-weight:600;font-size:var(--fs-sm)">${icon('arrow-right', { size: 15 })} ${l}</a></li>`).join('');
 
   const bodySections = (L.body || []).map(([h, p]) =>
@@ -415,14 +415,18 @@ export function landingPage(base, slug) {
       + `</div>`
     : '';
 
+  const pointsCard = L.points
+    ? card(
+      `<h3 style="font-size:var(--fs-xl);margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem">${icon('route', { size: 20, style: 'color:var(--icon-brand)' })} ${L.points.title}</h3>`
+      + infoList(L.points.items || []),
+      { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } })
+    : '';
+
   const main = `<div style="display:flex;flex-direction:column;gap:var(--space-8)">`
     + reviewedLine
     + (L.doctor === false ? '' : doctorFeature(base))
     + `<div><p style="color:var(--text-body);font-size:var(--fs-lg)">${L.lead}</p></div>`
-    + card(
-      `<h3 style="font-size:var(--fs-xl);margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem">${icon('route', { size: 20, style: 'color:var(--icon-brand)' })} ${L.points.title}</h3>`
-      + infoList(L.points.items),
-      { tone: 'cream', pad: 'lg', style: { boxShadow: 'var(--shadow-sm)' } })
+    + pointsCard
     + bodySections
     + `<div><h2 style="font-size:var(--fs-2xl);margin:0 0 .6rem">When to get in touch</h2><p style="margin:0;color:var(--text-body)">${L.when}</p></div>`
     + faqBlock

@@ -275,7 +275,9 @@ export const CONDITIONS = {
     when: 'Everyone with high blood pressure should have kidney tests at least yearly. If BP is hard to control, or reports show protein or a rising creatinine, consult early.',
     // First link points at the treatment-intent sibling, so the pair reads as one
     // topic to Google (explanation ↔ treatment) rather than two rivals for one query.
-    related: [['High BP kidney treatment', 'high-bp-kidney-disease'], ['Protein in urine', 'proteinuria'], ['CKD', 'ckd'], ['High Creatinine', 'high-creatinine']],
+    // Added, not swapped in — diabetic-kidney-disease keeps its link; taking a link
+    // off a page that already ranks to make room is not a trade worth making.
+    related: [['High BP kidney treatment', 'high-bp-kidney-disease'], ['Diabetic kidney disease', 'diabetic-kidney-disease'], ['Protein in urine', 'proteinuria'], ['CKD', 'ckd'], ['High Creatinine', 'high-creatinine']],
   },
   'kidney-stone-treatment': {
     icon: 'circle-dot', title: 'Kidney Stone Treatment', crumb: 'Kidney Diseases · Kidney Stone Treatment',

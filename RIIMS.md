@@ -186,7 +186,7 @@ RiimS/
    (`window.__RIIMS_SEARCH__`) — the admin-driven dataset (real doctor/posts/reel) that powers
    the home disease-search results (see §8) — and `js/gtag.js` if a Google Tag ID is set.
 
-Run it: `npm run build`. It logs `Generated 85 pages + sitemap.xml + robots.txt into /site`.
+Run it: `npm run build`. It logs `Generated 91 pages + sitemap.xml + robots.txt into /site`.
 
 ### The `base` prefix system (how relative paths stay correct)
 Root pages link assets as `css/styles.css`, `assets/...`, `about.html`. Pages inside a
@@ -839,7 +839,7 @@ the password.)
 ### What it controls
 | Tab | What you can do |
 |-----|-----------------|
-| **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal / System) with a find-a-page filter. Each row carries a **serial number** (1…85), numbered once over the full list in display order — so a page keeps its number while you filter (searching "fatty liver" shows 29/31/32, not 1/2/3) and "page 47" means the same page to everyone. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`; hiding a page asks for confirmation first). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the MedicalWebPage JSON-LD; `aboutTitle`/`about`/`when`/`approach` feed the FAQPage schema), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
+| **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal / System) with a find-a-page filter. Each row carries a **serial number** (1…91), numbered once over the full list in display order — so a page keeps its number while you filter (searching "fatty liver" shows its real numbers, not 1/2/3) and "page 47" means the same page to everyone. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`; hiding a page asks for confirmation first). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the MedicalWebPage JSON-LD; `aboutTitle`/`about`/`when`/`approach` feed the FAQPage schema), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
 | **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
@@ -1418,8 +1418,21 @@ Google the B.A.M.S. Ayurveda lead was a nephrologist. It is now derived from eac
 `quals`/`title` (`specialtyOf()`), with Ayurveda winning over a bare "Medicine" match so a BAMS
 is never labelled allopathic.
 
-Verification: `npm test` → 0 problems, 91 pages. Of the 85 pre-existing pages, 62 changed only in
-auto-numbered form-field ids (`fld-name-259` → `-277`; the counter in `input()` shifts when pages
-are added — invisible, no content/title/meta/schema impact) and `doctors.html` gained one link
-card. Reviewed by two QA agents (legal/medical/factual + build/SEO/render); their findings on
-credential wording, dialysis-timing, hyperkalaemia red flags and orphan links are applied above.
+Verification: `npm test` → 0 problems, 91 pages.
+
+What changed on the 85 pre-existing pages, measured against a pre-feature baseline:
+**no page changed its `<title>`, meta description, canonical, robots or `<h1>`** — the ranking
+assets are untouched. What did change: all 85 gained the **3 new sitewide footer links** (that
+footer is what de-orphans the landing pages); 61 also shifted their auto-numbered form-field ids
+(`fld-name-259` → `-277` — the counter in `input()` moves when pages are added; invisible);
+`doctors.html` gained **two** cards (kidney-specialist + nephrologist); `hypertensive-kidney-disease.html`
+gained a 5th related link; and `doctors.html`'s Physician schema corrected 3 specialties (see
+below). Byte-identical: 0/85 — expected, since the footer is on every page.
+
+Reviewed by two QA agents (legal/medical/factual + build/SEO/render). Their findings are applied:
+credential wording scoped to the named individual, the dialysis-timing "second opinion" turned into
+a referral, hyperkalaemia + low-urine added to the BP page's red flags, all six de-orphaned, the
+kidney-failure `intro` trimmed under clampDesc's 155 (it was losing the word "upfront" from
+"we never promise cure, and say so upfront"), and `landingPage()` guarded against a missing
+`points`/`related`. The second QA pass also caught this very note claiming only 62 pages changed —
+that measurement predated the footer links.

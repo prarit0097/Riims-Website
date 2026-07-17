@@ -7,20 +7,22 @@
    /conditions/ckd.html and the two fight each other in Google. Link, don't repeat.
 
    Rendered by landingPage() in build/pages.mjs; registered in build/generate.mjs.
-   Fields:
+   Fields (REQUIRED unless marked optional):
      dir      '' for a root page (/slug.html), 'doctors' for /doctors/slug.html
-     icon     lucide name from the self-hosted subset (site/assets/vendor/lucide.min.js)
+     icon     lucide name (site/assets/vendor/lucide.min.js) — a wrong name renders blank
      h1       visible heading. NO "Best …" self-claim — see the rule in pages.mjs:207
      metaTitle  <title>
-     intro    hero paragraph; also the meta description (head() clamps it at 155)
+     intro    hero paragraph; also the meta description. KEEP IT ≤155 — head() calls
+              clampDesc(), which truncates silently at 155 and will cut your last clause
      lead     opening paragraph of the body
-     points   { title, items[] } — the card list
-     body     [[heading, paragraph], …]
      when     "When to get in touch" paragraph
-     faqs     [[q, a], …] — rendered AND emitted as FAQPage schema, so they must
-              match the visible text exactly
-     related  [[label, conditionSlug], …] — links to /conditions/<slug>.html
-     doctor   false hides the founder card (see landingPage's comment)
+     related  [[label, conditionSlug], …] — links to /conditions/<slug>.html (optional,
+              but a page with none loses its outbound topical links)
+     points   optional — { title, items[] } card list
+     body     optional — [[heading, paragraph], …]
+     faqs     optional — [[q, a], …]. Rendered AND emitted as FAQPage schema, so the two
+              must stay identical; Google penalises schema that isn't on the page
+     doctor   optional — false hides the founder card (see landingPage's comment)
 
    COMPLIANCE (build/compliance.mjs enforces the wording at save time; these rules
    are the reason this copy reads the way it does):
@@ -104,7 +106,9 @@ export const LANDING = {
     h1: 'Kidney Failure Hospital in Delhi-NCR & Baraut',
     metaTitle: 'Kidney Failure Hospital in Delhi-NCR & Baraut | RIIMS',
     crumb: 'Kidney Care · Kidney Failure Hospital (Delhi-NCR)',
-    intro: 'Told that your kidneys have failed? RIIMS in Baraut gives honest, integrated care alongside your nephrologist. We never promise cure, and we say so upfront.',
+    // Kept under 155: clampDesc() truncates there, and at 156 this line lost the word
+    // "upfront" — the one page where a half-finished honesty claim is worst.
+    intro: 'Told that your kidneys have failed? RIIMS in Baraut gives honest, integrated care alongside your nephrologist. We never promise cure, and say so upfront.',
     lead: 'If you are searching this at 2am with a report in your hand, you are probably being offered promises by several places at once. Here is ours: RIIMS never claims that kidney failure can be undone, and any clinic that tells you otherwise is not telling you the truth. RIIMS is an integrated, Ayurveda-led kidney institute in Baraut, Baghpat district, within the NCR region and reached from Delhi, Ghaziabad, Meerut and Baghpat. What we do at this stage is support the work of protecting the function that remains, keep symptoms and daily life bearable, prepare your family before decisions turn urgent, and coordinate closely with nephrologists for dialysis and advanced care. Our kidney failure page explains the condition itself; this page is about whether we are the right people to walk it with you.',
     points: {
       title: 'What RIIMS can honestly do at this stage',
