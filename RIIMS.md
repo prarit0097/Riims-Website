@@ -883,7 +883,7 @@ the password.)
 | **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal / System) with a find-a-page filter. Each row carries a **serial number** (1…91), numbered once over the full list in display order — so a page keeps its number while you filter (searching "fatty liver" shows its real numbers, not 1/2/3) and "page 47" means the same page to everyone. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`; hiding a page asks for confirmation first). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the MedicalWebPage JSON-LD; `aboutTitle`/`about`/`when`/`approach` feed the FAQPage schema), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
 | **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
-| **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. |
+| **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. "Add reel" inserts at the TOP; the homepage shows the **top 5**, so the oldest drops off automatically. **Instagram auto-sync** (see below): paste an access token once and the list refreshes itself from Instagram every 6 hours — no manual adding at all. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
@@ -979,6 +979,30 @@ the password.)
 - **Both default to `{}`, so with nothing saved every page is byte-for-byte what it was before
   this feature existed** — verified by diffing the whole `site/` tree. That is what protects
   the kidney pages' rankings.
+
+### Instagram reels auto-sync (`admin/instagram-sync.mjs`)
+
+Zero-dependency. Once the owner pastes an access token in **Admin → Health Reels**:
+- Sync runs ~30s after admin-server boot and **every 6 hours**: pulls the newest media from
+  `graph.instagram.com/me/media`, keeps reels/videos only, newest 10 (homepage renders top 5).
+- **Thumbnails are downloaded** to `site/assets/uploads/ig-<id>.jpg` — IG CDN URLs expire within
+  days, hotlinking would leave broken images. Dropped reels' thumbnails are pruned.
+- Titles come from the caption's first line (hashtags/mentions/URLs/`<>` stripped, ≤70 chars) and
+  are run through `checkText()` — a caption that trips the medical-claims guard becomes the
+  neutral "Health reel" instead of publishing the claim.
+- The 60-day token **auto-refreshes weekly** (`refresh_access_token`); state (token, lastSync,
+  lastError) lives in `data/instagram.json` (gitignored, survives `update.sh`).
+- **Failure policy: never blank the section** — any error keeps the last synced list, records
+  `lastError` (shown in the admin card), retries next cycle.
+- Endpoints (auth'd): `GET /api/admin/instagram` status (both roles); `POST` set-token and
+  `DELETE` disable are **owner-only** (the token is a credential for the owner's Instagram);
+  `POST /api/admin/instagram/sync` = sync now. While sync is ON, manual edits to the reels list
+  are overwritten by the next cycle (the card says so).
+
+**Getting the token (one-time, owner):** Instagram must be a Professional (Business/Creator)
+account → developers.facebook.com → My Apps → Create App (type Business) → add product
+**Instagram** → "API setup with Instagram login" → Generate token (log in with the clinic's
+Instagram) → copy the long-lived token → paste in Admin → Health Reels → Save & start.
 
 ### VPS setup (one-time)
 ```bash

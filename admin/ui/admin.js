@@ -371,7 +371,8 @@
       <div class="head"><h2>Health Reels (${list.length})</h2>
         <div class="row"><button id="add" class="btn light small">＋ Add reel</button>
         <button id="save" class="btn primary">Save reels</button></div></div>
-      <p class="muted" style="margin:-6px 0 14px">Newest reel stays on top — the homepage shows the <strong>top 5</strong> of this list. Add your new reel, upload its thumbnail, paste the Instagram link, Save. The oldest one drops off the homepage automatically.</p>
+      <div class="card" id="ig-card"><p class="muted">Checking Instagram sync…</p></div>
+      <p class="muted" style="margin:-6px 0 14px">Newest reel stays on top — the homepage shows the <strong>top 5</strong> of this list. With auto-sync ON this list refreshes from Instagram every 6 hours (manual edits here get overwritten by the next sync).</p>
       ${list.map((r, i) => `
         <div class="card">
           <div class="row" style="margin-bottom:10px">
@@ -395,6 +396,37 @@
     // adding a reel here automatically replaces the oldest one on the site.
     $('#add').onclick = () => { list.unshift({ id: newId(), tag: '', tone: 'green', title: '', views: '', img: '', url: '' }); render(); };
     $('#save').onclick = () => saveSection('reels', list, 'Reels');
+    renderIgCard();
+  }
+
+  /* Instagram auto-sync card (inside Health Reels). Token set/remove is owner-only
+     server-side; the card explains itself to the SEO role. */
+  async function renderIgCard() {
+    const el = $('#ig-card');
+    if (!el) return;
+    let s = { enabled: false };
+    try { s = await api('/api/admin/instagram'); } catch { el.innerHTML = '<p class="err">Could not load Instagram sync status.</p>'; return; }
+    if (s.enabled) {
+      el.innerHTML = `
+        <h3 style="margin:0 0 .3rem">📸 Instagram auto-sync: ON ${s.username ? `(@${esc(s.username)})` : ''}</h3>
+        <p class="muted" style="margin:0 0 10px">Last sync: ${s.lastSync ? new Date(s.lastSync).toLocaleString('en-IN') : 'pending (runs ~30s after server start, then every 6 hours)'} · ${s.lastCount || 0} reels${s.lastError ? ` · <span class="err" style="min-height:0">last error: ${esc(s.lastError)}</span>` : ''}</p>
+        <div class="row"><button id="ig-sync" class="btn light small">↻ Sync now</button>
+        <button id="ig-off" class="btn light small">Turn off (owner)</button></div>`;
+      $('#ig-sync').onclick = async () => { try { const r = await api('/api/admin/instagram/sync', { method: 'POST', body: '{}' }); toast(`Synced ${r.synced ?? 0} reels — site rebuilding…`); content = await api('/api/admin/content'); render(); } catch (e) { toast(e.message, true); } };
+      $('#ig-off').onclick = async () => { if (!confirm('Turn off Instagram auto-sync? The current list stays as-is.')) return; try { await api('/api/admin/instagram', { method: 'DELETE' }); render(); } catch (e) { toast(e.message, true); } };
+    } else {
+      el.innerHTML = `
+        <h3 style="margin:0 0 .3rem">📸 Instagram auto-sync: OFF</h3>
+        <p class="muted" style="margin:0 0 10px">Paste an Instagram access token once and new reels appear here (and on the site) automatically — no manual adding. How to get the token: see RIIMS.md §23 or ask your developer. Owner login only.</p>
+        <div class="row"><input id="ig-token" type="password" placeholder="Instagram access token" style="flex:1;min-width:220px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px">
+        <button id="ig-on" class="btn primary small">Save & start</button></div>`;
+      $('#ig-on').onclick = async () => {
+        const token = $('#ig-token').value.trim();
+        if (!token) { toast('Paste the token first', true); return; }
+        try { const r = await api('/api/admin/instagram', { method: 'POST', body: JSON.stringify({ token }) }); toast(`Connected @${r.username || 'account'} — first sync running…`); renderIgCard(); }
+        catch (e) { toast(e.message, true); }
+      };
+    }
   }
 
   /* ---- Patient stories ---- */

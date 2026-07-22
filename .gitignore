@@ -27,6 +27,7 @@ kidney kavach book-1.pdf
 data/leads.json
 data/content.local.json
 data/admin-config.json
+data/instagram.json
 site/assets/uploads/
 
 # Build artifact: page list for the admin "Pages / SEO" tab (rewritten by every build)
