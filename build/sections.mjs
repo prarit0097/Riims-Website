@@ -82,7 +82,10 @@ export function healthReels(base = '') {
     + button('View all reels', { variant: 'ghost', iconRight: icon('arrow-right', { size: 16 }), href: SITE.instagram, extraAttrs: { target: '_blank', rel: 'noopener' } })
     + `</div>`
     + `<div class="reel-track" style="display:flex;gap:var(--space-4);overflow-x:auto;padding-bottom:.6rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch">`
-    + REELS.map((r) => reelCard(base, r)).join('')
+    // The homepage carries the 5 newest reels; the admin list is newest-first
+    // ("Add reel" inserts at the top), so slice(0,5) IS "the last 5 uploaded".
+    // Older ones stay in the admin for the search widget and drop off here.
+    + REELS.slice(0, 5).map((r) => reelCard(base, r)).join('')
     + `</div></div></section>`;
 }
 

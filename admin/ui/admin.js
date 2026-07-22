@@ -371,6 +371,7 @@
       <div class="head"><h2>Health Reels (${list.length})</h2>
         <div class="row"><button id="add" class="btn light small">＋ Add reel</button>
         <button id="save" class="btn primary">Save reels</button></div></div>
+      <p class="muted" style="margin:-6px 0 14px">Newest reel stays on top — the homepage shows the <strong>top 5</strong> of this list. Add your new reel, upload its thumbnail, paste the Instagram link, Save. The oldest one drops off the homepage automatically.</p>
       ${list.map((r, i) => `
         <div class="card">
           <div class="row" style="margin-bottom:10px">
@@ -390,7 +391,9 @@
     bindFields(v, list);
     v.querySelectorAll('[data-img]').forEach((b) => b.onclick = () => pickImage(list[Number(b.dataset.img)], 'img'));
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this reel?')) { list.splice(Number(b.dataset.del), 1); render(); } });
-    $('#add').onclick = () => { list.push({ id: newId(), tag: '', tone: 'green', title: '', views: '', img: '', url: '' }); render(); };
+    // Newest reel goes on TOP (like Blogs) — the homepage shows the first 5, so
+    // adding a reel here automatically replaces the oldest one on the site.
+    $('#add').onclick = () => { list.unshift({ id: newId(), tag: '', tone: 'green', title: '', views: '', img: '', url: '' }); render(); };
     $('#save').onclick = () => saveSection('reels', list, 'Reels');
   }
 
