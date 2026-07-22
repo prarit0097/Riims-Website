@@ -982,7 +982,10 @@ the password.)
 
 ### Instagram reels auto-sync (`admin/instagram-sync.mjs`)
 
-Zero-dependency. Once the owner pastes an access token in **Admin → Health Reels**:
+**LIVE since 2026-07-22** — connected to **@riimshospital** (token set on the VPS in
+`data/instagram.json`; first sync verified on production: newest reels, cached thumbnails,
+muted-autoplay videos). Zero-dependency. Once the owner pastes an access token in
+**Admin → Health Reels**:
 - Sync runs ~30s after admin-server boot and **every 6 hours**: pulls the newest media from
   `graph.instagram.com/me/media`, keeps reels/videos only, newest 10 (homepage renders top 5).
 - **Thumbnails are downloaded** to `site/assets/uploads/ig-<id>.jpg` — IG CDN URLs expire within
@@ -996,6 +999,10 @@ Zero-dependency. Once the owner pastes an access token in **Admin → Health Ree
 - Titles come from the caption's first line (hashtags/mentions/URLs/`<>` stripped, ≤70 chars) and
   are run through `checkText()` — a caption that trips the medical-claims guard becomes the
   neutral "Health reel" instead of publishing the claim.
+- **Synced reels carry an empty `tag`** (owner preference: clean thumbnails, no "Reel" text
+  stamped on the card). `reelCard()` renders a badge only when a tag exists, with an empty
+  span holding the flex layout so the title stays pinned to the bottom; a hand-added admin
+  reel with a tag still shows its badge.
 - The 60-day token **auto-refreshes weekly** (`refresh_access_token`); state (token, lastSync,
   lastError) lives in `data/instagram.json` (gitignored, survives `update.sh`).
 - **Failure policy: never blank the section** — any error keeps the last synced list, records
