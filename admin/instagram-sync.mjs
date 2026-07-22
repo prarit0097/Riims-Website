@@ -150,7 +150,7 @@ export async function syncReels(rebuild) {
     catch { /* card renders its gradient background without an image */ }
     reels.push({
       id: `ig${m.id}`,
-      tag: 'Reel',
+      tag: '',   // owner asked for clean thumbnails - no badge text on synced reels
       tone: TONES[i % TONES.length],
       title: titleFrom(m.caption),
       views: '',

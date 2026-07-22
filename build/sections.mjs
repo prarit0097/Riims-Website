@@ -67,7 +67,9 @@ function reelCard(base, r) {
   return `<a href="${href}" target="_blank" rel="noopener" aria-label="Watch reel: ${r.title}" class="reel riims-card--hover" style="display:block;flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
     + `<div style="aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--teal-600), var(--teal-900))">`
     + media
-    + badge(r.tag, { tone: badgeTone, style: { alignSelf: 'flex-start', position: 'relative' } })
+    // No tag = no badge. The empty span keeps the flex space-between layout
+    // (badge top, title bottom); without it the title would jump to the top.
+    + (r.tag ? badge(r.tag, { tone: badgeTone, style: { alignSelf: 'flex-start', position: 'relative' } }) : '<span></span>')
     + `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 20 })}</span>`
     + `<div style="color:#fff;position:relative;text-shadow:0 1px 8px rgba(0,0,0,.45)">`
     + `<p style="margin:0 0 .25rem;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1.25">${r.title}</p>`
