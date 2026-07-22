@@ -61,16 +61,21 @@ export function searchBanner(base = '') {
 function reelCard(base, r) {
   const badgeTone = r.tone === 'blue' ? 'blue' : r.tone === 'green' ? 'green' : 'cream';
   const href = r.url || SITE.instagram;
-  const media = r.img
-    ? `<img src="${base}${r.img}" alt="${esc(r.title)}" width="190" height="253" loading="lazy" decoding="async" class="reel-bg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
-    : '';
+  /* With a self-hosted mp4 the card plays it muted; site.js starts/stops playback
+     as the card enters/leaves the viewport (preload="none", so nothing downloads
+     until visible). The thumbnail rides along as poster + no-JS fallback. */
+  const media = r.video
+    ? `<video data-reel-video src="${base}${r.video}"${r.img ? ` poster="${base}${r.img}"` : ''} muted loop playsinline preload="none" aria-label="${esc(r.title)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>`
+    : r.img
+      ? `<img src="${base}${r.img}" alt="${esc(r.title)}" width="190" height="253" loading="lazy" decoding="async" class="reel-bg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
+      : '';
   return `<a href="${href}" target="_blank" rel="noopener" aria-label="Watch reel: ${r.title}" class="reel riims-card--hover" style="display:block;flex:0 0 auto;width:190px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
     + `<div style="aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--teal-600), var(--teal-900))">`
     + media
     // No tag = no badge. The empty span keeps the flex space-between layout
     // (badge top, title bottom); without it the title would jump to the top.
     + (r.tag ? badge(r.tag, { tone: badgeTone, style: { alignSelf: 'flex-start', position: 'relative' } }) : '<span></span>')
-    + `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 20 })}</span>`
+    + (r.video ? '' : `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 20 })}</span>`)
     + `<div style="color:#fff;position:relative;text-shadow:0 1px 8px rgba(0,0,0,.45)">`
     + `<p style="margin:0 0 .25rem;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1.25">${r.title}</p>`
     + (r.views ? `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);color:rgba(255,255,255,.8)">${r.views}</span>` : '')

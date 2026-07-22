@@ -986,7 +986,13 @@ Zero-dependency. Once the owner pastes an access token in **Admin → Health Ree
 - Sync runs ~30s after admin-server boot and **every 6 hours**: pulls the newest media from
   `graph.instagram.com/me/media`, keeps reels/videos only, newest 10 (homepage renders top 5).
 - **Thumbnails are downloaded** to `site/assets/uploads/ig-<id>.jpg` — IG CDN URLs expire within
-  days, hotlinking would leave broken images. Dropped reels' thumbnails are pruned.
+  days, hotlinking would leave broken images. Dropped reels' media is pruned.
+- **The top-5 reels' mp4s are downloaded too** (`ig-<id>.mp4`, 30MB cap) and the homepage cards
+  **autoplay them muted** while in view: `<video muted loop playsinline preload="none">` with the
+  thumbnail as poster; `site.js` plays/pauses via IntersectionObserver (0.35 threshold), so
+  nothing downloads until a card is actually visible and playback stops off-screen. A failed
+  video download falls back to the thumbnail card (play-button overlay returns on those) and
+  retries next sync. Clicking a card still opens the reel on Instagram.
 - Titles come from the caption's first line (hashtags/mentions/URLs/`<>` stripped, ≤70 chars) and
   are run through `checkText()` — a caption that trips the medical-claims guard becomes the
   neutral "Health reel" instead of publishing the claim.

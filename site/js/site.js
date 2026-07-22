@@ -101,6 +101,23 @@
     if (reset) reset.addEventListener('click', () => { if (f) f.reset(); showStep(form, 0); });
   });
 
+  /* ---------------- Reels: muted autoplay while in view ----------------
+     preload="none" keeps 5 videos from downloading on page load; play() starts
+     the stream only when the card is actually visible, pause() stops it when
+     scrolled away. Muted + playsinline is what browsers allow to autoplay. If a
+     browser still refuses, the poster (thumbnail) simply stays — same as before. */
+  const reelVids = $$('[data-reel-video]');
+  if (reelVids.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        const v = e.target;
+        if (e.isIntersecting) { v.play().catch(() => {}); }
+        else { v.pause(); }
+      });
+    }, { threshold: 0.35 });
+    reelVids.forEach((v) => io.observe(v));
+  }
+
   /* ---------------- Select placeholder colour ---------------- */
   $$('.riims-select').forEach((sel) => {
     sel.addEventListener('change', () => {

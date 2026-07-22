@@ -99,18 +99,22 @@ function titleFrom(caption) {
   return t;
 }
 
-async function cacheThumbnail(id, url) {
+const MAX_VIDEO = 30 * 1024 * 1024; // a reel beyond 30MB stays a thumbnail card
+
+async function cacheMedia(file, url, { maxBytes = 0, minBytes = 100, timeout = 20000 } = {}) {
   mkdirSync(UPLOADS, { recursive: true });
-  const file = `ig-${id}.jpg`;
   const full = join(UPLOADS, file);
   if (!existsSync(full)) {
     const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 20000);
+    const t = setTimeout(() => ctl.abort(), timeout);
     try {
       const res = await fetch(url, { signal: ctl.signal });
-      if (!res.ok) throw new Error(`thumbnail HTTP ${res.status}`);
+      if (!res.ok) throw new Error(`media HTTP ${res.status}`);
+      const len = Number(res.headers.get('content-length') || 0);
+      if (maxBytes && len && len > maxBytes) throw new Error(`too large (${len}B)`);
       const buf = Buffer.from(await res.arrayBuffer());
-      if (buf.length < 100) throw new Error('thumbnail too small');
+      if (buf.length < minBytes) throw new Error('media too small');
+      if (maxBytes && buf.length > maxBytes) throw new Error(`too large (${buf.length}B)`);
       writeFileSync(full, buf);
     } finally { clearTimeout(t); }
   }
@@ -146,8 +150,16 @@ export async function syncReels(rebuild) {
     const m = reelsRaw[i];
     const thumb = m.thumbnail_url || m.media_url;
     let img = '';
-    try { if (thumb) img = await cacheThumbnail(m.id, thumb); }
+    try { if (thumb) img = await cacheMedia(`ig-${m.id}.jpg`, thumb); }
     catch { /* card renders its gradient background without an image */ }
+    /* The reel's mp4 itself, self-hosted — the homepage cards autoplay it muted
+       while in view. Videos only for the top 5 (the homepage set): downloading
+       all 10 doubles disk/bandwidth for cards nobody renders. */
+    let video = '';
+    if (i < 5 && m.media_url) {
+      try { video = await cacheMedia(`ig-${m.id}.mp4`, m.media_url, { maxBytes: MAX_VIDEO, minBytes: 10000, timeout: 60000 }); }
+      catch { /* thumbnail card is the graceful fallback */ }
+    }
     reels.push({
       id: `ig${m.id}`,
       tag: '',   // owner asked for clean thumbnails - no badge text on synced reels
@@ -155,6 +167,7 @@ export async function syncReels(rebuild) {
       title: titleFrom(m.caption),
       views: '',
       img,
+      video,
       url: m.permalink || '',
     });
   }
@@ -162,7 +175,7 @@ export async function syncReels(rebuild) {
   const local = readJson(LOCAL_PATH, {});
   local.reels = reels;
   writeJson(LOCAL_PATH, local);
-  pruneThumbnails(new Set(reels.map((r) => r.img.split('/').pop()).filter(Boolean)));
+  pruneThumbnails(new Set(reels.flatMap((r) => [r.img.split('/').pop(), (r.video || '').split('/').pop()]).filter(Boolean)));
   setState({ lastSync: new Date().toISOString(), lastError: '', lastCount: reels.length });
   if (typeof rebuild === 'function') rebuild();
   return { synced: reels.length };
