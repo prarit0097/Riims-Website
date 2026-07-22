@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { header, footer, mobileBar, bookingModal } from './chrome.mjs';
-import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, specialistPage, categoryHubPage, landingPage } from './pages.mjs';
+import { homePage, conditionPage, aboutPage, doctorsPage, blogPage, contactPage, blogPostPage, legalPage, notFoundPage, conditionsHubPage, servicesPage, protocolPage, PROTOCOL_FAQS, guidePage, guidesHubPage, LEGAL_KEYS, SPECIALISTS, SPECIALIST_DOCTOR, specialistPage, categoryHubPage, landingPage } from './pages.mjs';
 import { LANDING } from './landing.mjs';
 import { GUIDES, GUIDE_ORDER } from './guides.mjs';
 import { esc } from './components.mjs';
@@ -31,10 +31,18 @@ if (GTAG_ID) {
    not a hardcoded list — so adding/removing a doctor, blog or reel in /admin/ flows
    straight into search on the next rebuild. External file (CSP script-src 'self'). */
 const SEARCH_CARE = { name: 'RIIMS Care Team', title: 'Guided referral & support', init: 'RC' };
-// Auto doctor (when a topic leaves "doctor" blank): prefer a nephrologist, else the first
-// doctor in Admin → Doctors. Names/titles trimmed (admin fields can carry stray spaces).
-const _isNephro = (d) => /nephro/i.test(`${d.title || ''} ${(d.specialties || []).join(' ')}`);
-const _kidneyDoc = DOCTORS_FULL.find(_isNephro) || DOCTORS_FULL[0];
+// Auto doctor (when a topic leaves "doctor" blank). The old rule matched /nephro/
+// only — once the mislabelled "Senior Nephrologist" title was corrected to honest
+// wording, nobody matched and the search fell back to whoever sat first in the
+// admin roster (it showed Dr. Vikas for "Kidney"). Priority now:
+//   1. a real nephrologist, should one ever join the roster
+//   2. the site's canonical kidney physician (SPECIALIST_DOCTOR — Dr. Abhishek)
+//   3. anyone with kidney-ish specialties   4. the first doctor
+const _docHay = (d) => `${d.title || ''} ${(d.specialties || []).join(' ')}`;
+const _kidneyDoc = DOCTORS_FULL.find((d) => /nephro/i.test(_docHay(d)))
+  || DOCTORS_FULL.find((d) => String(d.name || '').trim().toLowerCase() === SPECIALIST_DOCTOR.name.toLowerCase())
+  || DOCTORS_FULL.find((d) => /kidney|renal|ckd|dialysis/i.test(_docHay(d)))
+  || DOCTORS_FULL[0];
 const _autoDoc = _kidneyDoc
   ? { name: String(_kidneyDoc.name || '').trim(), title: String(_kidneyDoc.title || '').trim(), init: _kidneyDoc.init || 'RC' }
   : SEARCH_CARE;
@@ -43,7 +51,7 @@ const _docByName = new Map(DOCTORS_FULL.map((d) => [String(d.name || '').trim(),
 const _reelByTitle = new Map(REELS.map((r) => [String(r.title || '').trim(), r]));
 const _pickDoctor = (name) => {
   const n = String(name || '').trim();
-  if (!n) return _autoDoc;                                     // blank = auto nephrologist
+  if (!n) return _autoDoc;                                     // blank = auto kidney doctor
   if (/^riims care team$/i.test(n)) return SEARCH_CARE;
   const d = _docByName.get(n);
   return d ? { name: String(d.name).trim(), title: String(d.title || '').trim(), init: d.init || 'RC' } : _autoDoc;
