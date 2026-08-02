@@ -100,13 +100,14 @@ does need `docker compose -f docker-compose.admin.yml restart`. Details: RIIMS.m
 > Permissions: nginx (user `www-data`) must be able to read `/opt/riims/site`. If you get 403,
 > run `sudo chmod -R a+rX /opt/riims`.
 
-### A0.8 — Extra brand domains (redirect-only, added 2026-08-02)
+### A0.8 — Extra brand domains (redirect-only, added 2026-08-02, expanded same day)
 
-The owner also holds **riimshospitals.in**, **riims.info**, **riims.co.in** (DNS A-records already
-pointed at this VPS). These do **not** serve a second copy of the site — every request 301s to
-the canonical `https://riimshospitals.com`, so all SEO signal (backlinks, indexing) stays on one
-domain while every domain still resolves to the real site for a visitor who types it. Full
-rationale + config in `deploy/nginx-riims-redirect-domains.conf`.
+The owner also holds **riimshospitals.in, riims.info, riims.co.in, riims.in, kidneyhealer.in,
+kidneyhealer.com** (DNS A-records already pointed at this VPS). These do **not** serve a second
+copy of the site — every request 301s to the canonical `https://riimshospitals.com`, so all SEO
+signal (backlinks, indexing) stays on one domain while every domain still resolves to the real
+site for a visitor who types it. Full rationale + config in
+`deploy/nginx-riims-redirect-domains.conf`.
 
 ```bash
 cd /opt/riims && git pull
@@ -117,12 +118,30 @@ certbot --nginx \
   -d riimshospitals.in -d www.riimshospitals.in \
   -d riims.info -d www.riims.info \
   -d riims.co.in -d www.riims.co.in \
+  -d riims.in -d www.riims.in \
+  -d kidneyhealer.in -d www.kidneyhealer.in \
+  -d kidneyhealer.com -d www.kidneyhealer.com \
   --redirect --agree-tos -m praritsidana786@gmail.com --non-interactive
 nginx -t && systemctl reload nginx
 ```
 Verify: `curl -sI http://riims.info/` should show a chain ending at `https://riimshospitals.com/`.
-Adding a further domain later is the same pattern — add it to this one file's `server_name` list
-(or a new block) and re-run certbot with its `-d` flags added.
+
+**Adding a further domain later** — a cert for this domain group already exists (named after
+`riimshospitals.in`), so add the new name(s) to `server_name` in the conf file, then re-run
+certbot with **`--expand`** and the **full** current domain list (old + new) so it grows the
+same certificate instead of erroring:
+```bash
+certbot --nginx --expand \
+  -d riimshospitals.in -d www.riimshospitals.in \
+  -d riims.info -d www.riims.info \
+  -d riims.co.in -d www.riims.co.in \
+  -d riims.in -d www.riims.in \
+  -d kidneyhealer.in -d www.kidneyhealer.in \
+  -d kidneyhealer.com -d www.kidneyhealer.com \
+  -d <new-domain> -d www.<new-domain> \
+  --redirect --agree-tos -m praritsidana786@gmail.com --non-interactive
+nginx -t && systemctl reload nginx
+```
 
 ---
 

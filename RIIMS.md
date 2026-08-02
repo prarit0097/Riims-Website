@@ -645,21 +645,25 @@ This section is the source of truth for the running production setup.
 | SSL | Let's Encrypt via **certbot** (`/etc/letsencrypt/live/riimshospitals.com/`), auto-renew enabled |
 | Repo | https://github.com/prarit0097/Riims-Website (`main`) |
 
-### 18.1b Extra brand domains — redirect-only (added 2026-08-02)
+### 18.1b Extra brand domains — redirect-only (added 2026-08-02, expanded same day)
 
-The owner also owns **riimshospitals.in**, **riims.info**, **riims.co.in** (DNS A/`www` records
-for all three already point at `187.127.132.106`, same as the canonical domain). None of them
-serve a second copy of the site — each is a bare nginx server block
-(`deploy/nginx-riims-redirect-domains.conf`) that 301-redirects every request, path and query
-string included, straight to `https://riimshospitals.com`. This was a deliberate choice over
-mirroring the site on all four domains: the generator hardcodes canonical/OG/JSON-LD URLs to
+The owner also owns **riimshospitals.in, riims.info, riims.co.in, riims.in, kidneyhealer.in,
+kidneyhealer.com** (DNS A/`www` records for all six already point at `187.127.132.106`, same as
+the canonical domain). None of them serve a second copy of the site — all six share one bare
+nginx server block (`deploy/nginx-riims-redirect-domains.conf`, one `server_name` list, one
+Let's Encrypt certificate covering all 12 hostnames) that 301-redirects every request, path and
+query string included, straight to `https://riimshospitals.com`. This was a deliberate choice
+over mirroring the site on every domain: the generator hardcodes canonical/OG/JSON-LD URLs to
 `SITE.origin` regardless of which domain serves the bytes, so mirroring *could* have relied on
 Google respecting the canonical tag — a redirect makes it certain instead, keeps 100% of SEO
-signal (backlinks, indexing, rankings) on one domain, and needs only one small nginx block +
-cert to maintain instead of three more copies of the full site config. A visitor typing any of
-the three domains still lands on the real site — just via one instant 301 hop. Install steps:
-DEPLOY.md §A0.8. No code changes were needed — this is pure nginx/DNS/SSL, nothing in `build/`
-or `site/` references these domains.
+signal (backlinks, indexing, rankings) on one domain, and needs only one small nginx block + one
+cert to maintain instead of a full site config per domain. A visitor typing any of the six
+domains still lands on the real site — just via one instant 301 hop (two hops over plain HTTP:
+own HTTPS first, then the canonical, since certbot's `--redirect` adds the http→https leg
+in front of this block's own redirect). Install/expand steps: DEPLOY.md §A0.8. No code changes
+were needed — this is pure nginx/DNS/SSL, nothing in `build/` or `site/` references these
+domains. Adding a further brand domain later is the same pattern: add it to the `server_name`
+list and re-run certbot with `--expand` and the full domain list (old + new).
 
 ### 18.2 How it was deployed (the exact commands that were run)
 
