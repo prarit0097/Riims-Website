@@ -122,11 +122,17 @@ RiimS/
     ├── index.html            # home
     ├── about.html  doctors.html  blog.html  contact.html
     ├── privacy.html  terms.html  disclaimer.html
-    ├── conditions/           # 15 condition/SEO pages
+    ├── services.html  dna-kayakalp-protocol.html  guides.html
+    ├── <7 patient-guide slugs>.html          # §25 (how-kidneys-work, … 30-day-kidney-plan)
+    ├── <3 Delhi-NCR landing pages>.html      # §27 (chronic-kidney-disease-hospital-…, etc.)
+    ├── conditions/           # index.html (kidney hub) + 16 kidney condition/SEO pages
     │   ├── high-creatinine.html  high-creatinine-without-dialysis.html  ckd.html  stage-3-ckd.html
     │   │   stage-4-ckd.html  kidney-failure.html  kidney-disease-treatment.html  dialysis.html
     │   ├── proteinuria.html  kidney-swelling-treatment.html  diabetic-kidney-disease.html
-    │   └── hypertensive-kidney-disease.html  kidney-stone-treatment.html  uti-treatment.html  laser-kidney-stone-treatment.html
+    │   ├── hypertensive-kidney-disease.html  high-bp-kidney-disease.html  kidney-stone-treatment.html
+    │   │   uti-treatment.html  laser-kidney-stone-treatment.html
+    │   └── liver/  heart/  general/   # §26 — each: index.html hub + 12 / 8 / 12 condition pages
+    ├── doctors/              # 8 pages: 7 SPECIALISTS + 1 LANDING doctor page (§27)
     ├── blog/                 # 9 blog-article pages (one per post)
     │   └── <slug>.html × 9
     ├── css/
@@ -149,7 +155,7 @@ RiimS/
     ├── 404.html              # branded not-found page (absolute paths; served by web server)
     ├── site.webmanifest      # PWA manifest (name, icons, theme color)
     ├── .htaccess             # Apache caching/gzip/headers/clean-URLs/404 (ignored by nginx)
-    ├── sitemap.xml           # all 84 indexable URLs with lastmod/priority (404 excluded)
+    ├── sitemap.xml           # all 90 indexable URLs with lastmod/priority (404 excluded)
     └── robots.txt            # allows all, points to sitemap
 ```
 
@@ -176,11 +182,13 @@ RiimS/
    `nav`/`mobile` (active-state hints), `title`, `desc`, optional `keywords`, `body` (HTML), and
    optional `ld` (extra JSON-LD).
    - 9 core pages (home, kidney-diseases hub, treatments/services, **DNA Kayakalp Protocol**, **Patient Guides hub**, about, doctors, blog, contact)
-   - 15 condition pages (looped over `CONDITIONS`)
+   - 16 condition pages (looped over `CONDITIONS`)
    - 9 blog-article pages (looped over `POSTS`)
    - **7 patient-guide pages** (looped over `GUIDE_ORDER` in `build/guides.mjs`)
    - 3 legal pages (privacy, terms, disclaimer)
-   → **64 indexable pages** (+ a branded 404 = **65 files written**).
+   - 7 specialist pages + 4 Delhi-NCR landing pages (§27)
+   → with the 3 category hubs and 32 liver/heart/general condition pages below,
+     **90 indexable pages** (+ a branded 404 = **91 files written**).
    - Plus a loop over `['liver', 'heart', 'general']` that writes one **category hub**
      (`conditions/<dir>/index.html`, via `categoryHubPage(base, cat)` in `pages.mjs`) per
      category, and a second loop over `CONDITION_SETS['liver'|'heart'|'general']` (see §26)
@@ -256,7 +264,7 @@ driven by **Pages / SEO** — 17 tabs for 20 sections. For sections with a code 
 so the site always renders.
 
 **Condition pages are partly admin-editable** (since the Pages / SEO tab): title, meta description, H1
-and the six text fields (`intro`, `aboutTitle`, `about`, `when`, `symptoms`, `approach`) of all 47
+and the six text fields (`intro`, `aboutTitle`, `about`, `when`, `symptoms`, `approach`) of all 48
 conditions can be edited from `/admin/`, stored as `pagesSeo`/`conditionEdits` overrides. The condition
 copy itself still *lives* in `build/data.mjs` — the overrides layer on top, and an empty override means
 the code value wins.
@@ -282,7 +290,7 @@ or via `data/content.json` / `build/data.mjs` in the repo.
   `content.json → protocol.faqs`, Admin → Protocol FAQs) — the DNA Kayakalp Protocol page FAQs
   (`[{q,a}]`; empty = built-in defaults), driving both the visible block and the FAQPage schema.
 - **`NAV`** — the 7 header links (About, Kidney Diseases, Treatments, Guides, Doctors, Blog, Contact).
-- **`CONDITIONS`** — the 15 kidney condition pages, each with: `icon`, `title`, `crumb`, `intro`,
+- **`CONDITIONS`** — the 16 kidney condition pages, each with: `icon`, `title`, `crumb`, `intro`,
   `aboutTitle`, `about`, `symptoms[]`, `approach[]`, `when`, `related[]`, plus two **optional**
   fields shared with the other categories: `redFlags: {emergency: string[], soon?: string[]}`
   (renders an emergency red-flag box) and `sources: [label, url][]` (renders a citations block).
@@ -564,7 +572,7 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
   Ayurveda-supported lifestyle care"), and `medicalSpecialty` now lists `['Nephrology', 'Internal
   Medicine', 'Hepatology', 'Cardiology', 'Endocrinology']` (was Nephrology + Internal Medicine
   only). Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post; and a **`Physician`** node per doctor on the doctors page (`physiciansGraph()`, from the admin roster — for doctor rich results + E-E-A-T).
-- `sitemap.xml` (84 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
+- `sitemap.xml` (90 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
 - One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Delhi-NCR & Baraut — High
   Creatinine, CKD, Dialysis & Diet Guidance"; home `<title>` targets "Kidney Specialist in
   Delhi-NCR"), semantic landmarks, `aria-hidden` on decorative icons, `role="img"`
@@ -762,7 +770,7 @@ An external Semrush Site Audit (health 96%, top-10% benchmark 92%) prompted thes
 - **Edit copy that has an admin tab** (doctors, blogs, reels, testimonials, FAQs, services, why, steps,
   about, legal, protocol FAQs, search) → **use `/admin/`** (see §23) — it rebuilds automatically.
   Code defaults live in `build/data.mjs` / `build/pages.mjs`.
-- **Edit a condition page's title / meta / H1 / text** (any of the 47) → **use `/admin/` →
+- **Edit a condition page's title / meta / H1 / text** (any of the 48) → **use `/admin/` →
   Pages / SEO** (§23). Its `redFlags` + `sources` are locked as safety content — those stay code.
 - **Edit code-only copy** (condition `redFlags`/`sources`, the 6 specialist pages `SPECIALISTS`,
   the 7 guides, `NAV`, footer columns, disclaimers) → `build/data.mjs` / `build/pages.mjs` /
@@ -803,7 +811,7 @@ An external Semrush Site Audit (health 96%, top-10% benchmark 92%) prompted thes
   it with the three real doctors, who carry real Reg. Nos. Do not diagnose the live roster from
   the repo; check the live page or Admin → Doctors.
 - **Review what the SEO contractor publishes — this is a standing owner task, not a one-off.**
-  The `seo` role can rewrite the title, meta description, H1 and body text of all 47 disease
+  The `seo` role can rewrite the title, meta description, H1 and body text of all 48 disease
   pages. `build/compliance.mjs` refuses the obvious illegal claim, but **a denylist cannot catch
   a fluent promise that avoids the banned words** ("your reports will be normal again", "you
   won't need dialysis"). On a YMYL medical site under the Drugs & Magic Remedies Act the
@@ -932,7 +940,7 @@ the password.)
   server, taking the public `/api/lead` booking endpoint down with it).
   > **A denylist cannot catch a fluent claim that avoids the words** ("your reports will be
   > normal again"). This is a tripwire, not sign-off: an outside contractor's edits to the
-  > 47 disease pages still need a human to read them before they are trusted.
+  > 48 disease pages still need a human to read them before they are trusted.
 - **The Tracking tab cannot carry page copy.** `validateSection` refuses any `<meta>`/`<link>`
   line whose `name`/`property` is `description`, `robots`, `title`, `keywords`, `canonical`,
   `og:*` or `twitter:*` — the generator emits those itself, so accepting them would ship a
@@ -1184,7 +1192,8 @@ its category hub. **Task 5 completed the heart silo** — the highest-stakes cat
 (education, risk management and emergency guidance, never treatment marketing) — all 8 conditions
 live under `/conditions/heart/`; its category hub renders 8 cards. **Task 6 wired all 4 categories
 into site-wide discovery** (see below) and corrected the site's positioning, which still called
-itself kidney-only after the other 3 silos had shipped. The build emits **85 files** in total;
+itself kidney-only after the other 3 silos had shipped. At the end of this task the build emitted
+**85 files** (91 today — §27 added six more pages);
 every existing kidney page stays byte-identical (content-wise) to before. All 4 disease categories
 (Kidney, Liver, Heart, General) are fully populated **and discoverable** from the main nav.
 
