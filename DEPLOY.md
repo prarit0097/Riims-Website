@@ -100,6 +100,30 @@ does need `docker compose -f docker-compose.admin.yml restart`. Details: RIIMS.m
 > Permissions: nginx (user `www-data`) must be able to read `/opt/riims/site`. If you get 403,
 > run `sudo chmod -R a+rX /opt/riims`.
 
+### A0.8 — Extra brand domains (redirect-only, added 2026-08-02)
+
+The owner also holds **riimshospitals.in**, **riims.info**, **riims.co.in** (DNS A-records already
+pointed at this VPS). These do **not** serve a second copy of the site — every request 301s to
+the canonical `https://riimshospitals.com`, so all SEO signal (backlinks, indexing) stays on one
+domain while every domain still resolves to the real site for a visitor who types it. Full
+rationale + config in `deploy/nginx-riims-redirect-domains.conf`.
+
+```bash
+cd /opt/riims && git pull
+cp deploy/nginx-riims-redirect-domains.conf /etc/nginx/sites-available/riims-redirects
+ln -sf /etc/nginx/sites-available/riims-redirects /etc/nginx/sites-enabled/riims-redirects
+nginx -t && systemctl reload nginx
+certbot --nginx \
+  -d riimshospitals.in -d www.riimshospitals.in \
+  -d riims.info -d www.riims.info \
+  -d riims.co.in -d www.riims.co.in \
+  --redirect --agree-tos -m praritsidana786@gmail.com --non-interactive
+nginx -t && systemctl reload nginx
+```
+Verify: `curl -sI http://riims.info/` should show a chain ending at `https://riimshospitals.com/`.
+Adding a further domain later is the same pattern — add it to this one file's `server_name` list
+(or a new block) and re-run certbot with its `-d` flags added.
+
 ---
 
 ## A. Alternative: deploy RIIMS as its own Docker container

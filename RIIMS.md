@@ -645,6 +645,22 @@ This section is the source of truth for the running production setup.
 | SSL | Let's Encrypt via **certbot** (`/etc/letsencrypt/live/riimshospitals.com/`), auto-renew enabled |
 | Repo | https://github.com/prarit0097/Riims-Website (`main`) |
 
+### 18.1b Extra brand domains — redirect-only (added 2026-08-02)
+
+The owner also owns **riimshospitals.in**, **riims.info**, **riims.co.in** (DNS A/`www` records
+for all three already point at `187.127.132.106`, same as the canonical domain). None of them
+serve a second copy of the site — each is a bare nginx server block
+(`deploy/nginx-riims-redirect-domains.conf`) that 301-redirects every request, path and query
+string included, straight to `https://riimshospitals.com`. This was a deliberate choice over
+mirroring the site on all four domains: the generator hardcodes canonical/OG/JSON-LD URLs to
+`SITE.origin` regardless of which domain serves the bytes, so mirroring *could* have relied on
+Google respecting the canonical tag — a redirect makes it certain instead, keeps 100% of SEO
+signal (backlinks, indexing, rankings) on one domain, and needs only one small nginx block +
+cert to maintain instead of three more copies of the full site config. A visitor typing any of
+the three domains still lands on the real site — just via one instant 301 hop. Install steps:
+DEPLOY.md §A0.8. No code changes were needed — this is pure nginx/DNS/SSL, nothing in `build/`
+or `site/` references these domains.
+
 ### 18.2 How it was deployed (the exact commands that were run)
 
 ```bash
