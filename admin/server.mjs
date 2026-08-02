@@ -1,7 +1,8 @@
 /* ============================================================================
    RIIMS Admin Server — zero-dependency Node HTTP server.
 
-   - Stores + manages appointment LEADS (public POST /api/lead from the site)
+   - Stores + manages appointment LEADS (public POST /api/lead from the site),
+     and mirrors them into the owner's Google Sheet (admin/google-sheet.mjs)
    - Edits site content (doctors, reels, stories, FAQs, blogs, phone numbers)
      by writing data/content.local.json, then rebuilding the static site
    - Serves the admin UI at /admin/ (password login, signed session cookie)
@@ -21,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, extname, normalize } from 'node:path';
 import { checkPayload, reservedMetaName } from '../build/compliance.mjs';
 import { startInstagramSync, syncReels, verifyToken as verifyIgToken, getState as igState, disable as igDisable } from './instagram-sync.mjs';
+import { startSheetSync, flush as sheetFlush, pushSoon as sheetPushSoon, connect as sheetConnect, getState as sheetState, isEnabled as sheetEnabled, disable as sheetDisable } from './google-sheet.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -301,6 +303,11 @@ createServer(async (req, res) => {
         updated: new Date().toISOString(),
       });
       saveLeads(leads);
+      /* Mirror into the owner's Google Sheet, if configured. Deliberately AFTER
+         the save and without await: the patient's confirmation must not wait on
+         Google, and a Sheets outage must not turn a real lead into a 500. Any
+         failure is retried by the sweep in google-sheet.mjs. */
+      sheetPushSoon(getLeads, saveLeads);
       return send(res, 200, { ok: true, id: lead.id });
     }
 
@@ -332,6 +339,10 @@ createServer(async (req, res) => {
       if (!role) return send(res, 401, { error: 'unauthorized' });
       // Patient data is owner-only. Prefix match covers /leads, /leads/:id and any future subroute.
       if (p.startsWith('/api/admin/leads') && role !== 'owner') return send(res, 403, { error: 'Leads are owner-only' });
+      // Same rule for the Google Sheet mirror: it is a pipe carrying patient names
+      // and phone numbers out of the panel, so the SEO contractor cannot see it,
+      // point it somewhere else, or trigger a push.
+      if (p.startsWith('/api/admin/sheet') && role !== 'owner') return send(res, 403, { error: 'Sheet sync is owner-only' });
 
       if (p === '/api/admin/content' && req.method === 'GET') {
         return send(res, 200, mergedContent());
@@ -407,6 +418,36 @@ createServer(async (req, res) => {
         return send(res, 200, { ok: true });
       }
 
+      /* ---- Google Sheet mirror for leads (see admin/google-sheet.mjs) ----
+         Owner-only, enforced by the prefix guard above. */
+      if (p === '/api/admin/sheet' && req.method === 'GET') {
+        const s = sheetState();
+        return send(res, 200, {
+          enabled: sheetEnabled(), sheetName: s.sheetName || '', url: s.url || '',
+          lastPush: s.lastPush || '', lastError: s.lastError || '', lastCount: s.lastCount || 0,
+          pending: getLeads().filter((l) => !l.sheetSynced).length,
+        });
+      }
+      if (p === '/api/admin/sheet' && req.method === 'POST') {
+        const b = await readJsonBody(req);
+        if (!b) return send(res, 400, { error: 'bad json' });
+        try {
+          const r = await sheetConnect(b.url, b.secret);
+          sheetFlush(getLeads, saveLeads).catch(() => {}); // backfill in the background
+          return send(res, 200, { ok: true, sheet: r.sheet || '' });
+        } catch (err) {
+          return send(res, 400, { error: err.message });
+        }
+      }
+      if (p === '/api/admin/sheet/sync' && req.method === 'POST') {
+        try { return send(res, 200, await sheetFlush(getLeads, saveLeads)); }
+        catch (err) { return send(res, 400, { error: err.message }); }
+      }
+      if (p === '/api/admin/sheet' && req.method === 'DELETE') {
+        sheetDisable();
+        return send(res, 200, { ok: true });
+      }
+
       if (p === '/api/admin/upload' && req.method === 'POST') {
         const b = await readJsonBody(req);
         if (!b || !b.data || !b.name) return send(res, 400, { error: 'need {name, data}' });
@@ -437,3 +478,8 @@ createServer(async (req, res) => {
 /* Instagram reels auto-sync: no-op until the owner saves a token (Admin → Health
    Reels). Then: first pass ~30s after boot, every 6 hours after that. */
 startInstagramSync(rebuild);
+
+/* Google Sheet lead mirror: no-op until the owner saves a web-app URL (Admin →
+   Leads). The sweep exists so a lead that could not be delivered live — Sheets
+   down, deployment replaced, VPS restarted mid-push — still reaches the sheet. */
+startSheetSync(getLeads, saveLeads);

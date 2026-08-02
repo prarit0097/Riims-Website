@@ -96,13 +96,19 @@ RiimS/
 ├── admin/                    # ── ADMIN PANEL (see §23) ──
 │   ├── server.mjs            # zero-dep Node server: leads API, content CRUD, uploads, rebuild; owner/seo roles
 │   ├── set-password.mjs      # set owner password; --seo sets the SEO-role password (data/admin-config.json)
+│   ├── instagram-sync.mjs    # Instagram reels auto-sync (§23)
+│   ├── google-sheet.mjs      # mirrors every lead into the owner's Google Sheet (§23)
+│   ├── apps-script/          # riims-leads.gs — the receiver pasted into the Sheet
+│   │                         #   (Google-side code; never run by this repo)
 │   └── ui/                   # the /admin/ panel (index.html + admin.js + admin.css)
 ├── data/                     # ── CONTENT + RUNTIME DATA ──
 │   ├── content.json          # admin-editable content defaults (in git)
 │   ├── content.local.json    # VPS admin edits — overrides content.json (GITIGNORED)
 │   ├── pages-manifest.json   # build artifact: page list for the Pages/SEO tab (GITIGNORED)
 │   ├── leads.json            # stored appointment leads (GITIGNORED)
-│   └── admin-config.json     # owner + SEO password hashes & session secret (GITIGNORED)
+│   ├── admin-config.json     # owner + SEO password hashes & session secret (GITIGNORED)
+│   ├── instagram.json        # IG access token + sync state (GITIGNORED)
+│   └── sheets.json           # Google Sheet web-app URL + shared secret (GITIGNORED)
 ├── docker-compose.admin.yml  # runs the admin server in Docker on 127.0.0.1:5500
 ├── docker-compose.yml        # alt: site as a container behind Traefik (not used)
 ├── deploy/                   # ── DEPLOYMENT (see DEPLOY.md) ──
@@ -881,7 +887,7 @@ the password.)
 | Tab | What you can do |
 |-----|-----------------|
 | **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal / System) with a find-a-page filter. Each row carries a **serial number** (1…91), numbered once over the full list in display order — so a page keeps its number while you filter (searching "fatty liver" shows its real numbers, not 1/2/3) and "page 47" means the same page to everyone. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`; hiding a page asks for confirmation first). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the MedicalWebPage JSON-LD; `aboutTitle`/`about`/`when`/`approach` feed the FAQPage schema), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
-| **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. |
+| **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. Also holds the **Google Sheet sync** card — mirror every lead into the owner's spreadsheet (see below). |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. "Add reel" inserts at the TOP; the homepage shows the **top 5**, so the oldest drops off automatically. **Instagram auto-sync** (see below): paste an access token once and the list refreshes itself from Instagram every 6 hours — no manual adding at all. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
@@ -1016,6 +1022,46 @@ muted-autoplay videos). Zero-dependency. Once the owner pastes an access token i
 account → developers.facebook.com → My Apps → Create App (type Business) → add product
 **Instagram** → "API setup with Instagram login" → Generate token (log in with the clinic's
 Instagram) → copy the long-lived token → paste in Admin → Health Reels → Save & start.
+
+### Google Sheet lead sync (`admin/google-sheet.mjs` + `admin/apps-script/riims-leads.gs`)
+
+Every website lead is mirrored into the owner's "website leads" Google Sheet, whose header row is
+`s.n. | created_time | full_name | phone_number | city | problem`. Turned on in **Admin → Leads →
+Google Sheet sync**; OFF until the owner pastes a web-app URL, and the panel remains the system of
+record either way. (The sheet's URL/id is deliberately **not** recorded here — this repo is public,
+and the sheet holds patient contact details.)
+
+- **Apps Script web app, not the Sheets API.** The API needs an OAuth service account, a signed
+  JWT and a key file on the VPS — a real dependency and a credential to rotate. A web app is one
+  URL plus a shared secret, which keeps the zero-dependency rule intact.
+- **The lead is never at risk.** `data/leads.json` is written **first**; the push runs after, without
+  `await`, so the patient's confirmation never waits on Google and a Sheets outage cannot turn a real
+  lead into a 500. A lead is flagged `sheetSynced` only once the script confirms the row; anything
+  unconfirmed is retried by a sweep **every 10 minutes**, so a wrong URL, a replaced deployment or a
+  restart mid-push self-heals once fixed. "Pending abhi bhejo" forces the sweep; connecting
+  backfills every existing lead.
+- **`lead_id` is what makes retries safe.** A row can be written and the reply lost on the way back
+  (at-least-once delivery), so the script appends `lead_id` + `source` columns once and skips any
+  row whose id is already present. Columns are matched **by header name**, not position, so
+  reordering or adding columns in the sheet does not break the mapping.
+- **Owner-only, enforced server-side.** `/api/admin/sheet*` returns **403** for the seo role, next to
+  the same guard on `/api/admin/leads*` — this is a pipe carrying patient names and phone numbers
+  out of the panel, so the contractor cannot read it, redirect it, or trigger a push.
+- **The shared secret** is generated in the browser (CSPRNG) and pasted into the script's `SECRET`;
+  a web app deployed "Anyone" cannot ask an unauthenticated server to log in, so without it anyone
+  who learned the URL could append junk rows. State lives in `data/sheets.json` (gitignored,
+  survives `update.sh`).
+- Endpoints (owner-only): `GET /api/admin/sheet` status + pending count, `POST` connect (pings the
+  script before saving), `POST /api/admin/sheet/sync` flush now, `DELETE` disable.
+- **Verified** by an integration test against a fake receiver implementing the same contract: all
+  leads delivered oldest-first, nothing re-sent once synced, an outage leaves the lead pending
+  rather than lost or half-written, recovery delivers exactly once, a duplicate `lead_id` is
+  skipped, and a wrong secret is refused with the lead kept pending. `npm test` does not cover
+  `admin/`, so changes here need that check run separately.
+
+> ⚠️ **The sheet is currently shared "Anyone with the link — Viewer".** Once leads flow in it holds
+> patient names and phone numbers, so that link is a public patient-data leak. Set General access
+> back to **Restricted** before enabling the sync.
 
 ### VPS setup (one-time)
 ```bash

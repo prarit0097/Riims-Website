@@ -310,10 +310,12 @@
         <div class="stat"><b>${count('contacted')}</b><span>Contacted</span></div>
         <div class="stat"><b>${count('booked')}</b><span>Booked</span></div>
       </div>
+      <div class="card" id="sheet-card"><p class="muted">Checking Google Sheet sync…</p></div>
       ${leads.length ? `<div style="overflow-x:auto"><table>
         <tr><th>#</th><th>When</th><th>Patient</th><th>Problem</th><th>Status</th><th>Notes</th><th></th></tr>
         ${rows}</table></div>` : `<div class="card muted">No leads yet. They appear here the moment someone submits the website form.</div>`}`;
 
+    renderSheetCard();
     $('#refresh').onclick = async () => { leads = await api('/api/admin/leads'); render(); };
     const csvBtn = $('#csv');
     if (csvBtn) csvBtn.onclick = () => {
@@ -331,6 +333,70 @@
       tr.querySelector('[data-act="notes"]').onchange = (e) => api(`/api/admin/leads/${id}`, { method: 'PATCH', body: JSON.stringify({ notes: e.target.value }) }).then(() => toast('Note saved'));
       tr.querySelector('[data-act="del"]').onclick = () => { if (confirm('Delete this lead?')) api(`/api/admin/leads/${id}`, { method: 'DELETE' }).then(() => { leads = leads.filter((l) => l.id !== id); render(); }); };
     });
+  }
+
+  /* Google Sheet mirror (inside Leads). Owner-only server-side — the SEO role
+     never renders this tab at all. Leads are saved here first and pushed after,
+     so a Sheets outage delays a row, it never loses a patient. */
+  async function renderSheetCard() {
+    const el = $('#sheet-card');
+    if (!el) return;
+    let s = { enabled: false };
+    try { s = await api('/api/admin/sheet'); } catch { el.innerHTML = '<p class="err">Could not load Google Sheet status.</p>'; return; }
+
+    if (s.enabled) {
+      el.innerHTML = `
+        <h3 style="margin:0 0 .3rem">📊 Google Sheet sync: ON ${s.sheetName ? `(${esc(s.sheetName)})` : ''}</h3>
+        <p class="muted" style="margin:0 0 10px">
+          Last row bheji: ${s.lastPush ? new Date(s.lastPush).toLocaleString('en-IN') : 'abhi tak nahi'}
+          ${s.pending ? ` · <b>${s.pending} pending</b> (10 min me apne aap dubara try hoga)` : ' · sab leads sheet me pahunch gaye'}
+          ${s.lastError ? ` · <span class="err" style="min-height:0">last error: ${esc(s.lastError)}</span>` : ''}</p>
+        <div class="row"><button id="sh-sync" class="btn light small">↻ Pending abhi bhejo</button>
+        <button id="sh-off" class="btn light small">Turn off</button></div>`;
+      $('#sh-sync').onclick = async () => {
+        try { const r = await api('/api/admin/sheet/sync', { method: 'POST', body: '{}' }); toast(`${r.sent ?? 0} lead sheet me bheje`); renderSheetCard(); }
+        catch (e) { toast(e.message, true); }
+      };
+      $('#sh-off').onclick = async () => {
+        if (!confirm('Google Sheet sync band karein?\n\nSheet me jo rows hain wo rahengi, lekin naye leads sirf is panel me aayenge.')) return;
+        try { await api('/api/admin/sheet', { method: 'DELETE' }); renderSheetCard(); } catch (e) { toast(e.message, true); }
+      };
+      return;
+    }
+
+    el.innerHTML = `
+      <h3 style="margin:0 0 .3rem">📊 Google Sheet sync: OFF</h3>
+      <p class="muted" style="margin:0 0 10px">Har naya lead apne aap aapki Google Sheet me chala jayega. One-time setup:</p>
+      <ol class="muted" style="margin:0 0 12px 18px;font-size:13px;line-height:1.7">
+        <li>Sheet kholo → <b>Extensions → Apps Script</b></li>
+        <li>Repo ki file <b>admin/apps-script/riims-leads.gs</b> ka poora code paste karo</li>
+        <li>Neeche wala secret copy karke script ki pehli line <b>var SECRET = '…'</b> me daalo → Save</li>
+        <li><b>Deploy → New deployment → Web app</b> · Execute as: <b>Me</b> · Who has access: <b>Anyone</b></li>
+        <li>Jo <b>/exec</b> URL mile use yahan paste karo</li>
+      </ol>
+      <label class="f">Web app URL<input id="sh-url" placeholder="https://script.google.com/macros/s/…/exec"></label>
+      <label class="f">Secret (dono jagah same hona chahiye)
+        <input id="sh-secret" value="${esc(randomSecret())}"></label>
+      <div class="row"><button id="sh-on" class="btn primary small">Save &amp; connect</button></div>
+      <p class="muted" style="font-size:13px;margin:10px 0 0">Connect karte hi purane leads bhi sheet me bhej diye jayenge (duplicate nahi banenge).</p>`;
+
+    $('#sh-on').onclick = async () => {
+      const url = $('#sh-url').value.trim(), secret = $('#sh-secret').value.trim();
+      if (!url) { toast('Pehle /exec URL paste karo', true); return; }
+      try {
+        const r = await api('/api/admin/sheet', { method: 'POST', body: JSON.stringify({ url, secret }) });
+        toast(`Sheet "${r.sheet || 'connected'}" se jud gaya — purane leads bheje ja rahe hain…`);
+        renderSheetCard();
+      } catch (e) { toast(e.message, true); }
+    };
+  }
+
+  /* Shared secret for the Apps Script. Generated in the browser (CSPRNG) so it
+     never has to travel anywhere before the owner has copied it into the script. */
+  function randomSecret() {
+    const b = new Uint8Array(24);
+    crypto.getRandomValues(b);
+    return [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
   }
 
   /* ---- Doctors ---- */
