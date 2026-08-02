@@ -1043,7 +1043,9 @@ and the sheet holds patient contact details.)
 - **`lead_id` is what makes retries safe.** A row can be written and the reply lost on the way back
   (at-least-once delivery), so the script appends `lead_id` + `source` columns once and skips any
   row whose id is already present. Columns are matched **by header name**, not position, so
-  reordering or adding columns in the sheet does not break the mapping.
+  reordering or adding columns in the sheet does not break the mapping. `created_time` is written
+  as a real Date (sortable/filterable) and the script pins that column to `dd/MM/yyyy HH:mm:ss` —
+  a fresh column defaults to date-only, which hid the time the patient actually submitted.
 - **Owner-only, enforced server-side.** `/api/admin/sheet*` returns **403** for the seo role, next to
   the same guard on `/api/admin/leads*` — this is a pipe carrying patient names and phone numbers
   out of the panel, so the contractor cannot read it, redirect it, or trigger a push.

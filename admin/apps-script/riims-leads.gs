@@ -64,6 +64,13 @@ function doPost(e) {
 
     if (out.length) {
       sh.getRange(sh.getLastRow() + 1, 1, out.length, width).setValues(out);
+      /* created_time is written as a real Date so the sheet can sort and filter
+         it. A fresh column defaults to a date-only format, which hides the time
+         a patient actually submitted — so pin the format on the whole column
+         (existing rows included) rather than leaving it to the sheet. */
+      if (map.createdtime && sh.getLastRow() > 1) {
+        sh.getRange(2, map.createdtime, sh.getLastRow() - 1, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
+      }
     }
     return json({ ok: true, added: out.length, skipped: skipped });
   } catch (err) {
