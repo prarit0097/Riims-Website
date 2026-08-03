@@ -259,9 +259,9 @@ export function select({ label, required, hint, icon: ic, options = [], placehol
   return field({ label, required, hint, control, controlId: id });
 }
 
-export function checkbox({ label, name, checked = true } = {}) {
+export function checkbox({ label, name, checked = true, required = false } = {}) {
   return `<label class="riims-check" style="display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--text-body)">`
-    + `<input type="checkbox"${name ? ` name="${name}"` : ''}${checked ? ' checked' : ''} class="riims-check-input">`
+    + `<input type="checkbox"${name ? ` name="${name}"` : ''}${checked ? ' checked' : ''}${required ? ' required' : ''} class="riims-check-input">`
     + `<span class="riims-check-box" aria-hidden="true">${icon('check', { size: 13, style: 'color:#fff;stroke-width:3' })}</span>`
     + `<span>${label}</span></label>`;
 }

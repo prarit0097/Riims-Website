@@ -319,9 +319,9 @@
     $('#refresh').onclick = async () => { leads = await api('/api/admin/leads'); render(); };
     const csvBtn = $('#csv');
     if (csvBtn) csvBtn.onclick = () => {
-      const head = ['sno', 'date', 'name', 'phone', 'problem', 'status', 'notes'];
+      const head = ['sno', 'date', 'name', 'phone', 'city', 'problem', 'status', 'notes'];
       const lines = [head.join(',')].concat(leads.map((l, i) =>
-        [leads.length - i, l.ts, l.name, l.phone, l.problem, l.status, l.notes]
+        [leads.length - i, l.ts, l.name, l.phone, l.city, l.problem, l.status, l.notes]
           .map((x) => `"${String(x ?? '').replace(/"/g, '""')}"`).join(',')));
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));

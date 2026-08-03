@@ -60,7 +60,7 @@
   function formValues(form) {
     const v = (n) => { const el = form.querySelector(`[name="${n}"]`); return el ? el.value.trim() : ''; };
     return {
-      name: v('name'), phone: v('phone'), problem: v('problem'),
+      name: v('name'), phone: v('phone'), city: v('city'), problem: v('problem'),
       website: v('website'), // honeypot — must stay empty
       page: location.pathname,
       stage: 'complete',

@@ -375,11 +375,22 @@ Global UI wrapped around every page by the generator:
 - **`bookingModal()`** — hidden dialog containing the appointment form; opened by any
   `[data-book]` control, closed by the ✕, overlay click, or Esc.
 - **`pageHero(base, {crumb, title, intro, icon})`** — the breadcrumb + H1 hero for inner pages.
-- **`appointmentForm()`** — single-step form: Name + Phone + Problem/Disease (**kidney-first**
-  `PROBLEM_OPTIONS`: high creatinine, CKD, dialysis, kidney failure, proteinuria, swelling, diabetes+kidney,
-  BP+kidney, stone/UTI, Other — no off-brand non-kidney options) + consent →
-  success state. Toggled by `site.js` via the `hidden` attribute (CSS
+- **`appointmentForm()`** — single-step form: **Name + Phone + City + Problem/Disease + consent**,
+  → success state. Toggled by `site.js` via the `hidden` attribute (CSS
   `[hidden]{display:none!important}` guarantees only the active view shows).
+  **Every field is required** (owner request, 2026-08-04), consent checkbox included — it ships
+  pre-checked, so `required` only bites if someone deliberately unchecks it, which is the correct
+  outcome (no consent, no call-back). Browser `required`/`minlength` is mirrored by real
+  server-side validation in `/api/lead` (see §23) because `required` does not guard a direct POST.
+  - **City** (`name="city"`, 2–50 chars) was added the same day. The owner's Google Sheet had
+    carried a `city` column since the sync shipped, and the admin Leads table already rendered
+    city when present — the form simply never collected it, so the column was always blank.
+  - **Problem/Disease is free text, not a dropdown.** It was a `select` over a kidney-only
+    `PROBLEM_OPTIONS` list; patients now type the complaint in their own words (2–100 chars).
+    Two reasons: a fixed list cannot capture how a patient actually describes their problem, and
+    the old list predated the multi-disease expansion (§26), so a liver/heart/metabolic patient
+    had nothing to pick but "Other". `select()` is still exported by `components.mjs` but is no
+    longer used anywhere in the site chrome.
 
 ## 10. Sections (`build/sections.mjs`)
 
@@ -504,13 +515,17 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 
 - **Booking modal** — `[data-book]` opens it (delegated click), `[data-modal-close]`/overlay/
   Esc close it; body scroll locked while open.
-- **Appointment form (single step)** — `[data-apptform]`: **Name + Phone + Problem/Disease
-  select** + consent (+ hidden honeypot). On submit, `postLead()` POSTs to `/api/lead` →
+- **Appointment form (single step)** — `[data-apptform]`: **Name + Phone + City + Problem/Disease
+  (all required, free-text)** + consent (+ hidden honeypot). `formValues()` sends
+  `name, phone, city, problem` — **`city` must stay in that list**, or the field renders but never
+  reaches the server. On submit, `postLead()` POSTs to `/api/lead` →
   stored by the admin server, managed in the `/admin/` Leads tab (see §23) — **no WhatsApp
   redirect** (owner request: leads go only to the admin panel). Success screen confirms a
   call-back. In local dev (no admin server) the POST fails silently; the form still shows
   the confirmation.
-- **Select placeholder color** — adds `has-value` when a real option is chosen.
+- **Select placeholder color** — adds `has-value` when a real option is chosen. (Now unused by the
+  appointment form, which has no `select` since Problem/Disease became free text; the handler is
+  harmless and stays for any future select.)
 - **FAQ accordion** — `[data-faq]` items; clicking a question opens it (and closes siblings),
   rotates the chevron, animates `grid-template-rows: 0fr→1fr`.
 - **Disease search** — `resolveTopic()` maps the query to a topic; the "Specialist / Related
@@ -915,7 +930,7 @@ the password.)
 | Tab | What you can do |
 |-----|-----------------|
 | **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal / System) with a find-a-page filter. Each row carries a **serial number** (1…91), numbered once over the full list in display order — so a page keeps its number while you filter (searching "fatty liver" shows its real numbers, not 1/2/3) and "page 47" means the same page to everyone. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`; hiding a page asks for confirmation first). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the MedicalWebPage JSON-LD; `aboutTitle`/`about`/`when`/`approach` feed the FAQPage schema), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
-| **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, Problem/Disease). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. Also holds the **Google Sheet sync** card — mirror every lead into the owner's spreadsheet (see below). |
+| **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, **City**, Problem/Disease — city shows under the problem in the table, and is a column in the CSV export as of 2026-08-04). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. Also holds the **Google Sheet sync** card — mirror every lead into the owner's spreadsheet (see below). |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. "Add reel" inserts at the TOP; the homepage shows the **top 5**, so the oldest drops off automatically. **Instagram auto-sync** (see below): paste an access token once and the list refreshes itself from Instagram every 6 hours — no manual adding at all. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
@@ -972,11 +987,13 @@ the password.)
   text is injected into HTML unescaped by `build/pages.mjs`, so no tags may enter through it.
 - Image uploads go to `site/assets/uploads/` (gitignored) via base64 JSON (10MB nginx cap).
 - The public form (`site/js/site.js`) POSTs to **`/api/lead`** on submit (single step:
-  name/phone/problem). Honeypot field + 10/min/IP rate limit. Leads go ONLY to the admin
+  name/phone/**city**/problem). Honeypot field + 10/min/IP rate limit. Leads go ONLY to the admin
   panel (no WhatsApp redirect, per owner request).
 - **`/api/lead` validates server-side** (added 2026-07-17 after a numberless lead reached the
   panel via a direct POST — the browser's `required` only guards the form): name ≥2 chars and a
-  real Indian mobile are mandatory. The phone is normalised (`+91`/`91`/`0` prefixes and
+  real Indian mobile are mandatory, **plus city ≥2 and problem ≥2 as of 2026-08-04** (same
+  reasoning — the form marks all four required, so the server has to enforce it or a direct POST
+  walks past it). The phone is normalised (`+91`/`91`/`0` prefixes and
   spaces/dashes stripped) and must then match `[6-9]\d{9}`; anything else is a 400 with a
   plain-language error. The honeypot answers **before** validation so bots keep getting their
   fake ok. The form mirrors the same rule client-side (`pattern`/`inputmode`/`maxlength` on the
@@ -985,6 +1002,12 @@ the password.)
   `[data-appt-error]` instead of a false "Request received". If the network itself is down the
   old show-success behaviour is kept deliberately (the server has no lead either way, and the
   page offers call/WhatsApp).
+  > `city`/`problem` are now assigned from the validated values, not `|| lead.city || ''`. The
+  > old fallback existed for a partial/multi-step save that no longer exists (the form posts once,
+  > `stage: 'complete'`); keeping it would have let a second POST with the same `id` blank a field
+  > the validator had just demanded. Verified end-to-end against a locally booted admin server:
+  > a full lead stores city + free-text problem, a missing city 400s, a missing problem 400s, and
+  > the honeypot still returns a fake ok without storing anything.
 - Auth: scrypt password hash(es) + HMAC-signed 7-day session cookie carrying the role
   (`data/admin-config.json`, created by `node admin/set-password.mjs '<password>'`, plus
   `--seo` for the SEO role). UI is `noindex`.
@@ -1058,6 +1081,12 @@ Every website lead is mirrored into the owner's "website leads" Google Sheet, wh
 Google Sheet sync**; OFF until the owner pastes a web-app URL, and the panel remains the system of
 record either way. (The sheet's URL/id is deliberately **not** recorded here — this repo is public,
 and the sheet holds patient contact details.)
+
+> The **`city` column finally has data** as of 2026-08-04. It was mapped from `lead.city` since the
+> sync shipped, but the public form never collected a city, so every synced row wrote an empty
+> string there. Adding the required City field to `appointmentForm()` filled it — no change was
+> needed in `google-sheet.mjs` or the Apps Script, since columns are matched by header name.
+> Leads captured **before** that date still have a blank city; that is historical, not a bug.
 
 - **Apps Script web app, not the Sheets API.** The API needs an OAuth service account, a signed
   JWT and a key file on the VPS — a real dependency and a credential to rotate. A web app is one

@@ -2,32 +2,31 @@
    floating contact, booking modal, appointment form, page hero.
    Ported from ui_kits/website sections-a/-d + pages.jsx. */
 
-import { icon, logo, button, iconButton, input, select, checkbox } from './components.mjs';
+import { icon, logo, button, iconButton, input, checkbox } from './components.mjs';
 import { NAV, SITE, CATEGORIES } from './data.mjs';
 
 /* attributes for off-site links (social, WhatsApp) */
 const OFFSITE = { target: '_blank', rel: 'noopener noreferrer' };
 
 /* ---------- Appointment form (single step) ----------
-   Name + Phone + Problem/Disease only. On submit the lead POSTs to /api/lead
-   (stored by the admin server; managed in the /admin/ Leads tab). */
+   Name + Phone + City + Problem/Disease. On submit the lead POSTs to /api/lead
+   (stored by the admin server; managed in the /admin/ Leads tab).
+   Every field is required (owner request): a lead missing the city or the
+   complaint costs the care team a call-back just to ask, and the owner's
+   Google Sheet has always had a `city` column the form never filled. */
 export function appointmentForm() {
-  // Kidney-first — RIIMS is a kidney specialist brand; the list stays focused on
-  // kidney concerns (broad non-kidney options dilute the brand + SEO signal).
-  const PROBLEM_OPTIONS = [
-    'High creatinine', 'CKD (chronic kidney disease)', 'Dialysis guidance', 'Kidney failure',
-    'Protein in urine', 'Swelling (edema)', 'Diabetes + kidney', 'BP + kidney',
-    'Kidney stone / UTI', 'Other',
-  ];
-
   const form = `<form data-step="0" class="appt-step" style="display:flex;flex-direction:column;gap:.9rem">`
     + input({ label: 'Full name', required: true, minlength: 2, icon: icon('user'), placeholder: 'Your name', name: 'name' })
     /* pattern mirrors the server's rule (10 digits, starts 6-9) so a typo is caught
        in the browser with a clear message instead of a failed submit. */
     + input({ label: 'Phone / WhatsApp', type: 'tel', required: true, icon: icon('phone'), placeholder: '10-digit mobile', name: 'phone', pattern: '[6-9][0-9]{9}', inputmode: 'numeric', maxlength: 10, title: 'Enter your 10-digit mobile number (starts with 6, 7, 8 or 9)' })
-    + select({ label: 'Problem / Disease', name: 'problem', icon: icon('activity'), options: PROBLEM_OPTIONS, placeholder: 'Select your problem' })
+    + input({ label: 'City', required: true, minlength: 2, maxlength: 50, icon: icon('map-pin'), placeholder: 'Your city', name: 'city' })
+    /* Free text, not a dropdown (owner request): patients describe the problem in
+       their own words, which also captures complaints outside the old kidney-only
+       option list now that RIIMS treats liver/heart/general conditions too. */
+    + input({ label: 'Problem / Disease', required: true, minlength: 2, maxlength: 100, icon: icon('activity'), placeholder: 'Describe your problem', name: 'problem' })
     + `<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:1px;width:1px;opacity:0">`
-    + checkbox({ label: 'I agree to be contacted by RIIMS about my query.', name: 'agree', checked: true })
+    + checkbox({ label: 'I agree to be contacted by RIIMS about my query.', name: 'agree', checked: true, required: true })
     + `<p data-appt-error hidden style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--danger,#c0392b)"></p>`
     + button('Request a callback', { variant: 'primary', size: 'lg', fullWidth: true, type: 'submit', iconRight: icon('arrow-right', { size: 18 }) })
     + `<p style="margin:0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Takes ~20 seconds · our care team will call you back</p>`

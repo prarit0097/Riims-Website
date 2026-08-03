@@ -286,8 +286,15 @@ createServer(async (req, res) => {
       const rawPhone = String(b.phone || '').replace(/[\s()-]/g, '');
       const phone10 = (rawPhone.match(/^(?:\+?91|0)?([6-9]\d{9})$/) || [])[1] || '';
       const nameClean = clean(b.name, 100);
+      /* City + problem are required on the form (owner request) and mirrored here
+         for the same reason the phone rule is: `required` in the browser does not
+         guard a direct POST. Same 2-char floor as the name. */
+      const cityClean = clean(b.city, 50);
+      const problemClean = clean(b.problem, 100);
       if (nameClean.length < 2) return send(res, 400, { error: 'Please enter your name.' });
       if (!phone10) return send(res, 400, { error: 'Please enter a valid 10-digit mobile number.' });
+      if (cityClean.length < 2) return send(res, 400, { error: 'Please enter your city.' });
+      if (problemClean.length < 2) return send(res, 400, { error: 'Please describe your problem.' });
 
       const leads = getLeads();
       let lead = b.id ? leads.find((l) => l.id === b.id) : null;
@@ -297,8 +304,8 @@ createServer(async (req, res) => {
       }
       Object.assign(lead, {
         stage: clean(b.stage, 20) || 'partial',
-        name: nameClean, phone: phone10, problem: clean(b.problem, 100),
-        city: clean(b.city, 50) || lead.city || '', creatinine: clean(b.creatinine, 30) || lead.creatinine || '',
+        name: nameClean, phone: phone10, problem: problemClean,
+        city: cityClean, creatinine: clean(b.creatinine, 30) || lead.creatinine || '',
         mode: clean(b.mode, 40) || lead.mode || '', page: clean(b.page, 200),
         updated: new Date().toISOString(),
       });
