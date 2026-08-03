@@ -385,6 +385,10 @@ Global UI wrapped around every page by the generator:
   - **City** (`name="city"`, 2–50 chars) was added the same day. The owner's Google Sheet had
     carried a `city` column since the sync shipped, and the admin Leads table already rendered
     city when present — the form simply never collected it, so the column was always blank.
+  - The reassurance line under the submit button reads **"Our team will contact you shortly"**
+    (owner request, 2026-08-04; was "Takes ~20 seconds · our care team will call you back" — the
+    time estimate stopped being true once the form grew to four fields, and "call you back"
+    over-promised the channel).
   - **Problem/Disease is free text, not a dropdown.** It was a `select` over a kidney-only
     `PROBLEM_OPTIONS` list; patients now type the complaint in their own words (2–100 chars).
     Two reasons: a fixed list cannot capture how a patient actually describes their problem, and

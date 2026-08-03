@@ -29,7 +29,7 @@ export function appointmentForm() {
     + checkbox({ label: 'I agree to be contacted by RIIMS about my query.', name: 'agree', checked: true, required: true })
     + `<p data-appt-error hidden style="margin:0;font-family:var(--font-sans);font-size:var(--fs-sm);color:var(--danger,#c0392b)"></p>`
     + button('Request a callback', { variant: 'primary', size: 'lg', fullWidth: true, type: 'submit', iconRight: icon('arrow-right', { size: 18 }) })
-    + `<p style="margin:0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Takes ~20 seconds · our care team will call you back</p>`
+    + `<p style="margin:0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:var(--text-faint)">Our team will contact you shortly</p>`
     + `</form>`;
 
   const success = `<div data-step="2" class="appt-step" hidden style="text-align:center;padding:1rem .5rem">`
