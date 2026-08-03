@@ -101,7 +101,13 @@ const V = _h.digest('hex').slice(0, 10);
 /* ---------- JSON-LD ---------- */
 function clinicGraph() {
   return {
-    '@type': ['MedicalClinic', 'LocalBusiness'],
+    /* Hospital, not MedicalClinic — the Google Business Profile's category is
+       Hospital, and Google cross-checks this schema against the GBP. The two
+       disagreeing is the kind of mismatch that costs trust in both. Hospital is a
+       MedicalOrganization and (via EmergencyService) a LocalBusiness, so every
+       property below stays valid; LocalBusiness is kept explicit so parsers that
+       don't resolve the inheritance chain still read the local signals. */
+    '@type': ['Hospital', 'LocalBusiness'],
     '@id': `${SITE.origin}/#clinic`,
     name: 'RIIMS — Rashtriya Institute of Integrated Medical Sciences',
     alternateName: 'RIIMS Baraut',

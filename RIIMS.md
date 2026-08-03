@@ -582,15 +582,26 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
   (indexable by Google Images, low CLS). The LCP hero is a `<picture>` (WebP + JPG fallback,
   `fetchpriority="high"`). Total `site/assets` dropped from ~3.5 MB to ~0.9 MB (the brand logo
   alone went 1.43 MB → 112 KB). The favicon/apple-touch/PWA icon stays PNG.
-- **JSON-LD** (`<script type="application/ld+json">`): `["MedicalClinic","LocalBusiness"]` +
+- **JSON-LD** (`<script type="application/ld+json">`): **`["Hospital","LocalBusiness"]`** +
   `WebSite` on every page, with **local signals** — `geo` (GeoCoordinates), `hasMap`,
   `areaServed` = the real service cities (Baraut/Baghpat/Meerut/Shamli), E.164 `telephone`,
-  opening hours. `clinicGraph()`'s `description` (in `generate.mjs`) is **kidney-led but honest
+  opening hours.
+  > **`Hospital`, not `MedicalClinic`** (changed 2026-08-04). The Google Business Profile's
+  > category is **Hospital** (§16 has recorded that since the 2026-07-17 GBP sync) while the
+  > schema still said `MedicalClinic` — and Google cross-checks the two, so they must agree.
+  > `Hospital` is a `MedicalOrganization` and, through `EmergencyService`, a `LocalBusiness`, so
+  > every property in `clinicGraph()` stays valid and nothing else had to change: the `#clinic`
+  > node is referenced as `publisher` (WebSite, Article) and `worksFor` (Physician), both of
+  > which expect an Organization. `LocalBusiness` is kept explicit in the array for parsers that
+  > don't resolve the inheritance chain. **If the GBP category ever changes, change this too.**
+  
+  `clinicGraph()`'s `description` (in `generate.mjs`) is **kidney-led but honest
   about the other 3 categories** as of Task 6 ("...care for high creatinine, CKD, kidney failure
   and dialysis guidance, plus in-house liver, heart and metabolic disease care, alongside
-  Ayurveda-supported lifestyle care"), and `medicalSpecialty` now lists `['Nephrology', 'Internal
-  Medicine', 'Hepatology', 'Cardiology', 'Endocrinology']` (was Nephrology + Internal Medicine
-  only). Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post; and a **`Physician`** node per doctor on the doctors page (`physiciansGraph()`, from the admin roster — for doctor rich results + E-E-A-T).
+  Ayurveda-supported lifestyle care"), and `medicalSpecialty` is the **closed-enumeration** set
+  `['Renal', 'PrimaryCare', 'Gastroenterologic', 'Cardiovascular', 'Endocrine']` — schema.org's
+  own enum names, not free text (see §18.7b; free text was invalid markup and Semrush flagged it
+  on every page). Plus `FAQPage` on home + contact; `BreadcrumbList` + `MedicalWebPage` + a per-condition `FAQPage` (mirrors the visible Q&A-style sections) on each condition; `BreadcrumbList` + `Article` (with `datePublished`/`dateModified`) on each blog post; and a **`Physician`** node per doctor on the doctors page (`physiciansGraph()`, from the admin roster — for doctor rich results + E-E-A-T).
 - `sitemap.xml` (90 indexable URLs, `lastmod`, priority; 404 excluded) + `robots.txt`.
 - One `<h1>` per page (home H1 is keyword+local: "Kidney Care in Delhi-NCR & Baraut — High
   Creatinine, CKD, Dialysis & Diet Guidance"; home `<title>` targets "Kidney Specialist in
@@ -600,11 +611,14 @@ One dependency-free IIFE. Lucide is loaded from the **self-hosted** `assets/vend
 - **NAP matches the Google Business Profile** (synced 2026-07-17 from the owner's GBP —
   "RIIMS – Rashtriya Institute of Integrated Medical Sciences", kgmid `/g/11nq2qr_sq`, category
   Hospital, 5.0 from 8 reviews). Address `Medicity Hospital, Kotana Rd, Baraut, Bohla, Uttar
-  Pradesh 250611`; **Open 24 hours** (schema says all 7 days 00:00–23:59). Google cross-checks
+  Pradesh 250611`; **Open 24 hours** (schema says all 7 days 00:00–23:59); **schema `@type` is
+  `Hospital`, matching the GBP category** (corrected 2026-08-04 — it had said `MedicalClinic`
+  since launch while this very note recorded the GBP as Hospital; see §15). Google cross-checks
   the LocalBusiness schema against the GBP, so **if the GBP changes, change `data/content.json →
-  site` (or Admin → Settings) in the same breath** — the site previously advertised "Mon–Sat,
-  9am–7pm" against a 24-hour profile, which both contradicted Google and told a night-time
-  emergency patient the door was shut.
+  site` (or Admin → Settings) in the same breath** — and if the *category* changes, change
+  `clinicGraph()`'s `@type` in `build/generate.mjs`, which is code, not admin-editable. The site
+  previously advertised "Mon–Sat, 9am–7pm" against a 24-hour profile, which both contradicted
+  Google and told a night-time emergency patient the door was shut.
 - **Already set for go-live:** `SITE.origin = https://riimshospitals.com`. Off-site actions that
   remain (only you can do): verify the domain + submit `sitemap.xml` in Google Search Console,
   finish GBP verification ("Get verified" is still pending on the profile), and give
