@@ -92,6 +92,71 @@ html, body { overflow-x: clip; }
   .reel:hover .reel-bg { transform: none; }
 }
 
+/* ---------- Hero "watch patient stories" CTA ----------
+   Sits directly under the banner slider, above the search box: the first thing a
+   visitor can act on. The attention-seeking parts (breathing pill, pulsing play
+   ring, nudging arrow) are motion only — the button reads and works identically
+   with animation off, which is the whole point of the reduced-motion block. */
+.hero-cta-row { display: flex; flex-direction: column; align-items: center; gap: .45rem; margin: 0 0 clamp(1rem, .8rem + 1vw, 1.6rem); }
+.hero-stories-cta {
+  display: inline-flex; align-items: center; gap: .6rem;
+  padding: .62rem 1.35rem .62rem .62rem; border-radius: var(--radius-pill);
+  background: linear-gradient(120deg, var(--teal-600), var(--teal-900));
+  color: #fff; text-decoration: none;
+  font-family: var(--font-sans); font-weight: 700; font-size: var(--fs-md);
+  box-shadow: 0 6px 22px rgba(10,97,104,.34); border: 1px solid rgba(255,255,255,.18);
+  animation: heroCtaBreathe 3.4s ease-in-out infinite;
+  transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out);
+}
+.hero-stories-cta:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 30px rgba(10,97,104,.44); animation-play-state: paused; }
+.hero-stories-cta:active { transform: translateY(0) scale(.99); }
+.hero-stories-cta:focus-visible { outline: 3px solid var(--teal-600); outline-offset: 3px; }
+.hero-stories-play {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%; flex: 0 0 auto;
+  background: #fff; color: var(--brand-primary);
+  animation: heroCtaRing 2.2s ease-out infinite;
+}
+.hero-stories-arrow { display: inline-flex; animation: heroCtaNudge 1.8s ease-in-out infinite; }
+.hero-stories-note { font-family: var(--font-sans); font-size: var(--fs-xs); color: var(--text-muted); }
+@keyframes heroCtaBreathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes heroCtaRing {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,.7); }
+  70%, 100% { box-shadow: 0 0 0 13px rgba(255,255,255,0); }
+}
+@keyframes heroCtaNudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+
+/* ---------- Patient story reels (the wall in the Patient Stories section) ---------- */
+.story-track { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.35) transparent; }
+.story-track::-webkit-scrollbar { height: 7px; }
+.story-track::-webkit-scrollbar-track { background: rgba(255,255,255,.08); border-radius: 4px; }
+.story-track::-webkit-scrollbar-thumb { background: rgba(255,255,255,.32); border-radius: 4px; }
+.story-track::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.5); }
+/* Bottom scrim so the patient's name stays readable over a bright frame. */
+.story-reel .story-shade { position: absolute; inset: auto 0 0 0; height: 58%; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.72) 100%); pointer-events: none; }
+.story-reel { transition: transform .25s var(--ease-out), box-shadow .25s var(--ease-out); }
+.story-reel:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(0,0,0,.4); }
+.story-arrow {
+  position: absolute; top: calc(50% - .35rem); transform: translateY(-50%); z-index: 3;
+  width: 42px; height: 42px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,.94); color: var(--brand-primary);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 14px rgba(0,0,0,.4); transition: background .2s, transform .2s, opacity .2s;
+}
+.story-arrow:hover { background: #fff; }
+.story-arrow:active { transform: translateY(-50%) scale(.92); }
+.story-arrow[hidden] { display: none; }
+.story-prev { left: -10px; }
+.story-next { right: -10px; }
+@media (max-width: 760px) { .story-arrow { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-stories-cta, .hero-stories-play, .hero-stories-arrow { animation: none !important; }
+  .hero-stories-cta:hover { transform: none; }
+  .story-reel { transition: none; }
+  .story-reel:hover { transform: none; }
+  .story-track { scroll-behavior: auto; }
+}
+
 /* Home extras grids */
 .services-grid { grid-template-columns: repeat(4, 1fr); }
 

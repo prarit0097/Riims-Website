@@ -5,7 +5,7 @@ import { icon, button, badge, card, eyebrow, sectionHead, starRow, esc } from '.
 import { appointmentForm } from './chrome.mjs';
 import {
   SITE, PROBLEMS, WHY, STEPS, DOCTORS, EXPERTS, POSTS,
-  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO, SEARCH, CTA,
+  TESTIMONIALS, FAQS, REELS, SERVICES, POPULAR, STATS, STORY_VIDEO, STORY_REELS, SEARCH, CTA,
   BANNERS, BANNER_SPEED,
 } from './data.mjs';
 
@@ -14,6 +14,29 @@ const TONE = {
   green: { bg: 'var(--surface-green-soft)', fg: 'var(--icon-accent)' },
   cream: { bg: 'var(--surface-cream-deep)', fg: 'var(--sand-500)' },
 };
+
+/* ---------- Hero "watch patient stories" CTA ----------
+   The first interactive thing under the banner, so a visitor meets real patients
+   before anything else. It is a plain in-page anchor to #patient-stories (the
+   testimonials section) — smooth scrolling comes from `html{scroll-behavior:smooth}`
+   in site.css, and with JS off or an old browser it still jumps to the right place.
+   searchBanner is homepage-only, so the bare "#patient-stories" fragment is right;
+   if this section is ever reused on another page it must become
+   `${base}index.html#patient-stories`.
+   The count is only shown once real stories exist — "0 stories" would be worse than
+   no number, and an unqualified "hundreds" would be a claim we cannot back. */
+function heroStoriesCta() {
+  const n = STORY_REELS.length;
+  const line = n >= 3 ? `Watch ${n} real patient stories` : 'Watch real patient stories';
+  return `<div class="hero-cta-row">`
+    + `<a href="#patient-stories" class="hero-stories-cta" data-stories-cta>`
+    + `<span class="hero-stories-play" aria-hidden="true">${icon('play', { size: 17 })}</span>`
+    + `<span class="hero-stories-text">${line}</span>`
+    + `<span class="hero-stories-arrow" aria-hidden="true">${icon('arrow-down', { size: 16 })}</span>`
+    + `</a>`
+    + `<span class="hero-stories-note">Shared with consent · real people, real reports</span>`
+    + `</div>`;
+}
 
 /* ---------- Search banner (home hero) ---------- */
 export function searchBanner(base = '') {
@@ -43,6 +66,7 @@ export function searchBanner(base = '') {
     + `<h1 class="sr-only">Kidney Care in Delhi-NCR &amp; Baraut — High Creatinine, CKD, Dialysis &amp; Diet Guidance</h1>`
     + slider
     + `<div class="riims-container" style="padding-block:clamp(1.2rem, 1rem + 1.6vw, 2.2rem);position:relative">`
+    + heroStoriesCta()
     + `<div style="max-width:780px;margin:0 auto;text-align:center">`
     + `<p id="search-label" style="margin:0 0 .6rem;font-family:var(--font-sans);font-weight:700;color:var(--text-strong)">Search any disease, symptom or report</p>`
     + `<form data-search aria-labelledby="search-label" style="display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--border-default);border-radius:var(--radius-pill);padding:.4rem .4rem .4rem 1.1rem;box-shadow:var(--shadow-lg);align-items:center">`
@@ -282,22 +306,74 @@ function testimonialCard(t) {
     + `<span><strong style="display:block;font-size:var(--fs-base)">${t.name}</strong><span style="font-size:var(--fs-sm);color:var(--text-muted)">${t.loc}</span></span></figcaption>`
     + `<p style="margin:0;font-size:var(--fs-xs);color:var(--text-faint);font-style:italic">Individual experience. Results vary by patient and depend on doctor evaluation.</p></figure>`;
 }
+/* ---------- Patient story reels ----------
+   One card per admin-added story (Admin → Story Reels). Deliberately the same
+   shape and mechanics as reelCard() above: if an entry ever has a self-hosted
+   `video`, site.js's existing [data-reel-video] observer plays it muted while in
+   view; otherwise the thumbnail carries a play badge and the card opens the reel
+   on Instagram. Attribution sits ON the card (name + place) because an anonymous
+   patient video is worth much less to a wary reader than a named one — but both
+   fields stay optional, since consent to publish a video is not consent to publish
+   a name. */
+function storyReelCard(base, s, i) {
+  const href = s.url || SITE.instagram;
+  const label = s.name ? `${s.name}${s.loc ? `, ${s.loc}` : ''}` : 'a RIIMS patient';
+  const alt = s.title || `Patient story from ${label}`;
+  const media = s.video
+    ? `<video data-reel-video src="${base}${s.video}"${s.img ? ` poster="${base}${s.img}"` : ''} muted loop playsinline preload="none" aria-label="${esc(alt)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>`
+    : `<img src="${base}${s.img}" alt="${esc(alt)}" width="200" height="356" loading="lazy" decoding="async" class="reel-bg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`;
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="Watch patient story: ${esc(label)}" class="story-reel reel riims-card--hover" style="display:block;flex:0 0 auto;width:200px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.16);scroll-snap-align:start;text-decoration:none;cursor:pointer">`
+    + `<div style="aspect-ratio:9/16;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:.7rem;background:linear-gradient(160deg, var(--teal-600), var(--teal-900))">`
+    + media
+    + `<span class="story-shade" aria-hidden="true"></span>`
+    + (s.condition ? badge(s.condition, { tone: 'green', style: { alignSelf: 'flex-start', position: 'relative' } }) : '<span></span>')
+    + (s.video ? '' : `<span class="reel-play" style="position:absolute;inset:0;margin:auto;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">${icon('play', { size: 22 })}</span>`)
+    + `<div style="color:#fff;position:relative;text-shadow:0 1px 10px rgba(0,0,0,.6)">`
+    + (s.title ? `<p style="margin:0 0 .3rem;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-sm);line-height:1.25">${esc(s.title)}</p>` : '')
+    + (s.name ? `<span style="display:block;font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:700;color:#fff">${esc(s.name)}</span>` : '')
+    + (s.loc ? `<span style="display:block;font-family:var(--font-sans);font-size:var(--fs-xs);color:rgba(255,255,255,.82)">${esc(s.loc)}</span>` : '')
+    + `</div></div></a>`;
+}
+
+/* The story-reel wall. Returns '' when nothing is saved, which is what lets
+   testimonials() fall back to the old single video tile — so the live homepage is
+   unchanged until the owner adds the first reel in the admin panel. */
+function storyReelWall(base) {
+  if (!STORY_REELS.length) return '';
+  const many = STORY_REELS.length > 3;
+  const arrows = many
+    ? `<button type="button" class="story-arrow story-prev" data-story-prev aria-label="Previous stories">${icon('chevron-left', { size: 24 })}</button>`
+      + `<button type="button" class="story-arrow story-next" data-story-next aria-label="More stories">${icon('chevron-right', { size: 24 })}</button>`
+    : '';
+  return `<div class="story-wall" style="position:relative;margin-top:var(--space-8)">`
+    + `<div class="story-track" data-story-track style="display:flex;gap:var(--space-4);overflow-x:auto;padding-bottom:.7rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scroll-behavior:smooth">`
+    + STORY_REELS.map((s, i) => storyReelCard(base, s, i)).join('')
+    + `</div>${arrows}</div>`;
+}
+
 export function testimonials(base = '') {
   const sv = STORY_VIDEO;
-  const videoTile = (sv.enabled && sv.img)
+  const wall = storyReelWall(base);
+  /* The legacy single tile is the fallback, not a second thing to scroll past:
+     once real story reels exist the wall replaces it entirely. */
+  const videoTile = (!wall && sv.enabled && sv.img)
     ? `<div style="margin-top:var(--space-8);display:flex;justify-content:center">`
       + `<a href="${sv.url || SITE.instagram}" target="_blank" rel="noopener noreferrer" aria-label="${sv.title}" class="riims-card--hover" style="position:relative;display:block;width:100%;max-width:560px;aspect-ratio:16/10;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.14)">`
       + `<img src="${base}${sv.img}" alt="${esc(sv.title)}" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
       + `<span style="position:absolute;left:16px;bottom:14px;color:#fff;font-family:var(--font-sans);font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.5)">${sv.title}</span></a>`
       + `</div>`
     : '';
-  return `<section style="padding-block:var(--section-pad-y);background:var(--surface-inverse)">`
+  /* id="patient-stories" is the scroll target for the hero CTA (searchBanner) and
+     the mobile bar. Renaming it breaks that link — check both before touching it. */
+  return `<section id="patient-stories" style="scroll-margin-top:96px;padding-block:var(--section-pad-y);background:var(--surface-inverse)">`
     + `<div class="riims-container">`
     + sectionHead({ onDark: true, eyebrow: `${icon('quote', { size: 15 })} Patient stories`, title: 'Care that patients remember', intro: 'Real experiences shared with consent. We never promise guaranteed outcomes.' })
-    + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:var(--space-5)">`
+    + wall
+    + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:var(--space-5);margin-top:${wall ? 'var(--space-8)' : '0'}">`
     + TESTIMONIALS.map(testimonialCard).join('')
     + `</div>`
     + videoTile
+    + (wall ? `<p style="margin:var(--space-6) 0 0;text-align:center;font-family:var(--font-sans);font-size:var(--fs-xs);color:rgba(255,255,255,.62);font-style:italic">Shared with patient consent. Individual experience — results vary by patient and depend on doctor evaluation.</p>` : '')
     + `</div></section>`;
 }
 

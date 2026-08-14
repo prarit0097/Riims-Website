@@ -254,12 +254,12 @@ If `content.local.json` is ever **unparseable** (a stray hand-edit on the VPS), 
 instead of throwing. That matters: an exception here would stop *every* rebuild and freeze the
 live site. `content.json` is in git and still fails loudly — `npm test` is what guards it.
 
-The **20 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `site` (numbers + business
-info + social), `tracking`, `stats`, `storyVideo`, `doctors`, `reels`, `testimonials`, `faqs`, `posts`,
+The **21 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `site` (numbers + business
+info + social), `tracking`, `stats`, `storyVideo`, **`storyReels`**, `doctors`, `reels`, `testimonials`, `faqs`, `posts`,
 `search`, `cta`, `protocol`, `services`, `why`, `steps`, `about`, `legal`, `banners`, `pagesSeo`,
 `conditionEdits`. Most have their own `/admin/` tab (see §23); the exceptions: `site`/`stats`/`cta`
 share **Settings**, `storyVideo` sits in **Patient Stories**, and `pagesSeo`/`conditionEdits` are both
-driven by **Pages / SEO** — 17 tabs for 20 sections. For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
+driven by **Pages / SEO** — 18 tabs for 21 sections. For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
 `legal`, `search`), an absent/empty value falls back to the default baked into `data.mjs`/`pages.mjs`,
 so the site always renders.
 
@@ -329,6 +329,14 @@ or via `data/content.json` / `build/data.mjs` in the repo.
   condition slug used to build the article body), `cat`, `title`, `excerpt`, `time`, `tone`,
   `date`, `author`, optional `img`.
 - **`POPULAR_TOPICS`** — SEO keyword chips on the blog page.
+- **`STORY_REELS`** (`data/content.json → storyReels`, Admin → **Story Reels**) — the patient
+  story video wall in the Patient Stories section (§10). Each entry: `img` (thumbnail, required),
+  `url` (Instagram reel link; blank = the RIIMS profile), and optional `name`, `loc`, `condition`,
+  `title` — plus an optional `video` (a self-hosted mp4 path), which is not settable from the
+  admin panel today but makes the card autoplay through the same `[data-reel-video]` observer the
+  Health Reels use. `data.mjs` **drops any entry without an `img`**, so a half-filled admin row
+  can never render an empty black card. Empty list = the section falls back to the legacy single
+  `STORY_VIDEO` tile, which is what keeps the live homepage unchanged until the first reel is added.
 - **`TESTIMONIALS`** (Baraut/Baghpat/Meerut), **`FAQS`** (5), **`REELS`** (6),
   **`SERVICES`** (11, "Complete Care").
 - **`SEARCH`** (`data/content.json` → `search.topics`, admin-editable) — **fully controls the home
@@ -402,7 +410,8 @@ Reusable content sections (composed into pages): `searchBanner` (the **full-widt
 **admin-managed** `BANNERS` slides (Admin → Home Banners; image + alt + optional link) auto-rotating at the
 admin `BANNER_SPEED` (via `data-interval`), cross-fade + prev/next arrows + dots (arrows/dots only with >1
 slide), driven by `site.js`; first slide is LCP-priority, rest lazy; any image size cover-fills the fixed 1920×400
-frame — followed by the search box + Popular chips from admin `SEARCH`),
+frame — followed by the **hero patient-stories CTA** (`heroStoriesCta()`, see below) and then the
+search box + Popular chips from admin `SEARCH`),
 `healthReels` (header is a single enlarged green **"🎬 Health Reels"** heading — clapperboard icon +
 `--text-accent`, `--fs-3xl`; the earlier "Short videos…/Top Reels" subheading was removed — plus a
 "View all reels" link and a `--space-8` gap down to the horizontal video-thumbnail cards, each linking
@@ -410,9 +419,51 @@ to Instagram), `problemsSection`
 (8 condition cards), `statsStrip` (Google rating + 4 count-up stats, admin `STATS`), `completeCare` (11
 services, admin `SERVICES`), `whyRiims` (admin `WHY`), `howItWorks` (admin `STEPS`), `doctorsSection`
 + `doctorCard`, `meetExperts` + `expertCard` (horizontal), `educationSection` + `blogCard` (cards link
-to `/blog/<slug>.html`), `testimonials` (+ video), `faqSection` (accordion, first item open),
+to `/blog/<slug>.html`), `testimonials` (**the Patient Stories section — see below**), `faqSection` (accordion, first item open),
 `ctaBand` (teal gradient, copy from admin `CTA`), `contactSection` (form + map placeholder + contact
 cards). Sections marked "admin X" read their content/copy from the admin-editable data (see §8/§23).
+
+### The Patient Stories section (`testimonials`) + the hero CTA — added 2026-08-15
+
+The owner's brief: make patient stories *the* thing a visitor meets first, as a running reel wall
+rather than the single video tile that was there before.
+
+- **`storyReelCard(base, s)` + `storyReelWall(base)`** (`sections.mjs`) — a horizontal, scroll-snapped
+  wall of 9:16 reel cards built from `STORY_REELS` (§8), styled to match `reelCard()` deliberately so
+  the two video surfaces on the homepage read as one system. Each card shows the thumbnail (or
+  autoplaying muted `<video>` when an entry has one), an optional condition badge, the caption, and
+  the patient's name + city over a bottom scrim. It opens the patient's Instagram reel in a new tab.
+  **Name and city are optional by design** — consent to publish a video is not consent to publish a
+  name, and the card's `aria-label` degrades to "a RIIMS patient" when they are absent.
+- **`testimonials(base)`** now renders: section head → **story reel wall** → the written testimonial
+  cards → a consent + "individual experience" line. It carries **`id="patient-stories"`** with
+  `scroll-margin-top:96px` (clears the sticky header) — that id is the hero CTA's scroll target, so
+  renaming it silently breaks the CTA.
+- **Graceful fallback, and why it matters:** `storyReelWall()` returns `''` when nothing is saved,
+  and the legacy single `STORY_VIDEO` tile renders *only* in that case. So this feature shipped
+  without changing one pixel of the live homepage — the wall appears the moment the owner saves the
+  first reel in the admin panel, and the old tile disappears on its own. No VPS content migration.
+- **`heroStoriesCta()`** (`sections.mjs`, rendered by `searchBanner` directly under the banner
+  slider, above the search box) — an animated pill: pulsing play badge, breathing lift, nudging
+  down-arrow, plus a "Shared with consent · real people, real reports" note. It is a plain
+  `<a href="#patient-stories">`, so smooth scrolling comes from `html{scroll-behavior:smooth}` and it
+  still works with JS disabled. The label counts real stories (**"Watch N real patient stories"**)
+  only once there are **≥3**; below that it reads "Watch real patient stories", because "0 stories"
+  is worse than no number and a vague "hundreds" would be a claim RIIMS cannot back.
+  `searchBanner` is homepage-only, which is why the bare `#patient-stories` fragment is correct — if
+  it is ever reused elsewhere the href must become `${base}index.html#patient-stories`.
+- **CSS** (`site/css/site.css`): `.hero-cta-row`/`.hero-stories-*` (three keyframe animations) and
+  `.story-track`/`.story-reel`/`.story-arrow`. Every animation and hover transform is switched off
+  under `prefers-reduced-motion`, and the arrows are hidden below 760px where the track is swiped.
+- **JS** (`site/js/site.js`): the story track's prev/next arrows scroll by whole cards (never leaving
+  a half-cut card at the edge) and hide themselves at each end. The whole block is guarded on the
+  track existing, so a homepage with no story reels costs nothing. Card autoplay needs no new code —
+  the cards reuse the existing `[data-reel-video]` IntersectionObserver.
+- **Compliance:** patient testimonials are exactly where cure claims creep onto a medical site, so
+  it matters that `storyReels` is a normal content section and therefore runs through
+  `checkPayload()` on every save like everything else. Verified: a reel captioned "RIIMS gave me a
+  permanent cure for my kidney failure" is refused with **400** naming the phrase and the field
+  (`[0].title`).
 
 ## 11. Pages (`build/pages.mjs`)
 
@@ -878,6 +929,10 @@ An external Semrush Site Audit (health 96%, top-10% benchmark 92%) prompted thes
 - **Google rating / review counts / patient numbers** in the stats strip are **demo figures** —
   replace with live Google Business numbers before launch (`build/sections.mjs` → `statsStrip`).
 - **Reels & testimonial video** are thumbnails linking to Instagram — embed real videos later.
+- 🎥 **The Patient Story Reels wall is built but empty.** Admin → Story Reels is live and the
+  homepage hero CTA already points at the section, but until the owner adds the first reel
+  (thumbnail + Instagram link, with the patient's consent) the section keeps showing the old
+  single video tile. This is the one open action that turns the feature on — see §10.
 - **Blog article bodies are now full original articles** written from the *Kidney Kavach* book content
   (stored in `data/content.json` → `posts[].body`). See §24.
 - **Contact map** is now a live Google Maps embed using a generic "RIIMS Baraut" query —
@@ -951,7 +1006,8 @@ the password.)
 | **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, **City**, Problem/Disease — city shows under the problem in the table, and is a column in the CSV export as of 2026-08-04). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. Also holds the **Google Sheet sync** card — mirror every lead into the owner's spreadsheet (see below). |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. "Add reel" inserts at the TOP; the homepage shows the **top 5**, so the oldest drops off automatically. **Instagram auto-sync** (see below): paste an access token once and the list refreshes itself from Instagram every 6 hours — no manual adding at all. |
-| **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). |
+| **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). That tile now only renders when **Story Reels** is empty (see below). |
+| **Story Reels** | The homepage patient-story **video wall** (§10). Add/remove/**reorder** (↑/↓) reels; per reel: **thumbnail upload** (required — an entry without one is dropped by `data.mjs` and never reaches the site, and the row says so), **Instagram reel link** (blank = the RIIMS profile), and optional patient **name**, **city**, **condition tag** and **caption**. Newest goes on top, like Health Reels and Blogs. **Never touched by the Instagram auto-sync** — that syncs the clinic's own reels, whereas each of these needs the patient's consent first, which is why the tab says so in Hinglish above the list. Saved to `content.json → storyReels`; empty list = the legacy single video tile stays. Compliance-guarded like every content section. |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
 | **About page** | Edit the About page: hero title/intro, story heading + story paragraphs (blank line = new paragraph; `<strong>` allowed), image alt, CKD awareness note, and the value cards (icon+title+desc, reorder). Saved to `content.json → about`; defaults live in `pages.mjs` (`DEFAULT_ABOUT`). |

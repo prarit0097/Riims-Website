@@ -118,6 +118,33 @@
     reelVids.forEach((v) => io.observe(v));
   }
 
+  /* ---------------- Patient story wall: arrow scrolling ----------------
+     The track is a plain overflow-x list, so touch/trackpad swiping already works
+     and this only adds the desktop arrows. Arrows hide at each end rather than
+     dead-clicking, and everything is inside a guard so a homepage without story
+     reels (no track in the DOM) costs nothing. */
+  const storyTrack = $('[data-story-track]');
+  if (storyTrack) {
+    const prev = $('[data-story-prev]');
+    const next = $('[data-story-next]');
+    const page = () => {
+      const card = storyTrack.querySelector('.story-reel');
+      // Scroll by whole cards, so a card never ends up half-cut at the edge.
+      const step = card ? card.getBoundingClientRect().width + 16 : 216;
+      return Math.max(step, Math.floor(storyTrack.clientWidth / step) * step);
+    };
+    const sync = () => {
+      const max = storyTrack.scrollWidth - storyTrack.clientWidth - 2;
+      if (prev) prev.hidden = storyTrack.scrollLeft <= 2;
+      if (next) next.hidden = storyTrack.scrollLeft >= max;
+    };
+    if (prev) prev.addEventListener('click', () => storyTrack.scrollBy({ left: -page(), behavior: 'smooth' }));
+    if (next) next.addEventListener('click', () => storyTrack.scrollBy({ left: page(), behavior: 'smooth' }));
+    storyTrack.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  }
+
   /* ---------------- Select placeholder colour ---------------- */
   $$('.riims-select').forEach((sel) => {
     sel.addEventListener('change', () => {

@@ -1332,11 +1332,25 @@ export const POPULAR_TOPICS = [
 
 export const TESTIMONIALS = CONTENT.testimonials || [];
 
-/* The "patient video stories" tile under testimonials (admin: Patient Stories tab). */
+/* The "patient video stories" tile under testimonials (admin: Patient Stories tab).
+   Kept as the FALLBACK for the story-reels carousel below: with no story reels saved
+   yet, the homepage keeps rendering exactly what it renders today, so adding this
+   feature changes nothing on the live site until the owner adds the first reel. */
 export const STORY_VIDEO = {
   enabled: true, title: 'Watch patient video stories', img: 'assets/video-testimonial.webp', url: '',
   ...(CONTENT.storyVideo || {}),
 };
+
+/* Patient story reels (admin: Story Reels tab) — the video wall in the Patient
+   Stories section. Same card shape as REELS so the muted-autoplay path in site.js
+   (`[data-reel-video]`) works unchanged if a `video` file ever backs an entry;
+   admin-added entries carry a thumbnail + an Instagram link, which is how the owner
+   publishes them. An entry needs an `img` to be worth rendering (a card with no
+   media is just an empty box), so blank ones are dropped here rather than in the
+   template. `name`/`loc` are the patient's own attribution and stay optional —
+   some patients consent to the video but not to their full name. */
+export const STORY_REELS = (Array.isArray(CONTENT.storyReels) ? CONTENT.storyReels : [])
+  .filter((s) => s && s.img);
 
 export const FAQS = CONTENT.faqs || [];
 

@@ -36,7 +36,7 @@ const CONFIG_PATH = join(DATA, 'admin-config.json');
 const MANIFEST_PATH = join(DATA, 'pages-manifest.json');
 const PORT = process.env.PORT || 5500;
 
-const SECTIONS = ['site', 'tracking', 'stats', 'storyVideo', 'doctors', 'reels', 'testimonials', 'faqs', 'posts', 'search', 'cta', 'protocol', 'services', 'why', 'steps', 'about', 'legal', 'banners', 'pagesSeo', 'conditionEdits'];
+const SECTIONS = ['site', 'tracking', 'stats', 'storyVideo', 'storyReels', 'doctors', 'reels', 'testimonials', 'faqs', 'posts', 'search', 'cta', 'protocol', 'services', 'why', 'steps', 'about', 'legal', 'banners', 'pagesSeo', 'conditionEdits'];
 const LEAD_STATUSES = ['new', 'contacted', 'booked', 'closed'];
 const ROLES = ['owner', 'seo'];
 const MAX_BODY = 8 * 1024 * 1024; // 8MB (base64 image uploads)

@@ -106,6 +106,7 @@
     if (view === 'doctors') return renderDoctors(v);
     if (view === 'reels') return renderReels(v);
     if (view === 'stories') return renderStories(v);
+    if (view === 'storyreels') return renderStoryReels(v);
     if (view === 'faqs') return renderFaqs(v);
     if (view === 'blogs') return renderBlogs(v);
     if (view === 'search') return renderSearch(v);
@@ -463,6 +464,56 @@
     $('#add').onclick = () => { list.unshift({ id: newId(), tag: '', tone: 'green', title: '', views: '', img: '', url: '' }); render(); };
     $('#save').onclick = () => saveSection('reels', list, 'Reels');
     renderIgCard();
+  }
+
+  /* ---- Patient Story Reels ----
+     The video wall in the homepage "Patient stories" section. Unlike Health Reels
+     this list is NEVER touched by the Instagram auto-sync (that syncs the clinic's
+     own reels); these are added by hand precisely because each one needs the
+     patient's consent before it goes up. A card only reaches the site once it has a
+     thumbnail — data.mjs drops entries with no `img`, so a half-filled row here
+     cannot render an empty black box on the homepage. */
+  function renderStoryReels(v) {
+    const list = content.storyReels = content.storyReels || [];
+    v.innerHTML = `
+      <div class="head"><h2>Patient Story Reels (${list.length})</h2>
+        <div class="row"><button id="add" class="btn light small">＋ Add story reel</button>
+        <button id="save" class="btn primary">Save story reels</button></div></div>
+      <div class="card" style="border-left:4px solid var(--brand,#0a6168)">
+        <h3 style="margin:0 0 6px">🎥 Homepage ki "Patient stories" wali video wall</h3>
+        <p class="muted" style="margin:0 0 8px">Har reel ke liye: <strong>thumbnail photo</strong> upload karo aur <strong>Instagram reel ka link</strong> paste karo. Visitor card par click karega to wahi reel Instagram par khulegi. Newest reel sabse pehle dikhti hai — ↑/↓ se order badal sakte ho.</p>
+        <p class="muted" style="margin:0"><strong>Zaroori:</strong> patient ki story tabhi daalein jab unhone publish karne ki permission di ho. Naam/sheher optional hain — video ki permission ka matlab naam ki permission nahi hota. Jab tak thumbnail nahi lagti, woh reel website par nahi aayegi.</p>
+      </div>
+      ${list.length ? '' : '<p class="muted" style="margin:0 0 14px">Abhi koi story reel nahi hai — tab tak homepage par purana single video tile hi dikhta rahega. Pehli reel add karte hi wall use replace kar degi.</p>'}
+      ${list.map((s, i) => `
+        <div class="card">
+          <div class="row" style="margin-bottom:10px">
+            <img class="thumb" src="${imgSrc(s.img)}" alt="">
+            <button class="btn light small" data-img="${i}">📷 Thumbnail</button>
+            ${s.img ? '' : '<span class="err" style="min-height:0;font-size:13px">Thumbnail ke bina yeh reel site par nahi dikhegi</span>'}
+            <span style="flex:1"></span>
+            <button class="btn light small" data-up="${i}" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button class="btn light small" data-down="${i}" ${i === list.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="btn danger small" data-del="${i}">Remove</button>
+          </div>
+          <div class="grid3">
+            <label class="f">Patient ka naam (optional)<input data-bind="${i}|name" value="${esc(s.name || '')}" placeholder="Ramesh K."></label>
+            <label class="f">Sheher (optional)<input data-bind="${i}|loc" value="${esc(s.loc || '')}" placeholder="Baraut"></label>
+            <label class="f">Condition tag (optional)<input data-bind="${i}|condition" value="${esc(s.condition || '')}" placeholder="High creatinine"></label>
+          </div>
+          <div class="grid2" style="margin-top:10px">
+            <label class="f">Caption / title (optional)<input data-bind="${i}|title" value="${esc(s.title || '')}" placeholder="6 mahine baad meri report"></label>
+            <label class="f">Instagram reel link<input data-bind="${i}|url" value="${esc(s.url || '')}" placeholder="https://www.instagram.com/reel/…"></label>
+          </div>
+        </div>`).join('')}`;
+    bindFields(v, list);
+    v.querySelectorAll('[data-img]').forEach((b) => b.onclick = () => pickImage(list[Number(b.dataset.img)], 'img'));
+    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this patient story reel?')) { list.splice(Number(b.dataset.del), 1); render(); } });
+    v.querySelectorAll('[data-up]').forEach((b) => b.onclick = () => { const i = Number(b.dataset.up); if (i > 0) { [list[i - 1], list[i]] = [list[i], list[i - 1]]; render(); } });
+    v.querySelectorAll('[data-down]').forEach((b) => b.onclick = () => { const i = Number(b.dataset.down); if (i < list.length - 1) { [list[i + 1], list[i]] = [list[i], list[i + 1]]; render(); } });
+    // Newest first, same as Health Reels and Blogs.
+    $('#add').onclick = () => { list.unshift({ id: newId(), name: '', loc: '', condition: '', title: '', img: '', url: '' }); render(); };
+    $('#save').onclick = () => saveSection('storyReels', list, 'Patient story reels');
   }
 
   /* Instagram auto-sync card (inside Health Reels). Token set/remove is owner-only
