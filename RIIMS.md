@@ -451,9 +451,9 @@ rather than the single video tile that was there before.
   slider, above the search box) — an animated pill: pulsing play badge, breathing lift, nudging
   down-arrow, plus a "Shared with consent · real people, real reports" note. It is a plain
   `<a href="#patient-stories">`, so smooth scrolling comes from `html{scroll-behavior:smooth}` and it
-  still works with JS disabled. The label counts real stories (**"Watch N real patient stories"**)
-  only once there are **≥3**; below that it reads "Watch real patient stories", because "0 stories"
-  is worse than no number and a vague "hundreds" would be a claim RIIMS cannot back.
+  still works with JS disabled. The label is a fixed **"Watch real patient stories"** — it briefly
+  carried a live count ("Watch N real patient stories"), removed on owner request 2026-08-15: a
+  number there reads as a statistic and re-dates the button every time a reel is added or removed.
   `searchBanner` is homepage-only, which is why the bare `#patient-stories` fragment is correct — if
   it is ever reused elsewhere the href must become `${base}index.html#patient-stories`.
 - **CSS** (`site/css/site.css`): `.hero-cta-row`/`.hero-stories-*` (three keyframe animations) and

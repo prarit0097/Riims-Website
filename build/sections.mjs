@@ -23,15 +23,14 @@ const TONE = {
    searchBanner is homepage-only, so the bare "#patient-stories" fragment is right;
    if this section is ever reused on another page it must become
    `${base}index.html#patient-stories`.
-   The count is only shown once real stories exist — "0 stories" would be worse than
-   no number, and an unqualified "hundreds" would be a claim we cannot back. */
+   The label is deliberately countless (owner request, 2026-08-15): it briefly read
+   "Watch N real patient stories", but a number here reads as a stat and dates the
+   button every time a reel is added or removed. */
 function heroStoriesCta() {
-  const n = STORY_REELS.length;
-  const line = n >= 3 ? `Watch ${n} real patient stories` : 'Watch real patient stories';
   return `<div class="hero-cta-row">`
     + `<a href="#patient-stories" class="hero-stories-cta" data-stories-cta>`
     + `<span class="hero-stories-play" aria-hidden="true">${icon('play', { size: 17 })}</span>`
-    + `<span class="hero-stories-text">${line}</span>`
+    + `<span class="hero-stories-text">Watch real patient stories</span>`
     + `<span class="hero-stories-arrow" aria-hidden="true">${icon('arrow-down', { size: 16 })}</span>`
     + `</a>`
     + `<span class="hero-stories-note">Shared with consent · real people, real reports</span>`
