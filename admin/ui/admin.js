@@ -106,7 +106,6 @@
     if (view === 'doctors') return renderDoctors(v);
     if (view === 'reels') return renderReels(v);
     if (view === 'stories') return renderStories(v);
-    if (view === 'storyreels') return renderStoryReels(v);
     if (view === 'faqs') return renderFaqs(v);
     if (view === 'blogs') return renderBlogs(v);
     if (view === 'search') return renderSearch(v);
@@ -473,14 +472,12 @@
      patient's consent before it goes up. A card only reaches the site once it has a
      thumbnail — data.mjs drops entries with no `img`, so a half-filled row here
      cannot render an empty black box on the homepage. */
-  function renderStoryReels(v) {
-    const list = content.storyReels = content.storyReels || [];
-    v.innerHTML = `
-      <div class="head"><h2>Patient Story Reels (${list.length})</h2>
-        <div class="row"><button id="add" class="btn light small">＋ Add story reel</button>
-        <button id="save" class="btn primary">Save story reels</button></div></div>
+  function storyReelsHtml(list) {
+    return `
+      <div class="head" style="margin-top:0"><h2 style="margin:0">🎥 Video reels — ${list.length}</h2>
+        <div class="row"><button id="add-reel" class="btn light small">＋ Add story reel</button></div></div>
       <div class="card" style="border-left:4px solid var(--brand,#0a6168)">
-        <h3 style="margin:0 0 6px">🎥 Homepage ki "Patient stories" wali video wall</h3>
+        <h3 style="margin:0 0 6px">Homepage ki "Patient stories" wali video wall</h3>
         <p class="muted" style="margin:0 0 8px"><strong>Sabse aasan tarika:</strong> Instagram reel ka link paste karo aur <strong>“📥 Video laao”</strong> dabao — video aur thumbnail dono server par aa jayenge, aur card Health Reels ki tarah <strong>apne aap chalega</strong>. Newest reel sabse pehle dikhti hai — ↑/↓ se order badal sakte ho.</p>
         <p class="muted" style="margin:0 0 8px">Sirf link paste karne se video <em>nahi</em> chalegi (Instagram bahar se video chalane nahi deta) — us haalat mein thumbnail wala card banega jo click par Instagram kholega. Isliye “Video laao” zaroor dabayein. Reel usi Instagram account par honi chahiye jo Health Reels mein connected hai.</p>
         <p class="muted" style="margin:0"><strong>Zaroori:</strong> patient ki story tabhi daalein jab unhone publish karne ki permission di ho. Naam/sheher optional hain — video ki permission ka matlab naam ki permission nahi hota. Jab tak thumbnail nahi lagti, woh reel website par nahi aayegi.</p>
@@ -512,6 +509,12 @@
             <label class="f">Instagram reel link<input data-bind="${i}|url" value="${esc(s.url || '')}" placeholder="https://www.instagram.com/reel/…"></label>
           </div>
         </div>`).join('')}`;
+  }
+
+  /* Handlers for the reels block. `v` MUST be the block's own container, not the
+     whole view — the quotes block below uses the same data-bind/data-del names,
+     and an unscoped query would wire a reel's handler onto a testimonial. */
+  function wireStoryReels(v, list) {
     bindFields(v, list);
     v.querySelectorAll('[data-img]').forEach((b) => b.onclick = () => pickImage(list[Number(b.dataset.img)], 'img'));
     /* Pull the mp4 + thumbnail off Instagram and self-host them, so the card
@@ -529,7 +532,7 @@
         list[i].video = r.video || '';
         if (r.url) list[i].url = r.url;
         if (!list[i].title && r.title) list[i].title = r.title;
-        toast(r.video ? 'Video aa gaya — ab "Save story reels" dabao.' : 'Thumbnail aa gaya (video nahi mila/30MB se bada) — "Save story reels" dabao.');
+        toast(r.video ? 'Video aa gaya — ab "Sab kuch save karo" dabao.' : 'Thumbnail aa gaya (video nahi mila/30MB se bada) — "Sab kuch save karo" dabao.');
         render();
       } catch (e) {
         b.disabled = false; b.textContent = old;
@@ -539,9 +542,6 @@
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this patient story reel?')) { list.splice(Number(b.dataset.del), 1); render(); } });
     v.querySelectorAll('[data-up]').forEach((b) => b.onclick = () => { const i = Number(b.dataset.up); if (i > 0) { [list[i - 1], list[i]] = [list[i], list[i - 1]]; render(); } });
     v.querySelectorAll('[data-down]').forEach((b) => b.onclick = () => { const i = Number(b.dataset.down); if (i < list.length - 1) { [list[i + 1], list[i]] = [list[i], list[i + 1]]; render(); } });
-    // Newest first, same as Health Reels and Blogs.
-    $('#add').onclick = () => { list.unshift({ id: newId(), name: '', loc: '', condition: '', title: '', img: '', video: '', url: '' }); render(); };
-    $('#save').onclick = () => saveSection('storyReels', list, 'Patient story reels');
   }
 
   /* Instagram auto-sync card (inside Health Reels). Token set/remove is owner-only
@@ -574,55 +574,83 @@
     }
   }
 
-  /* ---- Patient stories ---- */
+  /* ---- Patient stories ----
+     ONE tab for everything in the homepage "Patient stories" section, in the same
+     order the visitor sees it: video reels first, then the text quotes, then the
+     legacy single tile. It used to be split across two tabs ("Patient Stories" and
+     "Story Reels") and the owner reasonably went looking for the reel link on the
+     quote cards, where it has never been — the quotes are text-only and the reels
+     are separate entries. Two similarly-named tabs editing one page section was the
+     bug; merging them is the fix. */
   function renderStories(v) {
-    const list = content.testimonials;
+    const quotes = content.testimonials;
+    const reels = content.storyReels = content.storyReels || [];
     const sv = content.storyVideo || { enabled: true, title: 'Watch patient video stories', img: '', url: '' };
     v.innerHTML = `
-      <div class="head"><h2>Patient Stories (${list.length})</h2>
-        <div class="row"><button id="add" class="btn light small">＋ Add story</button>
-        <button id="save" class="btn primary">Save stories</button></div></div>
-      <div class="card">
-        <h3 style="margin:0 0 10px">🎥 Patient video tile (stories ke neeche wala video box)</h3>
-        <div class="row" style="margin-bottom:10px">
-          <img class="thumb wide" src="${imgSrc(sv.img)}" alt="">
-          <button class="btn light small" id="sv-img">📷 Thumbnail badlo</button>
-          <label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-left:8px">
-            <input type="checkbox" id="sv-on" ${sv.enabled ? 'checked' : ''}> Website par dikhao
-          </label>
-        </div>
-        <div class="grid2">
-          <label class="f">Title<input id="sv-title" value="${esc(sv.title || '')}"></label>
-          <label class="f">Video link (YouTube/Instagram URL — blank = Instagram profile)<input id="sv-url" value="${esc(sv.url || '')}" placeholder="https://youtube.com/watch?v=… ya reel link"></label>
-        </div>
-        <p class="muted" style="font-size:13px;margin-bottom:0">Click karne par visitor isi link par jaata hai. "Save stories" dabane par yeh bhi save ho jaata hai.</p>
+      <div class="head"><h2>Patient Stories</h2>
+        <div class="row"><button id="save-all" class="btn primary">Save sab kuch</button></div></div>
+      <p class="muted" style="margin:-6px 0 16px">Homepage ka "Patient stories" section poora yahin se banta hai — <strong>upar video reels</strong> (jo Health Reels ki tarah chalti hain) aur <strong>neeche text quotes</strong>. "Save sab kuch" dono ko ek saath save karta hai.</p>
+
+      <div id="reels-block">${storyReelsHtml(reels)}</div>
+
+      <div id="quotes-block" style="margin-top:28px;border-top:2px solid var(--line,#e5e7eb);padding-top:18px">
+        <div class="head" style="margin-top:0"><h2 style="margin:0">💬 Text quotes — ${quotes.length}</h2>
+          <div class="row"><button id="add-quote" class="btn light small">＋ Add quote</button></div></div>
+        <p class="muted" style="margin:-6px 0 12px">Yeh sirf likhi hui baatein hain (naam, sheher, rating, quote) — inme video/reel link nahi hota. Video wali stories upar "Video reels" mein daalein.</p>
+        ${quotes.map((t, i) => `
+          <div class="card">
+            <div class="grid3">
+              <label class="f">Name<input data-bind="${i}|name" value="${esc(t.name)}"></label>
+              <label class="f">Location<input data-bind="${i}|loc" value="${esc(t.loc)}"></label>
+              <label class="f">Rating (1–5)<input type="number" min="1" max="5" data-bind="${i}|rating" value="${t.rating || 5}"></label>
+            </div>
+            <label class="f" style="margin-top:10px">Quote<textarea data-bind="${i}|quote">${esc(t.quote)}</textarea></label>
+            <div class="row" style="margin-top:8px;justify-content:flex-end"><button class="btn danger small" data-del="${i}">Remove</button></div>
+          </div>`).join('')}
       </div>
-      ${list.map((t, i) => `
+
+      <div id="tile-block" style="margin-top:28px;border-top:2px solid var(--line,#e5e7eb);padding-top:18px">
+        <h2 style="margin:0 0 4px">🖼️ Purana single video tile</h2>
+        <p class="muted" style="margin:0 0 12px">${reels.length
+          ? '<strong>Abhi website par nahi dikh raha</strong> — upar video reels maujood hain, isliye wall ne ise replace kar diya hai. Saari reels hata do to yeh wapas aa jayega.'
+          : 'Abhi yahi dikh raha hai, kyunki koi video reel add nahi hui. Pehli reel add karte hi yeh apne aap hat jayega.'}</p>
         <div class="card">
-          <div class="grid3">
-            <label class="f">Name<input data-bind="${i}|name" value="${esc(t.name)}"></label>
-            <label class="f">Location<input data-bind="${i}|loc" value="${esc(t.loc)}"></label>
-            <label class="f">Rating (1–5)<input type="number" min="1" max="5" data-bind="${i}|rating" value="${t.rating || 5}"></label>
+          <div class="row" style="margin-bottom:10px">
+            <img class="thumb wide" src="${imgSrc(sv.img)}" alt="">
+            <button class="btn light small" id="sv-img">📷 Thumbnail badlo</button>
+            <label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-left:8px">
+              <input type="checkbox" id="sv-on" ${sv.enabled ? 'checked' : ''}> Website par dikhao
+            </label>
           </div>
-          <label class="f" style="margin-top:10px">Quote<textarea data-bind="${i}|quote">${esc(t.quote)}</textarea></label>
-          <div class="row" style="margin-top:8px;justify-content:flex-end"><button class="btn danger small" data-del="${i}">Remove</button></div>
-        </div>`).join('')}`;
-    bindFields(v, list);
-    v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this story?')) { list.splice(Number(b.dataset.del), 1); render(); } });
-    $('#add').onclick = () => { list.push({ id: newId(), rating: 5, name: '', loc: '', quote: '' }); render(); };
+          <div class="grid2">
+            <label class="f">Title<input id="sv-title" value="${esc(sv.title || '')}"></label>
+            <label class="f">Video link (YouTube/Instagram URL — blank = Instagram profile)<input id="sv-url" value="${esc(sv.url || '')}" placeholder="https://youtube.com/watch?v=… ya reel link"></label>
+          </div>
+        </div>
+      </div>`;
+
+    // Each block is wired against its OWN container: both use data-bind/data-del.
+    wireStoryReels($('#reels-block', v), reels);
+    const qb = $('#quotes-block', v);
+    bindFields(qb, quotes);
+    qb.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this quote?')) { quotes.splice(Number(b.dataset.del), 1); render(); } });
+
+    $('#add-reel').onclick = () => { reels.unshift({ id: newId(), name: '', loc: '', condition: '', title: '', img: '', video: '', url: '' }); render(); };
+    $('#add-quote').onclick = () => { quotes.push({ id: newId(), rating: 5, name: '', loc: '', quote: '' }); render(); };
     $('#sv-img').onclick = () => {
       content.storyVideo = content.storyVideo || { ...sv };
       pickImage(content.storyVideo, 'img');
     };
-    $('#save').onclick = () => {
+    $('#save-all').onclick = () => {
       content.storyVideo = {
         enabled: $('#sv-on').checked,
         title: $('#sv-title').value.trim() || 'Watch patient video stories',
         img: (content.storyVideo && content.storyVideo.img) || sv.img,
         url: $('#sv-url').value.trim(),
       };
-      saveSection('testimonials', list, 'Patient stories');
-      saveSection('storyVideo', content.storyVideo, 'Patient video');
+      saveSection('storyReels', reels, 'Story reels');
+      saveSection('testimonials', quotes, 'Patient quotes');
+      saveSection('storyVideo', content.storyVideo, 'Video tile');
     };
   }
 

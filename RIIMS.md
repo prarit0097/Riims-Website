@@ -259,8 +259,9 @@ The **21 admin sections** (mirror of `SECTIONS` in `admin/server.mjs`) are: `sit
 info + social), `tracking`, `stats`, `storyVideo`, **`storyReels`**, `doctors`, `reels`, `testimonials`, `faqs`, `posts`,
 `search`, `cta`, `protocol`, `services`, `why`, `steps`, `about`, `legal`, `banners`, `pagesSeo`,
 `conditionEdits`. Most have their own `/admin/` tab (see §23); the exceptions: `site`/`stats`/`cta`
-share **Settings**, `storyVideo` sits in **Patient Stories**, and `pagesSeo`/`conditionEdits` are both
-driven by **Pages / SEO** — 18 tabs for 21 sections. For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
+share **Settings**, `storyVideo` + **`storyReels`** + `testimonials` all sit in **Patient Stories**
+(one tab per homepage section, see §23), and `pagesSeo`/`conditionEdits` are both
+driven by **Pages / SEO** — 17 tabs for 21 sections. For sections with a code default (`cta`, `services`, `why`, `steps`, `protocol`, `about`,
 `legal`, `search`), an absent/empty value falls back to the default baked into `data.mjs`/`pages.mjs`,
 so the site always renders.
 
@@ -330,7 +331,7 @@ or via `data/content.json` / `build/data.mjs` in the repo.
   condition slug used to build the article body), `cat`, `title`, `excerpt`, `time`, `tone`,
   `date`, `author`, optional `img`.
 - **`POPULAR_TOPICS`** — SEO keyword chips on the blog page.
-- **`STORY_REELS`** (`data/content.json → storyReels`, Admin → **Story Reels**) — the patient
+- **`STORY_REELS`** (`data/content.json → storyReels`, Admin → **Patient Stories → Video reels**) — the patient
   story video wall in the Patient Stories section (§10). Each entry: `img` (thumbnail, required),
   `video` (self-hosted mp4 path — what makes the card **autoplay**), `url` (Instagram reel link;
   blank = the RIIMS profile), and optional `name`, `loc`, `condition`, `title`. Both `img` and
@@ -932,7 +933,7 @@ An external Semrush Site Audit (health 96%, top-10% benchmark 92%) prompted thes
 - **Google rating / review counts / patient numbers** in the stats strip are **demo figures** —
   replace with live Google Business numbers before launch (`build/sections.mjs` → `statsStrip`).
 - **Reels & testimonial video** are thumbnails linking to Instagram — embed real videos later.
-- 🎥 **The Patient Story Reels wall is built but empty.** Admin → Story Reels is live and the
+- 🎥 **The Patient Story Reels wall is built but empty.** Admin → Patient Stories → Video reels is live and the
   homepage hero CTA already points at the section, but until the owner adds the first reel
   (thumbnail + Instagram link, with the patient's consent) the section keeps showing the old
   single video tile. This is the one open action that turns the feature on — see §10.
@@ -1009,8 +1010,7 @@ the password.)
 | **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, **City**, Problem/Disease — city shows under the problem in the table, and is a column in the CSV export as of 2026-08-04). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. Also holds the **Google Sheet sync** card — mirror every lead into the owner's spreadsheet (see below). |
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. "Add reel" inserts at the TOP; the homepage shows the **top 5**, so the oldest drops off automatically. **Instagram auto-sync** (see below): paste an access token once and the list refreshes itself from Instagram every 6 hours — no manual adding at all. |
-| **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). That tile now only renders when **Story Reels** is empty (see below). |
-| **Story Reels** | The homepage patient-story **video wall** (§10). Add/remove/**reorder** (↑/↓) reels; per reel: **“📥 Video laao”** (paste the Instagram reel link → the server downloads the mp4 + thumbnail and self-hosts them, so the card **autoplays** like Health Reels — see below), a manual **thumbnail upload** as the fallback, and optional patient **name**, **city**, **condition tag** and **caption**. The row states which state it is in (`✓ Video site par hai` / thumbnail-only / no thumbnail). Newest goes on top, like Health Reels and Blogs. **The list is never touched by the Instagram auto-sync** — that syncs the clinic's own reels, whereas each of these needs the patient's consent first, which is why the tab says so in Hinglish above the list. Saved to `content.json → storyReels`; empty list = the legacy single video tile stays. Compliance-guarded like every content section. |
+| **Patient Stories** | **One tab for the whole homepage "Patient stories" section**, laid out in the order the visitor sees it. **① 🎥 Video reels** (`storyReels`, §10) — add/remove/**reorder** (↑/↓); per reel: **“📥 Video laao”** (paste the Instagram reel link → the server downloads the mp4 + thumbnail and self-hosts them, so the card **autoplays** like Health Reels — see `fetchReelByUrl` below), a manual **thumbnail upload** as fallback, and optional patient **name**, **city**, **condition tag**, **caption**. Each row states which state it is in (`✓ Video site par hai` / thumbnail-only / no thumbnail). Newest on top, like Health Reels and Blogs. **Never touched by the Instagram auto-sync** — that syncs the clinic's own reels, whereas each of these needs the patient's consent first, which the tab says in Hinglish above the list. **② 💬 Text quotes** (`testimonials`) — name, location, rating, quote; text only, no reel link (the copy says so, and points video stories at block ①). **③ 🖼️ Legacy single video tile** (`storyVideo`) — show/hide, title, thumbnail, link; the block states plainly whether it is currently visible, since it only renders when ① is empty. One **“Save sab kuch”** button writes all three sections. |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
 | **About page** | Edit the About page: hero title/intro, story heading + story paragraphs (blank line = new paragraph; `<strong>` allowed), image alt, CKD awareness note, and the value cards (icon+title+desc, reorder). Saved to `content.json → about`; defaults live in `pages.mjs` (`DEFAULT_ABOUT`). |
@@ -1149,8 +1149,18 @@ muted-autoplay videos). Zero-dependency. Once the owner pastes an access token i
 #### `fetchReelByUrl()` — one reel on demand, for Patient Story Reels
 
 `POST /api/admin/storyreel/fetch {url}` → `{img, video, title, url}`. Powers the **“📥 Video laao”**
-button in Admin → Story Reels. Both roles may call it: the token is *used* but never returned, so
-this is a content operation, not a credential one (same rule as `/sync`).
+button in Admin → Patient Stories → Video reels. Both roles may call it: the token is *used* but
+never returned, so this is a content operation, not a credential one (same rule as `/sync`).
+
+> **Why the reels editor lives in the Patient Stories tab and not its own.** It shipped as a
+> separate "Story Reels" tab, and the owner immediately went looking for the reel link on the
+> *quote* cards in Patient Stories — where it has never been, because quotes are text-only and
+> reels are separate entries. Two similarly-named tabs editing one page section was the bug. They
+> are now one tab whose three blocks mirror the rendered section top-to-bottom. In the code
+> `storyReelsHtml()` / `wireStoryReels()` are split precisely so the reels editor can be embedded;
+> **`wireStoryReels` must be passed the `#reels-block` container, never the whole view** — the
+> quotes block reuses the same `data-bind`/`data-del` attribute names, and an unscoped query would
+> wire a reel's handler onto a testimonial and silently write into the wrong object.
 
 **Why it has to exist.** Pasting an Instagram link alone can never autoplay on the site. A permalink
 serves no hotlinkable mp4 (the CDN URLs are signed and expire within days), and Instagram's embed
