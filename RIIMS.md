@@ -871,6 +871,43 @@ An external Semrush Site Audit (health 96%, top-10% benchmark 92%) prompted thes
    Admin → Settings.
 3. Real doctor names/photos + Google reviews; replace the 9 templated blog articles with full originals.
 
+### 18.9 VPS disk — the shared-box risk, and the 2026-08-14 cleanup
+
+**A full disk is a RIIMS outage even though RIIMS is tiny.** `/opt/riims` is ~157 MB and a rebuild
+writes ~50 MB, but this box runs ~13 other sites. If `/` hits 100%: `generate.mjs` cannot write
+`site/`, **the admin server cannot append to `data/leads.json` so a patient's booking is silently
+lost**, nginx stops logging, and certbot renewals fail. Nothing warns you first — which is why the
+login banner's "Usage of /" line is worth reading on every SSH.
+
+On **2026-08-14** the box was at **94% (181G of 193G, 13G free)**. Freed ~115 GB, now **35%
+(66G used, 127G free)**:
+
+| Action | Freed | Notes |
+|---|---|---|
+| `docker builder prune -af` | **23.9 G** | 142 cache entries, **0 active** — build cache never affects running containers, so this is the safe first move on this box |
+| `journalctl --vacuum-size=200M` | 819 M | |
+| Removed `/opt/jsll` | **~94 G** | "Jeena Sikho", a stock-market ML app, unrelated to RIIMS — owner confirmed it was no longer needed. `data/models` alone was 91 G |
+
+`jsll` takedown, for the record: `systemctl disable --now jsll-gunicorn jsll-scheduler` (two units,
+not one — a `systemctl … jsll` guess silently no-ops), then `rm -rf /opt/jsll`. Its code (1.6 MB)
+and non-model data (116 MB — the OHLCV sqlite, registries, state json) are tarred in `/root/jsll-*-
+backup-2026-08-14.tar.gz`; models were dropped deliberately since they retrain but market history
+does not.
+
+**Left behind on purpose, still open:**
+- `/etc/nginx/sites-available/seestox` still has two `location /jsll/…` blocks pointing at a dead
+  unix socket, so `api.seestox.com/jsll/*` returns **502**. The rest of seestox is unaffected
+  (nginx `location` blocks are path-scoped, verified: `api.seestox.com/` → 200) and `nginx -t`
+  still passes. Tidy those two blocks when convenient.
+- **`/opt/drive-to-meta-scheduler/app` = 33 G** — now the largest thing on the box.
+- **postzyo bakes a 698 MB `.sql` backup into every image build** — the same file was found in 18
+  containerd snapshot layers (~12 GB). Adding `backups/` + `*.sql` to that project's
+  `.dockerignore` stops it growing again.
+
+Do **not** reach for `docker system prune -a` or `docker volume prune` here: 12 images are in use
+by other sites, and 24 "unused" volumes may hold their databases. Prune the build cache, which is
+regenerable and unreferenced.
+
 ## 19. How to make common changes
 
 - **Change phone / WhatsApp / address / hours / social / maps / geo / CTA copy** → **Admin → Settings**
