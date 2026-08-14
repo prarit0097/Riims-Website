@@ -96,7 +96,8 @@ RiimS/
 ├── admin/                    # ── ADMIN PANEL (see §23) ──
 │   ├── server.mjs            # zero-dep Node server: leads API, content CRUD, uploads, rebuild; owner/seo roles
 │   ├── set-password.mjs      # set owner password; --seo sets the SEO-role password (data/admin-config.json)
-│   ├── instagram-sync.mjs    # Instagram reels auto-sync (§23)
+│   ├── instagram-sync.mjs    # Instagram reels auto-sync + fetchReelByUrl() for Story Reels (§23)
+│   ├── test-storyreel-fetch.mjs  # test for fetchReelByUrl (fake Graph API; run by hand)
 │   ├── google-sheet.mjs      # mirrors every lead into the owner's Google Sheet (§23)
 │   ├── apps-script/          # riims-leads.gs — the receiver pasted into the Sheet
 │   │                         #   (Google-side code; never run by this repo)
@@ -331,10 +332,12 @@ or via `data/content.json` / `build/data.mjs` in the repo.
 - **`POPULAR_TOPICS`** — SEO keyword chips on the blog page.
 - **`STORY_REELS`** (`data/content.json → storyReels`, Admin → **Story Reels**) — the patient
   story video wall in the Patient Stories section (§10). Each entry: `img` (thumbnail, required),
-  `url` (Instagram reel link; blank = the RIIMS profile), and optional `name`, `loc`, `condition`,
-  `title` — plus an optional `video` (a self-hosted mp4 path), which is not settable from the
-  admin panel today but makes the card autoplay through the same `[data-reel-video]` observer the
-  Health Reels use. `data.mjs` **drops any entry without an `img`**, so a half-filled admin row
+  `video` (self-hosted mp4 path — what makes the card **autoplay**), `url` (Instagram reel link;
+  blank = the RIIMS profile), and optional `name`, `loc`, `condition`, `title`. Both `img` and
+  `video` are normally filled by the admin panel's **“📥 Video laao”** button, which downloads them
+  off Instagram (see §23) — a card with `video` autoplays through the same `[data-reel-video]`
+  observer the Health Reels use; a card with only `img` shows a play badge and opens Instagram on
+  click. `data.mjs` **drops any entry without an `img`**, so a half-filled admin row
   can never render an empty black card. Empty list = the section falls back to the legacy single
   `STORY_VIDEO` tile, which is what keeps the live homepage unchanged until the first reel is added.
 - **`TESTIMONIALS`** (Baraut/Baghpat/Meerut), **`FAQS`** (5), **`REELS`** (6),
@@ -1007,7 +1010,7 @@ the password.)
 | **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. "Add reel" inserts at the TOP; the homepage shows the **top 5**, so the oldest drops off automatically. **Instagram auto-sync** (see below): paste an access token once and the list refreshes itself from Instagram every 6 hours — no manual adding at all. |
 | **Patient Stories** | Add/update/remove testimonials (name, location, rating, quote), plus the **patient video tile** below them — show/hide, title, thumbnail upload, and the video link (YouTube/Instagram URL; blank = Instagram profile). That tile now only renders when **Story Reels** is empty (see below). |
-| **Story Reels** | The homepage patient-story **video wall** (§10). Add/remove/**reorder** (↑/↓) reels; per reel: **thumbnail upload** (required — an entry without one is dropped by `data.mjs` and never reaches the site, and the row says so), **Instagram reel link** (blank = the RIIMS profile), and optional patient **name**, **city**, **condition tag** and **caption**. Newest goes on top, like Health Reels and Blogs. **Never touched by the Instagram auto-sync** — that syncs the clinic's own reels, whereas each of these needs the patient's consent first, which is why the tab says so in Hinglish above the list. Saved to `content.json → storyReels`; empty list = the legacy single video tile stays. Compliance-guarded like every content section. |
+| **Story Reels** | The homepage patient-story **video wall** (§10). Add/remove/**reorder** (↑/↓) reels; per reel: **“📥 Video laao”** (paste the Instagram reel link → the server downloads the mp4 + thumbnail and self-hosts them, so the card **autoplays** like Health Reels — see below), a manual **thumbnail upload** as the fallback, and optional patient **name**, **city**, **condition tag** and **caption**. The row states which state it is in (`✓ Video site par hai` / thumbnail-only / no thumbnail). Newest goes on top, like Health Reels and Blogs. **The list is never touched by the Instagram auto-sync** — that syncs the clinic's own reels, whereas each of these needs the patient's consent first, which is why the tab says so in Hinglish above the list. Saved to `content.json → storyReels`; empty list = the legacy single video tile stays. Compliance-guarded like every content section. |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
 | **Blogs** | Add/remove/edit blog posts — title, slug (own URL `/blog/<slug>.html`), category, author, date, read-time, cover image upload, excerpt, and full **body** (blank-line paragraphs, `## ` headings). Empty body = auto-filled from the related condition. |
 | **About page** | Edit the About page: hero title/intro, story heading + story paragraphs (blank line = new paragraph; `<strong>` allowed), image alt, CKD awareness note, and the value cards (icon+title+desc, reorder). Saved to `content.json → about`; defaults live in `pages.mjs` (`DEFAULT_ABOUT`). |
@@ -1142,6 +1145,38 @@ muted-autoplay videos). Zero-dependency. Once the owner pastes an access token i
   `DELETE` disable are **owner-only** (the token is a credential for the owner's Instagram);
   `POST /api/admin/instagram/sync` = sync now. While sync is ON, manual edits to the reels list
   are overwritten by the next cycle (the card says so).
+
+#### `fetchReelByUrl()` — one reel on demand, for Patient Story Reels
+
+`POST /api/admin/storyreel/fetch {url}` → `{img, video, title, url}`. Powers the **“📥 Video laao”**
+button in Admin → Story Reels. Both roles may call it: the token is *used* but never returned, so
+this is a content operation, not a credential one (same rule as `/sync`).
+
+**Why it has to exist.** Pasting an Instagram link alone can never autoplay on the site. A permalink
+serves no hotlinkable mp4 (the CDN URLs are signed and expire within days), and Instagram's embed
+script is blocked by the site's CSP (`script-src 'self' https://www.googletagmanager.com`). The
+Health Reels strip only plays because the sync **downloads** each mp4 — so a patient story has to go
+the same route. The button resolves the link, then self-hosts the file.
+
+- Extracts the shortcode (`/reel/`, `/reels/`, `/p/`, `/tv/`, query strings tolerated), then walks
+  `me/media` — **following `paging.next`, bounded to 8 pages (~400 posts)** — until the permalink
+  matches. Paging matters: the first page is only 50 posts and a story reel is often older.
+- Downloads the mp4 (30MB cap, same as the sync) + thumbnail, then returns the local paths.
+- 🔑 **Media is cached as `story-<id>.mp4` / `story-<id>.jpg`, deliberately NOT `ig-…`.**
+  `pruneThumbnails()` deletes every `ig-` file that isn't in the current synced list, so an `ig-`
+  name would get every patient story wiped on the next 6-hour sync cycle. Both files have a comment
+  saying so; the test asserts it.
+- Only the connected account's own media is reachable, which is the real case (stories are posted on
+  @riimshospital). A link to someone else's reel fails with a message saying exactly that, rather
+  than a silent empty card. Same for: no token connected, a non-Instagram URL, a post with no media.
+- Captions run through `checkText()` like the sync's do, so a cure-claim caption becomes the neutral
+  "Health reel" instead of being published as the card title.
+- A video over 30MB (or a CDN timeout) is **not** an error — the thumbnail card is kept and the
+  toast says so. The story still shows, it just doesn't autoplay.
+- **Tested** by `admin/test-storyreel-fetch.mjs` (18 assertions) against a fake Graph API via the
+  `_setGraphBase()` hook: link parsing, paging to page 2, self-hosting, the `story-` prefix rule,
+  the compliance fallback, image-only posts, and all four failure messages. Run it with
+  `node admin/test-storyreel-fetch.mjs` — `npm test` covers the static site, not `admin/`.
 
 **Getting the token (one-time, owner):** Instagram must be a Professional (Business/Creator)
 account → developers.facebook.com → My Apps → Create App (type Business) → add product

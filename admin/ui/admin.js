@@ -481,7 +481,8 @@
         <button id="save" class="btn primary">Save story reels</button></div></div>
       <div class="card" style="border-left:4px solid var(--brand,#0a6168)">
         <h3 style="margin:0 0 6px">🎥 Homepage ki "Patient stories" wali video wall</h3>
-        <p class="muted" style="margin:0 0 8px">Har reel ke liye: <strong>thumbnail photo</strong> upload karo aur <strong>Instagram reel ka link</strong> paste karo. Visitor card par click karega to wahi reel Instagram par khulegi. Newest reel sabse pehle dikhti hai — ↑/↓ se order badal sakte ho.</p>
+        <p class="muted" style="margin:0 0 8px"><strong>Sabse aasan tarika:</strong> Instagram reel ka link paste karo aur <strong>“📥 Video laao”</strong> dabao — video aur thumbnail dono server par aa jayenge, aur card Health Reels ki tarah <strong>apne aap chalega</strong>. Newest reel sabse pehle dikhti hai — ↑/↓ se order badal sakte ho.</p>
+        <p class="muted" style="margin:0 0 8px">Sirf link paste karne se video <em>nahi</em> chalegi (Instagram bahar se video chalane nahi deta) — us haalat mein thumbnail wala card banega jo click par Instagram kholega. Isliye “Video laao” zaroor dabayein. Reel usi Instagram account par honi chahiye jo Health Reels mein connected hai.</p>
         <p class="muted" style="margin:0"><strong>Zaroori:</strong> patient ki story tabhi daalein jab unhone publish karne ki permission di ho. Naam/sheher optional hain — video ki permission ka matlab naam ki permission nahi hota. Jab tak thumbnail nahi lagti, woh reel website par nahi aayegi.</p>
       </div>
       ${list.length ? '' : '<p class="muted" style="margin:0 0 14px">Abhi koi story reel nahi hai — tab tak homepage par purana single video tile hi dikhta rahega. Pehli reel add karte hi wall use replace kar degi.</p>'}
@@ -490,7 +491,12 @@
           <div class="row" style="margin-bottom:10px">
             <img class="thumb" src="${imgSrc(s.img)}" alt="">
             <button class="btn light small" data-img="${i}">📷 Thumbnail</button>
-            ${s.img ? '' : '<span class="err" style="min-height:0;font-size:13px">Thumbnail ke bina yeh reel site par nahi dikhegi</span>'}
+            <button class="btn primary small" data-fetch="${i}">📥 Video laao</button>
+            ${s.video
+              ? '<span style="min-height:0;font-size:13px;color:#0a6168;font-weight:700">✓ Video site par hai — card apne aap chalega</span>'
+              : s.img
+                ? '<span class="muted" style="font-size:13px">Sirf thumbnail — chalega nahi. “Video laao” dabao.</span>'
+                : '<span class="err" style="min-height:0;font-size:13px">Thumbnail ke bina yeh reel site par nahi dikhegi</span>'}
             <span style="flex:1"></span>
             <button class="btn light small" data-up="${i}" ${i === 0 ? 'disabled' : ''}>↑</button>
             <button class="btn light small" data-down="${i}" ${i === list.length - 1 ? 'disabled' : ''}>↓</button>
@@ -508,11 +514,33 @@
         </div>`).join('')}`;
     bindFields(v, list);
     v.querySelectorAll('[data-img]').forEach((b) => b.onclick = () => pickImage(list[Number(b.dataset.img)], 'img'));
+    /* Pull the mp4 + thumbnail off Instagram and self-host them, so the card
+       autoplays like the Health Reels do. The link alone can't autoplay — see
+       fetchReelByUrl() in admin/instagram-sync.mjs. */
+    v.querySelectorAll('[data-fetch]').forEach((b) => b.onclick = async () => {
+      const i = Number(b.dataset.fetch);
+      const url = (list[i].url || '').trim();
+      if (!url) { toast('Pehle Instagram reel ka link paste karo, phir yeh dabao.', true); return; }
+      const old = b.textContent;
+      b.disabled = true; b.textContent = '⏳ Laa rahe hain…';
+      try {
+        const r = await api('/api/admin/storyreel/fetch', { method: 'POST', body: JSON.stringify({ url }) });
+        list[i].img = r.img || list[i].img;
+        list[i].video = r.video || '';
+        if (r.url) list[i].url = r.url;
+        if (!list[i].title && r.title) list[i].title = r.title;
+        toast(r.video ? 'Video aa gaya — ab "Save story reels" dabao.' : 'Thumbnail aa gaya (video nahi mila/30MB se bada) — "Save story reels" dabao.');
+        render();
+      } catch (e) {
+        b.disabled = false; b.textContent = old;
+        toast(e.message, true);
+      }
+    });
     v.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { if (confirm('Remove this patient story reel?')) { list.splice(Number(b.dataset.del), 1); render(); } });
     v.querySelectorAll('[data-up]').forEach((b) => b.onclick = () => { const i = Number(b.dataset.up); if (i > 0) { [list[i - 1], list[i]] = [list[i], list[i - 1]]; render(); } });
     v.querySelectorAll('[data-down]').forEach((b) => b.onclick = () => { const i = Number(b.dataset.down); if (i < list.length - 1) { [list[i + 1], list[i]] = [list[i], list[i + 1]]; render(); } });
     // Newest first, same as Health Reels and Blogs.
-    $('#add').onclick = () => { list.unshift({ id: newId(), name: '', loc: '', condition: '', title: '', img: '', url: '' }); render(); };
+    $('#add').onclick = () => { list.unshift({ id: newId(), name: '', loc: '', condition: '', title: '', img: '', video: '', url: '' }); render(); };
     $('#save').onclick = () => saveSection('storyReels', list, 'Patient story reels');
   }
 

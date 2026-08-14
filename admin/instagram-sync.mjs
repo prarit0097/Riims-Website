@@ -121,13 +121,83 @@ async function cacheMedia(file, url, { maxBytes = 0, minBytes = 100, timeout = 2
   return `assets/uploads/${file}`;
 }
 
-/* Remove cached thumbnails for reels that dropped out of the list. */
+/* Remove cached thumbnails for reels that dropped out of the list.
+   NOTE the `ig-` prefix test: patient story media is deliberately cached as
+   `story-…` (see fetchReelByUrl) precisely so this prune never touches it. A
+   story reel is curated by hand and is not in the synced list, so an `ig-` name
+   would get it deleted on the very next sync cycle. */
 function pruneThumbnails(keptFiles) {
   try {
     for (const f of readdirSync(UPLOADS)) {
       if (f.startsWith('ig-') && !keptFiles.has(f)) unlinkSync(join(UPLOADS, f));
     }
   } catch { /* uploads dir may not exist yet */ }
+}
+
+/* ---------------------------------------------------------------------------
+   Fetch ONE reel by its Instagram URL — powers Admin → Story Reels.
+
+   Why this exists: pasting an Instagram link alone can never autoplay on the
+   site. A permalink serves no hotlinkable mp4 (the CDN URLs are signed and
+   expire), and Instagram's embed script is blocked by the site's CSP. The
+   Health Reels strip only plays because the sync DOWNLOADS each mp4. So a
+   patient story has to go the same route: resolve the link to the media, then
+   self-host the file.
+
+   The token can only read the connected account's own media, which is exactly
+   the case here — patient stories are posted on @riimshospital. A link to some
+   other account's reel cannot be fetched, and says so plainly.
+   --------------------------------------------------------------------------- */
+export function shortcodeFrom(url) {
+  const m = String(url || '').match(/instagram\.com\/(?:reel|reels|p|tv)\/([A-Za-z0-9_-]+)/i);
+  return m ? m[1] : '';
+}
+
+async function apiAbs(url) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 20000);
+  try {
+    const res = await fetch(url, { signal: ctl.signal });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data.error && data.error.message) || `HTTP ${res.status}`);
+    return data;
+  } finally { clearTimeout(t); }
+}
+
+/** Resolve an Instagram reel URL to self-hosted media. Returns {img, video, title, url}. */
+export async function fetchReelByUrl(rawUrl) {
+  const code = shortcodeFrom(rawUrl);
+  if (!code) throw new Error('That does not look like an Instagram reel link. Expected something like https://www.instagram.com/reel/XXXXXXXXX/');
+  const state = getState();
+  if (!state.token) throw new Error('Instagram is not connected. Open Health Reels and paste an access token first — the video is downloaded through that same connection.');
+  const token = await refreshTokenIfDue(state);
+
+  /* Walk the account's media until the shortcode turns up. Bounded at 8 pages
+     (~400 posts) so a mistyped link cannot spin through the whole account. */
+  const fields = 'id,caption,media_type,media_product_type,permalink,thumbnail_url,media_url,timestamp';
+  let next = `${GRAPH}/me/media?fields=${fields}&limit=50&access_token=${encodeURIComponent(token)}`;
+  let found = null;
+  for (let page = 0; page < 8 && next && !found; page++) {
+    const res = await apiAbs(next);
+    found = (res.data || []).find((m) => String(m.permalink || '').includes(`/${code}`));
+    next = res.paging && res.paging.next;
+  }
+  if (!found) throw new Error(`Could not find that reel on the connected Instagram account. It has to be posted on the same account the site syncs from — a link to someone else's reel cannot be downloaded.`);
+
+  let img = '';
+  const thumb = found.thumbnail_url || found.media_url;
+  if (thumb) {
+    try { img = await cacheMedia(`story-${found.id}.jpg`, thumb); }
+    catch (e) { throw new Error(`Found the reel but could not save its thumbnail: ${e.message}`); }
+  }
+  let video = '';
+  const isVideo = found.media_product_type === 'REELS' || found.media_type === 'VIDEO';
+  if (isVideo && found.media_url) {
+    try { video = await cacheMedia(`story-${found.id}.mp4`, found.media_url, { maxBytes: MAX_VIDEO, minBytes: 10000, timeout: 60000 }); }
+    catch { /* over 30MB or a slow CDN: the thumbnail card still works, it just won't autoplay */ }
+  }
+  if (!img && !video) throw new Error('That post has no downloadable image or video.');
+  return { img, video, title: titleFrom(found.caption), url: found.permalink || String(rawUrl).trim() };
 }
 
 const TONES = ['green', 'blue', 'cream'];
