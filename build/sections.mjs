@@ -224,12 +224,15 @@ export function doctorCard(base, d) {
   const specs = d.specialties ? d.specialties.map((sp) => `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:600;color:var(--text-brand);background:var(--surface-blue-soft);padding:.25rem .6rem;border-radius:var(--radius-pill)">${sp}</span>`).join('') : '';
   return `<div class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);overflow:hidden">`
     + photoTile(base, d, 250)
-    + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem">`
+    /* Same bottom-pinned button as expertCard: doctors have titles of very
+       different lengths (and only some carry a Reg. No.), so without this the
+       buttons sit at different heights across a row. */
+    + `<div style="padding:var(--space-5);display:flex;flex-direction:column;gap:.5rem;flex:1 1 auto">`
     + `<div><h3 style="font-size:var(--fs-xl);margin:0">${d.name}</h3><p style="margin:.15rem 0 0;color:var(--text-accent);font-weight:600;font-size:var(--fs-sm)">${d.title}</p></div>`
     + `<p style="margin:0;color:var(--text-muted);font-size:var(--fs-sm)">${d.quals}</p>`
     + (d.reg ? `<p style="margin:0;display:inline-flex;align-items:center;gap:.35rem;color:var(--text-accent);font-size:var(--fs-xs);font-weight:700;font-family:var(--font-sans)">${icon('badge-check', { size: 14 })} Reg. No.: ${esc(d.reg)}</p>` : '')
     + `<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.2rem">${specs}</div>`
-    + button('Book consultation', { variant: 'outline', size: 'sm', style: { marginTop: '.6rem' }, iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
+    + button('Book consultation', { variant: 'outline', size: 'sm', style: { marginTop: 'auto' }, iconLeft: icon('calendar-check', { size: 16 }), extraAttrs: { 'data-book': true } })
     + `</div></div>`;
 }
 export function doctorsSection(base = '') {
@@ -246,11 +249,15 @@ function expertCard(base, d) {
   const rows = [['award', d.quals], ['stethoscope', d.title], ['languages', d.languages || 'Hindi, English']]
     .map(([ic, tx]) => `<span style="display:inline-flex;align-items:center;gap:.45rem;color:var(--text-muted);font-size:var(--fs-sm);font-family:var(--font-sans)">${icon(ic, { size: 15, style: 'color:var(--icon-accent);flex:0 0 auto' })} ${tx}</span>`)
     .join('');
-  return `<div class="expert riims-card--hover" style="flex:0 0 auto;width:248px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;scroll-snap-align:start">`
+  /* The card is a flex column and the body flexes to fill it, so `marginTop:auto`
+     pins "View profile" to the bottom. Without this the button rides directly
+     under the text, and a doctor whose title fits on one line gets a button that
+     sits visibly higher than the others in the row. */
+  return `<div class="expert riims-card--hover" style="flex:0 0 auto;width:248px;display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;scroll-snap-align:start">`
     + photoTile(base, d, 210)
-    + `<div style="padding:var(--space-4) var(--space-5);display:flex;flex-direction:column;gap:.45rem">`
+    + `<div style="padding:var(--space-4) var(--space-5);display:flex;flex-direction:column;gap:.45rem;flex:1 1 auto">`
     + `<strong style="font-size:var(--fs-lg);font-family:var(--font-display)">${d.name}</strong>${rows}`
-    + button('View profile', { variant: 'primary', size: 'sm', fullWidth: true, style: { marginTop: '.5rem' }, extraAttrs: { 'data-book': true } })
+    + button('View profile', { variant: 'primary', size: 'sm', fullWidth: true, style: { marginTop: 'auto' }, extraAttrs: { 'data-book': true } })
     + `</div></div>`;
 }
 export function meetExperts(base) {

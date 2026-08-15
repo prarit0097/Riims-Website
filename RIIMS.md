@@ -422,7 +422,10 @@ search box + Popular chips from admin `SEARCH`),
 to Instagram), `problemsSection`
 (8 condition cards), `statsStrip` (Google rating + 4 count-up stats, admin `STATS`), `completeCare` (11
 services, admin `SERVICES`), `whyRiims` (admin `WHY`), `howItWorks` (admin `STEPS`), `doctorsSection`
-+ `doctorCard`, `meetExperts` + `expertCard` (horizontal), `educationSection` + `blogCard` (cards link
++ `doctorCard`, `meetExperts` + `expertCard` (horizontal) — **both doctor cards flex their body and
+give the CTA `margin-top:auto`, so the buttons line up across a row** whatever the length of each
+doctor's title (fixed 2026-08-15: one-line titles left their button sitting visibly higher) —,
+`educationSection` + `blogCard` (cards link
 to `/blog/<slug>.html`), `testimonials` (**the Patient Stories section — see below**), `faqSection` (accordion, first item open),
 `ctaBand` (teal gradient, copy from admin `CTA`), `contactSection` (form + map placeholder + contact
 cards). Sections marked "admin X" read their content/copy from the admin-editable data (see §8/§23).
@@ -941,16 +944,17 @@ regenerable and unreferenced.
 
 ## 21. Known placeholders / next steps
 
-- 🔴 **Dr. Abhishek Gupta is titled "Senior Nephrologist" in Admin → Doctors while his
-  qualification field says B.A.M.S. Change that title.** Live as of 2026-07-17 on
-  `/doctors.html` and the homepage. A B.A.M.S. practitioner presented as a nephrologist
-  misrepresents a qualification under Indian law, and it directly contradicts
-  `/doctors/best-nephrologist-delhi-ncr.html`, which tells patients plainly that he is not one —
-  a patient sees both, one click apart. Use the wording the rest of the site already uses:
-  **"Founder & Senior Kidney-Care Physician"** (`SPECIALIST_DOCTOR.role` in `build/pages.mjs`).
-  The admin now **refuses** to save an AYUSH qualification under an allopathic-specialty title
-  (`checkDoctors()` in `admin/server.mjs`), so this cannot recur — but the value already saved
-  stays live until someone edits it.
+- ✅ **RESOLVED 2026-08-15 — the "Senior Nephrologist" misrepresentation is gone.** Dr. Abhishek
+  Gupta was live as "Senior Nephrologist" with `quals: Bams`, which misrepresents a qualification
+  under Indian law and directly contradicted `/doctors/best-nephrologist-delhi-ncr.html`, where the
+  site tells patients plainly that he is not one — a patient saw both, one click apart. The owner
+  corrected it in Admin → Doctors. Verified live on `/doctors.html`: **Dr. Vikas Gupta — "Founder &
+  Director Senior Ayurveda Acharya"**, **Dr. Abhishek Gupta — "Co-Founder & Senior Kidney-Care
+  Physician"**, **Dr. Rajni Gupta — "Senior Ayurveda Acharya"**; all three B.A.M.S., **no doctor
+  claims an allopathic specialty anywhere on the page**. `checkDoctors()` in `admin/server.mjs`
+  now refuses to save an AYUSH qualification under an allopathic-specialty title, so it cannot
+  recur — and `specialtyOf()` in `generate.mjs` derives schema `medicalSpecialty` from the degree
+  rather than assuming Nephrology, so the JSON-LD agrees with the visible page.
   *Note for future readers:* `data/content.json → doctors` still holds the old six mock names
   (Dr. A. Sharma etc.). That is the **repo default only** — the VPS `content.local.json` overrides
   it with the three real doctors, who carry real Reg. Nos. Do not diagnose the live roster from
