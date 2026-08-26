@@ -214,16 +214,23 @@ export function howItWorks() {
 }
 
 /* ---------- Doctor card + sections ---------- */
-function photoTile(base, d, height) {
+/* Portrait tile for a doctor/expert card. Photos are admin uploads, so they
+   arrive at whatever shape the owner's file happened to be (0.65-0.92 wide:tall
+   across the current roster). The frame is therefore set in CSS as a 4:5
+   portrait rather than as a pixel height: a fixed 250px height inside a ~370px
+   card is a landscape box, and cropping a portrait into it showed 44% of the
+   tallest photo against 62% of the squarest one - one roster, seven different
+   crops, the tall ones reduced to a zoomed face. See `.doctor-photo` in site.css. */
+function photoTile(base, d, cls) {
   if (d.photo) {
-    return `<img class="img-cover" src="${base}${d.photo}" alt="${esc(d.name)}, ${esc(d.title)}" loading="lazy" decoding="async" style="display:block;width:100%;height:${height}px;object-fit:cover;object-position:center top">`;
+    return `<img class="${cls}" src="${base}${d.photo}" alt="${esc(d.name)}, ${esc(d.title)}" loading="lazy" decoding="async">`;
   }
-  return `<div style="height:${height}px;background:var(--surface-blue-soft);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--teal-300)">${d.init || ''}</span></div>`;
+  return `<div class="${cls}" style="display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--teal-300)">${d.init || ''}</span></div>`;
 }
 export function doctorCard(base, d) {
   const specs = d.specialties ? d.specialties.map((sp) => `<span style="font-family:var(--font-sans);font-size:var(--fs-xs);font-weight:600;color:var(--text-brand);background:var(--surface-blue-soft);padding:.25rem .6rem;border-radius:var(--radius-pill)">${sp}</span>`).join('') : '';
   return `<div class="riims-card riims-card--hover" style="display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);overflow:hidden">`
-    + photoTile(base, d, 250)
+    + photoTile(base, d, 'doctor-photo')
     /* Same bottom-pinned button as expertCard: doctors have titles of very
        different lengths (and only some carry a Reg. No.), so without this the
        buttons sit at different heights across a row. */
@@ -239,7 +246,7 @@ export function doctorsSection(base = '') {
   return `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
     + `<div class="riims-container">`
     + sectionHead({ eyebrow: `${icon('stethoscope', { size: 15 })} Meet the team`, title: 'Doctors & integrated care specialists', intro: 'A kidney-focused team combining nephrology with safe, evidence-aware lifestyle support.' })
-    + `<div class="grid-3" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:var(--space-5)">`
+    + `<div class="grid-3 doctors-grid" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:var(--space-5)">`
     + DOCTORS.map((d) => doctorCard(base, d)).join('')
     + `</div></div></section>`;
 }
@@ -254,7 +261,7 @@ function expertCard(base, d) {
      under the text, and a doctor whose title fits on one line gets a button that
      sits visibly higher than the others in the row. */
   return `<div class="expert riims-card--hover" style="flex:0 0 auto;width:248px;display:flex;flex-direction:column;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;scroll-snap-align:start">`
-    + photoTile(base, d, 210)
+    + photoTile(base, d, 'expert-photo')
     + `<div style="padding:var(--space-4) var(--space-5);display:flex;flex-direction:column;gap:.45rem;flex:1 1 auto">`
     + `<strong style="font-size:var(--fs-lg);font-family:var(--font-display)">${d.name}</strong>${rows}`
     + button('View profile', { variant: 'primary', size: 'sm', fullWidth: true, style: { marginTop: 'auto' }, extraAttrs: { 'data-book': true } })

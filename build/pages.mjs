@@ -472,7 +472,7 @@ export function doctorsPage(base) {
 
   return pageHero(base, { crumb: 'Doctors', icon: 'stethoscope', title: 'Our doctors & care team', intro: 'A kidney-focused team led by Dr. Abhishek Gupta, combining integrated kidney care with safe, evidence-aware lifestyle support.' })
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-page)">`
-    + `<div class="riims-container"><div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
+    + `<div class="riims-container"><div class="grid-3 doctors-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)">`
     + DOCTORS_FULL.map((d) => S.doctorCard(base, d)).join('')
     + `</div></div></section>`
     + `<section style="padding-block:var(--section-pad-y);background:var(--surface-subtle)"><div class="riims-container">`

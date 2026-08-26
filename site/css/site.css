@@ -62,6 +62,26 @@ html, body { overflow-x: clip; }
 /* Imagery — content images now render as real <img> (reels, doctors, hospital, blog covers). */
 .img-cover { background-size: cover; background-position: center top; background-repeat: no-repeat; }
 
+/* Doctor / expert portrait tiles (photoTile in build/sections.mjs).
+   Headshots are admin uploads and arrive at any shape - the live roster spans
+   0.65 to 0.92 wide:tall. The tile therefore fixes a 4:5 PORTRAIT frame instead
+   of a pixel height, so every photo crops the same way and the face lands in the
+   same place. object-position sits at 20% rather than `top` because a portrait
+   anchored to its very top edge spends the frame on headroom. */
+.doctor-photo,
+.expert-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  /* Two-column tablet cards are wide enough that a strict 4:5 would run to
+     ~600px of photo; the cap trades a little crop back for a sane height. It
+     does not bite on the 3-column desktop tile (370 -> 462). */
+  max-height: 460px;
+  object-fit: cover;
+  object-position: center 20%;
+  background: var(--surface-blue-soft);
+}
+
 /* Hero banner slider (home) — full-width, short letterbox banner (1920x400, ~4.8:1 myUpchar-style), 4 auto-rotating
    banners, cross-fade + arrows/dots. Wide+short = full-width without being too tall. */
 .hero-slider { position: relative; width: 100%; aspect-ratio: 1920 / 400; overflow: hidden; background: var(--surface-blue-soft); }
@@ -188,6 +208,8 @@ html, body { overflow-x: clip; }
   .riims-mobilebar { display: flex !important; }
   body { padding-bottom: 76px; }
   .grid-auto, .grid-3, .grid-4, .blog-grid, .footer-grid, .g2 { grid-template-columns: 1fr !important; }
+  /* A full-width card would stretch the 4:5 doctor photo to ~900px tall here. */
+  .doctors-grid { max-width: 420px; margin-inline: auto; }
   .riims-apptform { grid-template-columns: 1fr !important; }
   .services-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .riims-fab { display: none !important; }

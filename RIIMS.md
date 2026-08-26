@@ -561,7 +561,8 @@ Loaded per page as two stylesheets: `css/styles.css` then `css/site.css`.
   `[hidden]{display:none!important}` (makes the form steps + newsletter success toggle
   correctly), `.riims-btn--white:hover`, booking-modal `.is-open`, the `.riims-logo-mark`
   logo background + `.img-cover` helper (content images — reels, doctor portraits, hospital,
-  video, blog covers — are now real `<img>` tags with `alt`/`loading="lazy"`), reel hover animation,
+  video, blog covers — are now real `<img>` tags with `alt`/`loading="lazy"`),
+  **`.doctor-photo` / `.expert-photo`** (the doctor/expert portrait tile — see §12b), reel hover animation,
   `.riims-redflags` / `.riims-sources` (condition-page emergency red-flag box + citations block,
   see §26), the **responsive breakpoints** (≤1024 tablet: collapse grids + switch to mobile nav; ≤760
   phone: single column, show bottom bar, hide FAB; ≤480 small phone: tighter rhythm).
@@ -569,6 +570,44 @@ Loaded per page as two stylesheets: `css/styles.css` then `css/site.css`.
 Styling approach: components emit inline styles (ported faithfully from the prototype via
 `s()`); CSS files handle only what inline styles can't (hover/focus, media queries, background
 images, the `[hidden]` rule).
+
+### 12b. Doctor / expert portrait tiles (`.doctor-photo`, `.expert-photo`)
+
+`photoTile()` in `build/sections.mjs` emits the headshot for `doctorCard` (doctors page, About
+trio) and `expertCard` (home carousel). It used to hardcode a pixel height — `height:250px` for
+doctors, `210px` for experts — with `object-position:center top`.
+
+That was wrong for **admin-uploaded** photos, which arrive at whatever shape the owner's file
+happens to be. In a ~370px-wide card a 250px tile is a **landscape 1.48:1 box**, so a portrait
+headshot got cropped by its own aspect ratio: the live roster spans 0.65 to 0.92 wide:tall, and
+the visible slice of each photo ranged from **44% (Dr. Vidhi, 829×1280) to 62% (Dr. Rajni,
+1765×1911)** — one roster, seven different crops, the taller photos reduced to a zoomed face.
+The four doctors added 2026-08-26 (Akshit Tyagi, Abhishek Pandey, Sandhya Bhardwaj, Vidhi
+Chauhan) are all 0.65–0.80, which is why the mismatch became visible on `/doctors.html`.
+
+The tile is now a **4:5 portrait frame set in CSS**, not a pixel height:
+
+```css
+.doctor-photo, .expert-photo {
+  display: block; width: 100%;
+  aspect-ratio: 4 / 5;      /* every photo crops the same way */
+  max-height: 460px;        /* only bites on wide 2-column tablet cards */
+  object-fit: cover;
+  object-position: center 20%;   /* not `top` — a portrait anchored to its top edge spends the frame on headroom */
+  background: var(--surface-blue-soft);
+}
+```
+
+Visible slice is now **81–100%** of every photo instead of 44–62%. `aspect-ratio` reserves the
+box before the image loads, so there is no CLS regression from dropping the inline height. The
+doctor grids (`doctorsSection`, `doctorsPage`) carry an extra **`doctors-grid`** class so the
+≤760px single-column rule can cap them at `max-width:420px; margin-inline:auto` — a full-width
+card at the top of that range would otherwise stretch the tile to ~900px tall.
+
+> **Upload guidance for Admin → Doctors:** any shape now renders cleanly, but resolution still
+> matters — the tile paints at 370×462 CSS px, so a 2× screen wants **≥740px wide**. Dr. Abhishek
+> Pandey's photo is a 360×450 / 12 KB ID scan and will look soft until it is re-uploaded larger.
+> CSS cannot add pixels that were never in the file.
 
 ## 13. JavaScript interactivity (`site/js/site.js`)
 
@@ -1049,7 +1088,7 @@ the password.)
 |-----|-----------------|
 | **Pages / SEO** | **Owner + SEO role.** Every page on the site, listed from `data/pages-manifest.json`, grouped (Main pages / Category hubs / Kidney·Liver·Heart·General conditions / Specialists / Blogs / Guides / Legal / System) with a find-a-page filter. Each row carries a **serial number** (1…91), numbered once over the full list in display order — so a page keeps its number while you filter (searching "fatty liver" shows its real numbers, not 1/2/3) and "page 47" means the same page to everyone. Per page: **Google title** (60-char counter), **meta description** (155-char counter — the build clamps at 155 anyway via `clampDesc`), **H1**, and a **noindex** toggle (also drops it from `sitemap.xml`; hiding a page asks for confirmation first). Condition pages additionally expose their six text fields — `intro` (which also feeds the meta description and the MedicalWebPage JSON-LD; `aboutTitle`/`about`/`when`/`approach` feed the FAQPage schema), `aboutTitle`, `about`, `when`, `symptoms[]`, `approach[]` (one per line). **An empty box means "use the built-in default"**, so clearing a field always restores the original page — and "Reset to default" drops the override entirely. 🔒 `redFlags` (emergency box) and `sources` (citations) are **not** editable here: they are safety content and the server rejects them outright. Saves to `pagesSeo` / `conditionEdits`. |
 | **Leads** | **Owner only** (the seo role gets 403). Every appointment-form submission lands here (Name, Phone, **City**, Problem/Disease — city shows under the problem in the table, and is a column in the CSV export as of 2026-08-04). Status pipeline (new → contacted → booked → closed), notes, one-click WhatsApp reply to the patient, delete, CSV export. Stored in `data/leads.json`. Also holds the **Google Sheet sync** card — mirror every lead into the owner's spreadsheet (see below). |
-| **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload, **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
+| **Doctors** | Add/remove/edit doctors — name, title, qualifications, **Registration No.** (`reg`, e.g. `DBCP A/7368` — shows as a "Reg. No." line with a verified badge on each doctor card + a `Physician.identifier` in JSON-LD for E-E-A-T), specialties, languages, photo upload (any aspect ratio is safe — the card crops to a 4:5 portrait tile, see §12b; upload **≥740px wide** so it stays sharp), **↑/↓ reorder** (order matters: first 3 drive the about-page trio, and the first nephrologist is the search "Specialist for you"). Drives the doctors page, home experts carousel, and the about-page trio. |
 | **Health Reels** | Add/remove/edit reels — title, tag, views label, tone, thumbnail upload, per-reel Instagram URL. "Add reel" inserts at the TOP; the homepage shows the **top 5**, so the oldest drops off automatically. **Instagram auto-sync** (see below): paste an access token once and the list refreshes itself from Instagram every 6 hours — no manual adding at all. |
 | **Patient Stories** | **One tab for the whole homepage "Patient stories" section**, laid out in the order the visitor sees it. **① 🎥 Video reels** (`storyReels`, §10) — add/remove/**reorder** (↑/↓); per reel: **“📥 Video laao”** (paste the Instagram reel link → the server downloads the mp4 + thumbnail and self-hosts them, so the card **autoplays** like Health Reels — see `fetchReelByUrl` below), a manual **thumbnail upload** as fallback, and optional patient **name**, **city**, **condition tag**, **caption**. Each row states which state it is in (`✓ Video site par hai` / thumbnail-only / no thumbnail). Newest on top, like Health Reels and Blogs. **Never touched by the Instagram auto-sync** — that syncs the clinic's own reels, whereas each of these needs the patient's consent first, which the tab says in Hinglish above the list. **② 💬 Text quotes** (`testimonials`) — name, location, rating, quote; text only, no reel link (the copy says so, and points video stories at block ①). **③ 🖼️ Legacy single video tile** (`storyVideo`) — show/hide, title, thumbnail, link; the block states plainly whether it is currently visible, since it only renders when ① is empty. One **“Save sab kuch”** button writes all three sections. |
 | **FAQs** | Add/update/remove the FAQ accordion items (home + contact). |
