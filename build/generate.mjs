@@ -3,7 +3,7 @@
    each page body, then writes static HTML + sitemap.xml + robots.txt into /site.
    Run: node build/generate.mjs  (or `npm run build`). */
 
-import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -18,12 +18,33 @@ import { CONDITIONS, POSTS, SITE, TRACKING, DOCTORS_FULL, REELS, SEARCH, BANNERS
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'site');
 
-/* Google tag (admin "Tracking" tab): write js/gtag.js with the configured id.
-   External file (not inline) so CSP script-src 'self' covers the config call. */
-const GTAG_ID = String(TRACKING.gtagId || '').trim();
-if (GTAG_ID) {
+/* Google tag (admin "Tracking" tab): write js/gtag.js with the configured id(s).
+   External file (not inline) so CSP script-src 'self' covers the config call.
+
+   The field accepts SEVERAL ids, comma- or space-separated, because a site can
+   outgrow one property (a second GA4 property, or GA4 alongside an Ads
+   conversion tag) and both have to keep receiving hits during the changeover.
+   gtag.js is loaded once with the first id and every id gets its own `config`
+   call - Google's documented way to send one page's hits to several
+   destinations. Each id is sanitised ON ITS OWN, and splitting first is the
+   part that matters: stripping punctuation from the whole string would weld two
+   ids into one dead tag ("G-AAAG-BBB") that silently collects nothing. */
+const GTAG_IDS = [...new Set(
+  String(TRACKING.gtagId || '')
+    .split(/[,\s]+/)
+    .map((id) => id.trim().replace(/[^A-Za-z0-9_-]/g, ''))
+    .filter(Boolean),
+)];
+const GTAG_ID = GTAG_IDS[0] || '';   // the id the loader script is fetched with
+if (GTAG_IDS.length) {
   writeFileSync(join(OUT, 'js', 'gtag.js'),
-    `window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '${GTAG_ID.replace(/[^A-Za-z0-9_-]/g, '')}');\n`, 'utf8');
+    `window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\n`
+    + GTAG_IDS.map((id) => `gtag('config', '${id}');\n`).join(''), 'utf8');
+} else {
+  /* Tracking was turned off: drop the file too. The pages stop referencing it
+     either way, but leaving it behind ships a deployable /js/gtag.js still
+     naming the old property. */
+  rmSync(join(OUT, 'js', 'gtag.js'), { force: true });
 }
 
 /* Disease-search data (admin-driven): the home search widget's "Specialist for you"

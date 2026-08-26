@@ -849,8 +849,9 @@
     v.innerHTML = `
       <div class="head"><h2>Tracking / Tags</h2><button id="save" class="btn primary">Save & apply to whole site</button></div>
       <div class="card">
-        <label class="f">Google Tag ID (gtag)<input id="gtagid" value="${esc(t.gtagId || '')}" placeholder="G-XXXXXXXXXX  ya  AW-XXXXXXXXX"></label>
+        <label class="f">Google Tag ID (gtag)<input id="gtagid" value="${esc(t.gtagId || '')}" placeholder="G-XXXXXXXXXX   (ek se zyada ho to comma se alag karo)"></label>
         <p class="muted" style="font-size:13px">Google Analytics 4 ya Google Ads ka tag ID. Milega: <b>analytics.google.com</b> → Admin → Data Streams → apni site → "Measurement ID" (G- se shuru). Save karte hi har page par Google tracking lag jaayegi.</p>
+        <p class="muted" style="font-size:13px"><b>Ek se zyada tag:</b> comma se alag karke likho &mdash; jaise <code>G-AAAAAAAA, G-BBBBBBBB</code>. Har ID ko alag-alag data jaayega. Ye tab kaam aata hai jab nayi GA4 property par shift kar rahe ho (dono thodi der saath chalao), ya GA4 ke saath Google Ads ka tag bhi lagana ho.</p>
       </div>
       <div class="card">
         <label class="f">Meta tags (verification)<textarea id="metatags" style="min-height:110px" placeholder='&lt;meta name="google-site-verification" content="..." /&gt;\n&lt;meta name="msvalidate.01" content="..." /&gt;'>${esc(t.metaTags || '')}</textarea></label>
