@@ -22,7 +22,17 @@ body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 .side { width: 220px; background: var(--teal-deep); color: #fff; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
 .brand { padding: 20px 18px; font-weight: 800; font-size: 20px; letter-spacing: .5px; }
 .brand span { color: #5fc492; font-weight: 600; margin-left: 6px; font-size: 13px; }
-.side nav { display: flex; flex-direction: column; padding: 6px; gap: 2px; flex: 1; }
+/* The tab list scrolls on its own. .side is pinned at height:100vh, so once the
+   list grew past the viewport the last tabs (Tracking / Tags, Settings) were
+   simply unreachable - the page scrolling past them does not move a sticky
+   sidebar. min-height:0 is required: a flex child defaults to min-height:auto,
+   which refuses to shrink below its content and cancels the overflow. */
+.side nav { display: flex; flex-direction: column; padding: 6px; gap: 2px; flex: 1; overflow-y: auto; min-height: 0; overscroll-behavior: contain; }
+.side nav::-webkit-scrollbar { width: 8px; }
+.side nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.22); border-radius: 4px; }
+.side nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.35); }
+.side nav { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.22) transparent; }
+.side nav button { flex: 0 0 auto; }
 .side nav button { text-align: left; background: none; border: none; color: rgba(255,255,255,.8); padding: 11px 14px; font-size: 14px; border-radius: 8px; cursor: pointer; }
 .side nav button:hover { background: rgba(255,255,255,.08); }
 .side nav button.active { background: var(--teal); color: #fff; font-weight: 600; }

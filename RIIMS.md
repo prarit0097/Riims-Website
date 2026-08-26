@@ -1104,6 +1104,14 @@ the password.)
 | **Tracking / Tags** | Set the **Google Tag ID** (`G-…` GA4 / `AW-…` Ads) → gtag.js loads on every page. **Several ids are allowed, comma- or space-separated** (`G-AAA, G-BBB`): gtag.js is fetched once using the first id and each id gets its own `config` call — Google's documented way to send one page's hits to multiple destinations. Use it to run an old and a new GA4 property side by side during a changeover, or GA4 alongside an Ads tag. Ids are trimmed, sanitised **individually** and de-duplicated; sanitising the whole string first would weld two ids into one dead tag (`G-AAAG-BBB`) that silently collects nothing (generator writes `site/js/gtag.js`, external file so CSP `script-src 'self'` covers the config; the loader comes from `googletagmanager.com`, allowed in CSP). Once a tag is set, `site.js` fires **GA4 conversion events**: `click_whatsapp`, `click_call`, `click_book`, `form_submit` (safe no-op if no tag). Paste **verification meta tags** (Search Console, Bing, FB) — one per line; only `<meta>`/`<link>` lines are accepted (scripts are stripped), injected into every page's `<head>`. |
 | **Settings** | **Contact numbers** (Call + WhatsApp, 10 digits, sitewide) + email; **Business info** (city line, opening hours, address lines, Google Maps link, service cities, map lat/lng) → drives footer, contact page and the LocalBusiness JSON-LD (`address`, `openingHours`, `geo`, `areaServed`, `hasMap`); **Social links** (Facebook / Instagram / YouTube — blank hides that icon site-wide, also feeds JSON-LD `sameAs`); the **CTA band** copy (eyebrow/title/intro/button labels) shown on nearly every page; and the **homepage stats strip** — show/hide toggle + Google rating / reviews / patients / specialists values. Stats are **hidden by default** and must only carry REAL Google Business numbers (fake stats on a YMYL medical site suppress rankings). Empty fields are skipped; real values render in the HTML (crawler-visible) with JS count-up as enhancement. |
 
+> **The tab list scrolls.** `.side` is a `position:sticky`, `height:100vh` column, so the 17
+> buttons overflow it on a short viewport and the last two — **Tracking / Tags** and
+> **Settings** — used to be unreachable: the page scrolling past them does not move a sticky
+> sidebar. `.side nav` now carries `overflow-y:auto` **and `min-height:0`** (a flex child
+> defaults to `min-height:auto`, refuses to shrink below its content, and silently cancels the
+> overflow), with `.side-foot` staying pinned so Logout is always in reach. Fixed 2026-08-26,
+> found when the owner could not see the Tracking tab at all.
+
 ### How it works
 - Content edits are written to **`data/content.local.json`** (gitignored) which overrides
   `data/content.json` section-by-section (admin is authoritative — edits/deletions/order all apply); only an
