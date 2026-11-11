@@ -8,6 +8,10 @@ It is a **static, SEO-focused multi-page site** — plain HTML/CSS/JS, no framew
 runtime dependencies. It builds to a `/site` folder you can host on any static host
 (Netlify, Vercel, GitHub Pages, Cloudflare Pages, Hostinger, or any web server).
 
+## Engineering case study
+
+The [RIIMS website case study](https://praritsidana.com/projects/riims-website) explains the static publishing workflow, metadata generation and admin interface. See [Prarit Sidana's portfolio](https://praritsidana.com/) for related software projects.
+
 ## Why static + multi-page
 
 The brief's top priority is ranking nationally for kidney / Ayurveda searches. A static
